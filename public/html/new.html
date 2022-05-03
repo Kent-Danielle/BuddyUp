@@ -1,0 +1,21 @@
+    <!DOCTYPE html>
+    <html>
+
+    <body>
+      <form action="/user/createAccount" method="POST" enctype="multipart/form-data">
+        <h3>Email</h3>
+        <input id="email" type="text" value="" name="email" />
+        <h3>Password</h3>
+        <input id="password" type="password" value="" name="password" />
+        <h3>Name</h3>
+        <input id="name" type="password" value="" name="name" />
+        <h3>Profile Picture</h3>
+        <input type="file" id="image" name="image" value="" required accept="image/png">
+        <br>
+        <input type="submit" value="Submit" />
+        <a href="/">Cancel</a>
+        <a id="errorMsg"></a>
+      </form>
+    </body>
+
+    </html>
