@@ -14,37 +14,69 @@ router.get('/', function (req, res) {
     }
 });
 
-router.get('/profile', function (req, res) {
+router.get('/profile', async function (req, res) {
     if (!req.session.loggedIn) {
-        res.redirect('/user/login')
+        res.redirect("/user/login");
     } else {
-        let currentUser = User.findOne({
+        
+        let currentUser = await User.findOne({
             email: req.session.email
         });
-        currentUser.then((result) => {
-            let profile = fs.readFileSync("./app/html/profile.html", "utf-8");
-            let profileDOM = new JSDOM(profile);
-            profileDOM.window.document.getElementById('email').innerHTML = result.email;
-            profileDOM.window.document.getElementById('name').innerHTML = result.name;
-           // profileDOM.window.document.getElementById('pfp').src = 'data:image/'+result.img.contentType+';base64,'+result.img.data.toString('base64');
-            res.send(profileDOM.serialize());
+
+        let isAdmin = await User.findOne({
+            email: req.session.email,
+            admin: true
         });
+        console.log("admin stuff: " + isAdmin);
+        if (isAdmin) {
+            res.redirect("/user/admin");
+        } else {
+            //currentUser.then((result) => {
+                let profile = fs.readFileSync("./public/html/profile.html", "utf-8");
+                let profileDOM = new JSDOM(profile);
+                profileDOM.window.document.getElementById('email').innerHTML = currentUser.email;
+                profileDOM.window.document.getElementById('name').innerHTML = currentUser.name;
+               // profileDOM.window.document.getElementById('pfp').src = 'data:image/'+result.img.contentType+';base64,'+result.img.data.toString('base64');
+                res.send(profileDOM.serialize());
+            //});
+        }
     }
 
 });
 
 //get all users
 router.get('/login', function (req, res) {
-    if (req.session.loggedIn == true) {
+    // if user logged in, go to their profile page
+    if (req.session.loggedIn) {
         res.redirect('/user/profile');
-    } else {
-        let login = fs.readFileSync("./app/html/index.html", "utf-8");
+    } else { // if user is not logged in, go to the login page 
+        let login = fs.readFileSync("./public/html/index.html", "utf-8");
         res.send(login);
     }
 });
 
+router.get('/admin', function (req, res) {
+
+    if (req.session.loggedIn) {
+        let isAdmin = User.findOne({
+            email: req.session.email,
+            admin: true
+        });
+        let adminPage = fs.readFileSync("./public/html/admin.html", "utf-8");
+        if (isAdmin == null) {
+            console.log("/admin: User! line 76");
+            res.redirect("/user/login");
+        } else {
+            res.send(adminPage);
+        }
+    } else {
+        console.log("/admin: not logged in!");
+    }
+    
+});
+
 router.post('/login', function (req, res) {
-    let login = fs.readFileSync("./app/html/index.html", "utf-8");
+    let login = fs.readFileSync("./public/html/index.html", "utf-8");
     let loginDOM = new JSDOM(login);
 
     let currentUser = User.findOne({
@@ -72,7 +104,7 @@ router.get('/register', function (req, res) {
     if (req.session.loggedIn == true) {
         res.redirect('/user/profile')
     } else {
-        let login = fs.readFileSync("./app/html/new.html", "utf-8");
+        let login = fs.readFileSync("./public/html/new.html", "utf-8");
         res.send(login);
     }
 });
@@ -82,7 +114,7 @@ var multer = require('multer');
 
 var storage = multer.diskStorage({
     destination: (req, file, cb) => {
-        cb(null, 'uploads');
+        cb(null, '');
     },
     filename: (req, file, cb) => {
         cb(null, "temp.png");
@@ -106,13 +138,23 @@ router.post('/createAccount', upload.single('image'), async function (req, res) 
         // }
     });
 
+    let login = fs.readFileSync("./public/html/new.html", "utf-8");
+    let loginDOM = new JSDOM(login);
+
     try {
-        const newUser = await user.save();
-        console.log(newUser);
-        res.redirect('/user/login');
+        let hasSameEmail = await User.findOne({
+            email: req.body.email
+        });
+        if (hasSameEmail == null) {
+            const newUser = await user.save();
+            console.log(newUser);
+            res.redirect('/user/login');
+        } else {
+            console.log(hasSameEmail);
+            loginDOM.window.document.getElementById('errorMsg').innerHTML = "Email already exists!";
+            res.send(loginDOM.serialize());
+        }
     } catch {
-        let login = fs.readFileSync("./app/html/new.html", "utf-8");
-        let loginDOM = new JSDOM(login);
         loginDOM.window.document.getElementById('errorMsg').innerHTML = "Failed to create account";
         res.send(loginDOM.serialize());
     }
