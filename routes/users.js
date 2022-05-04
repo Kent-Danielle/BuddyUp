@@ -3,7 +3,10 @@ const router = express.Router();
 const User = require('../models/user');
 const path = require('path');
 const fs = require('fs');
-const { JSDOM } = require('jsdom');
+const {
+    JSDOM
+} = require('jsdom');
+
 
 //get all users
 router.get('/', function (req, res) {
@@ -18,7 +21,7 @@ router.get('/profile', async function (req, res) {
     if (!req.session.loggedIn) {
         res.redirect("/user/login");
     } else {
-        
+
         let currentUser = await User.findOne({
             email: req.session.email
         });
@@ -32,12 +35,12 @@ router.get('/profile', async function (req, res) {
             res.redirect("/user/admin");
         } else {
             //currentUser.then((result) => {
-                let profile = fs.readFileSync("./public/html/profile.html", "utf-8");
-                let profileDOM = new JSDOM(profile);
-                profileDOM.window.document.getElementById('email').innerHTML = currentUser.email;
-                profileDOM.window.document.getElementById('name').innerHTML = currentUser.name;
-               // profileDOM.window.document.getElementById('pfp').src = 'data:image/'+result.img.contentType+';base64,'+result.img.data.toString('base64');
-                res.send(profileDOM.serialize());
+            let profile = fs.readFileSync("./public/html/profile.html", "utf-8");
+            let profileDOM = new JSDOM(profile);
+            profileDOM.window.document.getElementById('email').innerHTML = currentUser.email;
+            profileDOM.window.document.getElementById('name').innerHTML = currentUser.name;
+            // profileDOM.window.document.getElementById('pfp').src = 'data:image/'+result.img.contentType+';base64,'+result.img.data.toString('base64');
+            res.send(profileDOM.serialize());
             //});
         }
     }
@@ -56,23 +59,54 @@ router.get('/login', function (req, res) {
 });
 
 router.get('/admin', function (req, res) {
-
     if (req.session.loggedIn) {
         let isAdmin = User.findOne({
             email: req.session.email,
             admin: true
         });
         let adminPage = fs.readFileSync("./public/html/admin.html", "utf-8");
+        let adminPageDOM = new JSDOM(adminPage);
         if (isAdmin == null) {
             console.log("/admin: User! line 76");
             res.redirect("/user/login");
         } else {
-            res.send(adminPage);
+            User.find({}, function (err, result) {
+                if (err) {
+                    adminPageDOM.window.document.getElementById('error').innerHTML = "Error finding all users";
+                } else {
+                    const tableDiv = adminPageDOM.window.document.getElementById("userTable");
+                    const tableToInsert = adminPageDOM.window.document.createElement("table");
+                    const userTable = createTable(result, tableToInsert);
+                    tableDiv.appendChild(userTable);
+                    res.send(adminPageDOM.serialize());
+                }
+            });
         }
     } else {
-        console.log("/admin: not logged in!");
+        res.redirect('/user/login');
     }
-    
+});
+
+function createTable(tableInfo, newTable) {
+    for (let i = -1; i < tableInfo.length; i++) {
+        let str = "";
+        if (i < 0) {
+            str = "<tr><th>Name</th><th>Email</th><th>isAdmin</th><th>isBanned</th><th>User Profile</th><th>Ban Account</th><th>Delete Account</th></tr>";
+        } else {
+            str = "<tr><td>" + tableInfo[i].name + "</td><td>" + tableInfo[i].email + "</td><td>" + tableInfo[i].admin + "</td><td>" + tableInfo[i].banned + "</td><td>" + tableInfo[i].about +
+            "</td><td>" + "<button onclick=banUser(" + tableInfo[i].email + ")>Ban User</button>" + "</td><td>" + "stuff" + "</td></tr>";
+        }
+        newTable.innerHTML += str;
+    }
+    return newTable;
+}
+
+router.post('/banUser', function (req, res) {
+
+    res.setHeader("Content-Type", "application/json");
+
+    console.log("Email", req.body.email);
+
 });
 
 router.post('/login', function (req, res) {
@@ -111,6 +145,8 @@ router.get('/register', function (req, res) {
 
 
 var multer = require('multer');
+const { table } = require('console');
+const user = require('../models/user');
 
 var storage = multer.diskStorage({
     destination: (req, file, cb) => {
@@ -131,7 +167,8 @@ router.post('/createAccount', upload.single('image'), async function (req, res) 
         name: req.body.name,
         email: req.body.email,
         password: req.body.password,
-        admin: false
+        admin: false,
+        banned: false
         // img: {
         //     data: fs.readFileSync('uploads/temp.png'),
         //     contentType: 'image/png'
@@ -177,4 +214,3 @@ router.get("/logout", function (req, res) {
 
 
 module.exports = router;
-
