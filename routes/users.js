@@ -74,29 +74,41 @@ router.get('/admin', function (req, res) {
                 if (err) {
                     adminPageDOM.window.document.getElementById('error').innerHTML = "Error finding all users";
                 } else {
-                    const t2 = adminPageDOM.window.document.getElementById("userTable");
-                    const t1 = adminPageDOM.window.document.createElement("table");
-                    for (let i = -1; i < result.length; i++) {
-                        let str = "";
-                        if (i < 0) {
-                            str = "<tr><th>Name</th><th>Email</th><th>isAdmin</th><th>isBanned</th><th>User Profile</th>";
-                        } else {
-                            str = "<tr><td>" + result[i].name + "</td><td>" + result[i].email + "</td><td>" + result[i].admin + "</td><td>" + result[i].banned + "</td><td>";
-                        }
-                        t1.innerHTML += str;
-                    }
-                    t2.appendChild(t1);
+                    const tableDiv = adminPageDOM.window.document.getElementById("userTable");
+                    const tableToInsert = adminPageDOM.window.document.createElement("table");
+                    const userTable = createTable(result, tableToInsert);
+                    tableDiv.appendChild(userTable);
                     res.send(adminPageDOM.serialize());
                 }
             });
-
-
         }
     } else {
         res.redirect('/user/login');
     }
+});
+
+function createTable(tableInfo, newTable) {
+    for (let i = -1; i < tableInfo.length; i++) {
+        let str = "";
+        if (i < 0) {
+            str = "<tr><th>Name</th><th>Email</th><th>isAdmin</th><th>isBanned</th><th>User Profile</th><th>Ban Account</th><th>Delete Account</th></tr>";
+        } else {
+            str = "<tr><td>" + tableInfo[i].name + "</td><td>" + tableInfo[i].email + "</td><td>" + tableInfo[i].admin + "</td><td>" + tableInfo[i].banned + "</td><td>" + tableInfo[i].about +
+            "</td><td>" + "<button onclick=banUser(" + tableInfo[i].email + ")>Ban User</button>" + "</td><td>" + "stuff" + "</td></tr>";
+        }
+        newTable.innerHTML += str;
+    }
+    return newTable;
+}
+
+router.post('/banUser', function (req, res) {
+
+    res.setHeader("Content-Type", "application/json");
+
+    console.log("Email", req.body.email);
 
 });
+
 router.post('/login', function (req, res) {
     let login = fs.readFileSync("./public/html/index.html", "utf-8");
     let loginDOM = new JSDOM(login);
@@ -133,6 +145,8 @@ router.get('/register', function (req, res) {
 
 
 var multer = require('multer');
+const { table } = require('console');
+const user = require('../models/user');
 
 var storage = multer.diskStorage({
     destination: (req, file, cb) => {

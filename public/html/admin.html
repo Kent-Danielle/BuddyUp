@@ -17,6 +17,34 @@
     <div id="error"></div>
     ADMIN PROFILE
     <a href="/user/logout">logout</a>
+
+    <script>
+
+
+        // document.getElementById("getDataThen").addEventListener("click", function(e) {
+        //     fetch("/")
+        //     .then(function(response) {
+        //         //console.log("first 'then'", response);
+        //         return response.text();
+        //     })
+        //     // second 'then' is required because the response object's 'text' method
+        //     // returns a promise - while it reads the stream to completion
+        //     .then(function(data) {
+        //         //console.log("second 'then'", data);
+        //         // just text. but how to turn into DOM hierarchy?
+        //         console.log("the HTML", data);
+        //         let frag =  document.createRange().createContextualFragment(data);
+        //         console.log(frag);
+        //         document.getElementById("container").appendChild(frag);
+        //     });
+        // });
+
+        function banUser(userEmail) {
+            console.log("IN ban user function!" + userEmail);
+        }
+
+
+    </script>
 </body>
 
 </html>
