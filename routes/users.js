@@ -17,7 +17,8 @@ router.get('/', function (req, res) {
     }
 });
 
-router.get('/profile', async function (req, res) {
+router.get('/profile/:name', async function (req, res) {
+    var profileName = req.params['name']
     if (!req.session.loggedIn) {
         res.redirect("/user/login");
     } else {
@@ -31,20 +32,34 @@ router.get('/profile', async function (req, res) {
             admin: true
         });
         console.log("admin stuff: " + isAdmin);
-        if (isAdmin) {
-            res.redirect("/user/admin");
+        if(profileName == "self"){
+            if (isAdmin) {
+                res.redirect("/user/admin");
+                return;
+            }
         } else {
-            //currentUser.then((result) => {
-            let profile = fs.readFileSync("./public/html/profile.html", "utf-8");
-            let profileDOM = new JSDOM(profile);
-            profileDOM.window.document.getElementById('email').innerHTML = currentUser.email;
-            profileDOM.window.document.getElementById('name').innerHTML = currentUser.name;
-            // profileDOM.window.document.getElementById('pfp').src = 'data:image/'+result.img.contentType+';base64,'+result.img.data.toString('base64');
-            res.send(profileDOM.serialize());
-            //});
+            if (isAdmin) {
+                currentUser = await User.findOne({
+                    name: profileName
+                });
+            } else {
+                res.redirect('/user/profile/self');
+                return;
+            }
         }
+        let profile = fs.readFileSync("./public/html/profile.html", "utf-8");
+        let profileDOM = new JSDOM(profile);
+        profileDOM.window.document.getElementById('email').innerHTML = currentUser.email;
+        profileDOM.window.document.getElementById('name').innerHTML = currentUser.name;
+        // profileDOM.window.document.getElementById('pfp').src = 'data:image/'+result.img.contentType+';base64,'+result.img.data.toString('base64');
+        res.send(profileDOM.serialize());
+
     }
 
+});
+
+router.get('/profile/', async function (req, res) {
+    res.redirect('/user/profile/self');
 });
 
 //get all users
@@ -79,7 +94,7 @@ router.get('/admin', function (req, res) {
                     //const userTable = createTable(result, tableToInsert);
                     for (let i = 0; i < result.length; i++) {
                         tableDiv.innerHTML += "<tr><th scope=\"row\">" + (i + 1) + "</th><td>" + result[i].name +
-                            "</td><td>" + result[i].email + "</td><td><a class=\"text-dark\" href=\"#\"><i class=\"fa-solid fa-pen-to-square  \"></i></a></td></tr>"
+                            "</td><td>" + result[i].email + "</td><td><a class=\"text-dark\" href=\"/user/profile/" + result[i].name + "\"><i class=\"fa-solid fa-pen-to-square  \"></i></a></td></tr>"
 
                     }
                     res.send(adminPageDOM.serialize());
