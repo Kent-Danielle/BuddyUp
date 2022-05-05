@@ -84,6 +84,7 @@
   <script>
     const searchButton = document.getElementById('submit');
     const search = document.getElementById('query');
+
     searchButton.addEventListener("click", (event) => {
       let data = {input: search.value}
       let result = fetch('/user/adminSearch', {

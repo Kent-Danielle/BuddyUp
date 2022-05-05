@@ -104,7 +104,7 @@ router.post('/adminSearch', function (req, res) {
             let tableDiv = '';
             for (let i = 0; i < result.length; i++) {
                 tableDiv += "<tr><th scope=\"row\">" + (i + 1) + "</th><td>" + result[i].name +
-                    "</td><td>" + result[i].email + "</td><td><a class=\"text-dark\" href=\"#\"><i class=\"fa-solid fa-pen-to-square  \"></i></a></td></tr>";
+                    "</td><td>" + result[i].email + "</td><td><a class=\"text-dark\" href=\"\"><i class=\"fa-solid fa-pen-to-square  \"></i></a></td></tr>";
             }
             if (tableDiv == '') {
                 res.send("no results");
@@ -115,30 +115,6 @@ router.post('/adminSearch', function (req, res) {
     });
 });
 
-function createTable(tableInfo, newTable) {
-    // for (let i = -1; i < tableInfo.length; i++) {
-    //     let str = "";
-    //     if (i < 0) {
-    //         str = "<tr><th>Name</th><th>Email</th><th>isAdmin</th><th>isBanned</th><th>User Profile</th><th>Ban Account</th><th>Delete Account</th></tr>";
-    //     } else {
-    //         let row = newTable.insertRow(i);
-    //         let name = row.insertCell(0);
-    //         let email = row.insertCell(1);
-    //         let isAdmin = row.insertCell(2);
-    //         let isBanned = row.insertCell(3);
-    //         let UserProfile = row.insertCell(4);
-    //         let banAccount = row.insertCell(5);
-    //         let deleteAccount = row.insertCell(6);
-    //         name.innerHTML = tableInfo[i].name;
-    //         email.innerHTML = tableInfo[i].email;
-    //         isAdmin.innerHTML = tableInfo[i].admin;
-    //         isBanned.innerHTML = tableInfo[i].banned;
-    //         UserProfile.innerHTML = "profile";
-    //        // banAccount.innerHTML = createElement("button").innerHTML = "test";
-    //     }
-    // }
-    return newTable;
-}
 
 router.post('/banUser', function (req, res) {
 
@@ -210,7 +186,7 @@ router.post('/createAccount', upload.single('image'), async function (req, res) 
         email: req.body.email,
         password: req.body.password,
         admin: false,
-        banned: false
+        banned: false,
         // img: {
         //     data: fs.readFileSync('uploads/temp.png'),
         //     contentType: 'image/png'
@@ -233,7 +209,8 @@ router.post('/createAccount', upload.single('image'), async function (req, res) 
             loginDOM.window.document.getElementById('errorMsg').innerHTML = "Email already exists!";
             res.send(loginDOM.serialize());
         }
-    } catch {
+    } catch (err) {
+        console.log(err);
         loginDOM.window.document.getElementById('errorMsg').innerHTML = "Failed to create account";
         res.send(loginDOM.serialize());
     }

@@ -25,6 +25,10 @@ const userSchema = new mongoose.Schema({
         type: String,
         required: false
     },
+    games: {
+        type: Array,
+        required: false,
+    },
     // img: {
     //     data: Buffer,
     //     contentType: String
