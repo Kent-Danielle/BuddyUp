@@ -43,10 +43,17 @@ router.get("/profile/:name", async function (req, res) {
 				return;
 			}
 		}
+
+		if (currentUser.about == null) {
+			currentUser.about = "";
+		}
+
 		let profile = fs.readFileSync("./public/html/profile.html", "utf-8");
 		let profileDOM = new JSDOM(profile);
 		profileDOM.window.document.getElementById("username").innerHTML =
 			currentUser.name;
+		profileDOM.window.document.getElementById("bio-text").innerHTML =
+			currentUser.about;
 		// profileDOM.window.document.getElementById('pfp').src = 'data:image/'+result.img.contentType+';base64,'+result.img.data.toString('base64');
 		res.send(profileDOM.serialize());
 	}
@@ -233,7 +240,7 @@ router.get("/register", function (req, res) {
 	if (req.session.loggedIn == true) {
 		res.redirect("/user/profile");
 	} else {
-		let login = fs.readFileSync("./public/html/new.html", "utf-8");
+		let login = fs.readFileSync("./public/html/register.html", "utf-8");
 		res.send(login);
 	}
 });
@@ -263,6 +270,7 @@ router.post(
 			name: req.body.name,
 			email: req.body.email,
 			password: req.body.password,
+			about: req.body.about,
 			admin: false,
 			banned: false,
 			// img: {
@@ -271,21 +279,26 @@ router.post(
 			// }
 		});
 
-		let login = fs.readFileSync("./public/html/new.html", "utf-8");
+		let login = fs.readFileSync("./public/html/register.html", "utf-8");
 		let loginDOM = new JSDOM(login);
 
 		try {
 			let hasSameEmail = await User.findOne({
 				email: req.body.email,
 			});
-			if (hasSameEmail == null) {
+			let hasSameUsername = await User.findOne({ name: req.body.name });
+			if (hasSameEmail == null && hasSameUsername == null) {
 				const newUser = await user.save();
 				console.log(newUser);
 				res.redirect("/user/login");
 			} else {
-				console.log(hasSameEmail);
-				loginDOM.window.document.getElementById("errorMsg").innerHTML =
-					"Email already exists!";
+				let msg = "";
+				if (hasSameEmail != null) {
+					msg = "Email already exists!";
+				} else {
+					msg = "Username already exists!";
+				}
+				loginDOM.window.document.getElementById("errorMsg").innerHTML = msg;
 				res.send(loginDOM.serialize());
 			}
 		} catch (err) {
