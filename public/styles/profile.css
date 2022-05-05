@@ -22,7 +22,7 @@ body {
     rgba(252, 225, 70, 0.8) 100%
   );
   animation: gradient 30s ease infinite;
-  background-size: 200% 200%;
+  background-size: 300% 300%;
 }
 @keyframes gradient {
   0% {
@@ -118,7 +118,7 @@ body {
  * Desktop layout
  *----------------
  */
- @media only screen and (min-width: 845px) {
+@media only screen and (min-width: 845px) {
   section#stories {
     display: none !important;
   }

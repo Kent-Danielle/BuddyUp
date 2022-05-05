@@ -23,6 +23,7 @@ body {
   );
   animation: gradient 30s ease infinite;
   background-size: 300% 300%;
+  background-repeat: no-repeat;
 }
 @keyframes gradient {
   0% {
