@@ -27,6 +27,9 @@
 
   <!-- Material Icons -->
   <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet" />
+  <!-- Google Icons -->
+  <link rel="stylesheet"
+    href="https://fonts.sandbox.google.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@48,400,0,0" />
   <!-- Fontawesome -->
   <script src="https://kit.fontawesome.com/8bb76a9e5f.js" crossorigin="anonymous"></script>
   <!-- Jquery -->
@@ -36,7 +39,7 @@
   <!-- styles of your own -->
   <!------------------------>
   <link rel="stylesheet" href="/styles/styles.css" />
-  <!-- <link rel="stylesheet" href="/styles/admin.css" /> -->
+  <link rel="stylesheet" href="/styles/admin.css" />
 </head>
 
 <body>
@@ -45,32 +48,36 @@
   <!-- Body goes here -->
   <div id="grid-container" class="container p-3">
 
-    <div id="header" class="row mb-5">
+    <div id="top-profile" class="mb-4">
+      <a class="btn rounded-3" href="/user/logout" id="logout" role="button">LOGOUT</a>
+      <h2 id="name">Username</h2>
+    </div>
+
+    <!-- <div id="header" class="row mb-5">
       <div id="profile" class="col">
-        <!-- <img src="" id="pfp"> -->
         <div id="name">NAME</div>
       </div>
       <div id="button-container" class="col text-end">
         <a class="btn btn-accent" href="/user/logout" id="logout" role="button">LOGOUT</a>
       </div>
-    </div>
+    </div> -->
 
     <div id="content">
-      <div id="searchbar" class="d-flex justify-content-center mb-4" role="search">
-        <input type="text" id="query" name="q" placeholder="Search..." aria-label="Search through site content">
-        <button id="submit">Search</button>
+      <div id="searchbar" class="d-flex justify-content-start mb-4" role="search">
+        <input type="text" id="search" class="rounded-pill ps-2" name="q" placeholder="Search..."
+          aria-label="Search through site content">
+        <button id="search-button" class="border-0"><i class="fa-solid fa-magnifying-glass"></i></button>
       </div>
-      <table id="user-list" class="table border">
+      <table id="user-list" class="table border-0">
         <thead>
           <tr>
-            <th scope="col">#</th>
+            <th class="text-center" scope="col">#</th>
             <th scope="col">Username</th>
-            <th scope="col">Email</th>
-            <th scope="col">Edit</th>
+            <th id="email" scope="col">Email</th>
+            <th id="edit" scope="col">Edit</th>
           </tr>
         </thead>
         <tbody id="tableBody">
-
         </tbody>
       </table>
     </div>
@@ -82,11 +89,18 @@
   <!-- Client-side Javascript -->
   <!---------------------------->
   <script>
-    const searchButton = document.getElementById('submit');
+    let table = document.getElementById('nested');
+    let plus = document.getElementById('plus');
+    let minus = document.getElementById('minus');
+
+    const expand = document.getElementById('more-info');
+    const searchButton = document.getElementById('search-button');
     const search = document.getElementById('query');
 
     searchButton.addEventListener("click", (event) => {
-      let data = {input: search.value}
+      let data = {
+        input: search.value
+      }
       let result = fetch('/user/adminSearch', {
         method: 'POST',
         headers: {
@@ -101,6 +115,33 @@
         table.innerHTML = result;
       });
     });
+
+    expand.addEventListener("click", (event) => {
+      if (table.style.display != 'block') {
+        table.style.display = 'block';
+        plus.style.display = 'none';
+        minus.style.display = 'block';
+      } else {
+        table.style.display = 'none';
+        plus.style.display = 'block';
+        minus.style.display = 'none';
+      }
+    })
+
+    function checkMedia(x) {
+      if (x.matches) { // If media query matches
+        table.style.display = 'none';
+
+        if (minus.style.display != 'none') {
+          minus.style.display = 'none';
+          plus.style.display = 'block';
+        }
+      }
+    }
+
+    var x = window.matchMedia("(min-width: 855px)")
+    checkMedia(x) // Call listener function at run time
+    x.addListener(checkMedia) // Attach listener function on state changes
   </script>
 </body>
 
