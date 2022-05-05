@@ -3,7 +3,7 @@ let nestedTable = document.getElementById("nested");
 //this is the plus/minus button
 const expandBtn = document.querySelectorAll("#more-info");
 const searchButton = document.getElementById("search-button");
-const search = document.getElementById("query");
+const search = document.getElementById("search");
 
 searchButton.addEventListener("click", (event) => {
 	let data = {
@@ -20,23 +20,29 @@ searchButton.addEventListener("click", (event) => {
 		.then(function (response) {
 			return response.text();
 		})
-		.then(function (result) {
+		.then(async function (result) {
 			let table = document.getElementById("tableBody");
-			table.innerHTML = result;
+			table.innerHTML = await result;
+			createListener();
 		});
 });
 
-for (let i = 0; i < expandBtn.length; i++) {
-	expandBtn[i].addEventListener("click", (event) => {
-		if (document.getElementById("nested-table-" + (i+1)).style.display != "block") {
-			document.getElementById("nested-table-" + (i+1)).style.display = "block";
-			expandBtn[i].innerHTML = '<i class="fa-solid fa-circle-minus"></i>';
-		} else {
-			document.getElementById("nested-table-" + (i+1)).style.display = "none";
-			expandBtn[i].innerHTML = '<i class="fa-solid fa-circle-plus"></i>';
-		}
-	});
+createListener();
+function createListener(){
+	console.log("hi")
+	for (let i = 0; i < expandBtn.length; i++) {
+		expandBtn[i].addEventListener("click", (event) => {
+			if (document.getElementById("nested-table-" + (i+1)).style.display != "block") {
+				document.getElementById("nested-table-" + (i+1)).style.display = "block";
+				expandBtn[i].innerHTML = '<i class="fa-solid fa-circle-minus"></i>';
+			} else {
+				document.getElementById("nested-table-" + (i+1)).style.display = "none";
+				expandBtn[i].innerHTML = '<i class="fa-solid fa-circle-plus"></i>';
+			}
+		});
+	}
 }
+
 
 function checkMedia(x) {
 	if (x.matches) {
