@@ -84,20 +84,15 @@ input[type="text"] {
     justify-content: center;
 }
 
-#list-number {
-    margin: 0;
+.fa-circle-plus {
+    color: #1663d69c;
 }
 
-#plus {
-    color: green;
+.fa-circle-minus {
+    color: #dd375b99;
 }
 
-#minus {
-    color: red;
-    display: none;
-}
-
-#nested {
+.nested {
     display: none;
 }
 
