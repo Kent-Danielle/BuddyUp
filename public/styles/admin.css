@@ -1,0 +1,127 @@
+#top-profile {
+    position: relative;
+}
+
+#logout {
+    position: absolute;
+    top: 0.1rem;
+    right: 0.5rem;
+    font-size: 0.7rem;
+    padding: 0.3rem;
+    background: rgba(221, 55, 91, 0.66);
+    color: white;
+    box-shadow: 0 4px 30px rgba(0, 0, 0, 0.1);
+    backdrop-filter: blur(1.7px);
+    -webkit-backdrop-filter: blur(1.7px);
+    border: 1px solid rgba(221, 55, 91, 0.3);
+}
+
+body {
+    background: rgb(63, 200, 251);
+    background: linear-gradient(50deg,
+            rgba(63, 200, 251, 0.8) 0%,
+            rgba(252, 70, 215, 0.8) 50%,
+            rgba(252, 225, 70, 0.8) 100%);
+    animation: gradient 60s ease infinite;
+    background-size: 300% 300%;
+}
+
+table {
+    background: rgba(255, 255, 255, 0.2) !important;
+    box-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.37) !important;
+    backdrop-filter: blur(3px) !important;
+    -webkit-backdrop-filter: blur(3px) !important;
+    border-radius: 10px !important;
+    border: 1px solid rgba(255, 255, 255, 0.18) !important;
+}
+
+.number-column, .email-column, .name-column, .edit-column, .info-column, #info td {
+    border: 0 !important;
+}
+
+input[type="text"] {
+    background: rgba(255, 255, 255, 0.2);
+    box-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.37);
+    backdrop-filter: blur(3px);
+    -webkit-backdrop-filter: blur(3px);
+    border-radius: 10px;
+    border: 1px solid rgba(255, 255, 255, 0.18);
+}
+
+#search-button {
+    background: none;
+}
+
+#more-info {
+    background: none;
+    border: 0;
+}
+
+@keyframes gradient {
+    0% {
+        background-position: bottom left;
+    }
+
+    25% {
+        background-position: top left;
+    }
+
+    50% {
+        background-position: top right;
+    }
+
+    75% {
+        background-position: bottom right;
+    }
+
+    100% {
+        background-position: bottom left;
+    }
+}
+
+.number-column {
+    display: flex;
+    justify-content: center;
+}
+
+.fa-circle-plus {
+    color: #1663d69c;
+}
+
+.fa-circle-minus {
+    color: #dd375b99;
+}
+
+#info {
+    display: none;
+}
+
+/*----------------
+ * Mobile layout
+ *----------------
+ */
+@media only screen and (max-width: 844px) {
+
+    #email,
+    #edit, .email-column, .edit-column {
+        display: none;
+    }
+
+    #more-info {
+        display: block;
+    }
+}
+
+/*----------------
+   * Desktop layout
+   *----------------
+   */
+@media only screen and (min-width: 845px) {
+    #more-info {
+        display: none;
+    }
+
+    #info {
+        display: none;
+    }
+}
