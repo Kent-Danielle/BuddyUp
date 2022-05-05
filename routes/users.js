@@ -74,10 +74,14 @@ router.get('/admin', function (req, res) {
                 if (err) {
                     adminPageDOM.window.document.getElementById('error').innerHTML = "Error finding all users";
                 } else {
-                    const tableDiv = adminPageDOM.window.document.getElementById("userTable");
-                    const tableToInsert = adminPageDOM.window.document.createElement("table");
-                    const userTable = createTable(result, tableToInsert);
-                    tableDiv.appendChild(userTable);
+                    adminPageDOM.window.document.getElementById('name').innerHTML = req.session.name;
+                    const tableDiv = adminPageDOM.window.document.getElementById("tableBody");
+                    //const userTable = createTable(result, tableToInsert);
+                    for (let i = 0; i < result.length; i++) {
+                        tableDiv.innerHTML += "<tr><th scope=\"row\">" + (i + 1) + "</th><td>" + result[i].name +
+                            "</td><td>" + result[i].email + "</td><td><a class=\"text-dark\" href=\"#\"><i class=\"fa-solid fa-pen-to-square  \"></i></a></td></tr>"
+
+                    }
                     res.send(adminPageDOM.serialize());
                 }
             });
@@ -87,17 +91,52 @@ router.get('/admin', function (req, res) {
     }
 });
 
-function createTable(tableInfo, newTable) {
-    for (let i = -1; i < tableInfo.length; i++) {
-        let str = "";
-        if (i < 0) {
-            str = "<tr><th>Name</th><th>Email</th><th>isAdmin</th><th>isBanned</th><th>User Profile</th><th>Ban Account</th><th>Delete Account</th></tr>";
-        } else {
-            str = "<tr><td>" + tableInfo[i].name + "</td><td>" + tableInfo[i].email + "</td><td>" + tableInfo[i].admin + "</td><td>" + tableInfo[i].banned + "</td><td>" + tableInfo[i].about +
-            "</td><td>" + "<button onclick=banUser(" + tableInfo[i].email + ")>Ban User</button>" + "</td><td>" + "stuff" + "</td></tr>";
-        }
-        newTable.innerHTML += str;
+router.post('/adminSearch', function (req, res) {
+    res.setHeader("Content-Type", "application/json");
+    let searchOptions = {};
+    if (req.body.input != null || req.body.input != '') {
+        searchOptions.name = new RegExp(req.body.input, 'i');
     }
+    User.find(searchOptions, function (err, result) {
+        if (err) {
+            res.send("Error finding users!");
+        } else {
+            let tableDiv = '';
+            for (let i = 0; i < result.length; i++) {
+                tableDiv += "<tr><th scope=\"row\">" + (i + 1) + "</th><td>" + result[i].name +
+                    "</td><td>" + result[i].email + "</td><td><a class=\"text-dark\" href=\"#\"><i class=\"fa-solid fa-pen-to-square  \"></i></a></td></tr>";
+            }
+            if (tableDiv == '') {
+                res.send("no results");
+            } else {
+                res.send(tableDiv);
+            }
+        }
+    });
+});
+
+function createTable(tableInfo, newTable) {
+    // for (let i = -1; i < tableInfo.length; i++) {
+    //     let str = "";
+    //     if (i < 0) {
+    //         str = "<tr><th>Name</th><th>Email</th><th>isAdmin</th><th>isBanned</th><th>User Profile</th><th>Ban Account</th><th>Delete Account</th></tr>";
+    //     } else {
+    //         let row = newTable.insertRow(i);
+    //         let name = row.insertCell(0);
+    //         let email = row.insertCell(1);
+    //         let isAdmin = row.insertCell(2);
+    //         let isBanned = row.insertCell(3);
+    //         let UserProfile = row.insertCell(4);
+    //         let banAccount = row.insertCell(5);
+    //         let deleteAccount = row.insertCell(6);
+    //         name.innerHTML = tableInfo[i].name;
+    //         email.innerHTML = tableInfo[i].email;
+    //         isAdmin.innerHTML = tableInfo[i].admin;
+    //         isBanned.innerHTML = tableInfo[i].banned;
+    //         UserProfile.innerHTML = "profile";
+    //        // banAccount.innerHTML = createElement("button").innerHTML = "test";
+    //     }
+    // }
     return newTable;
 }
 
@@ -124,6 +163,7 @@ router.post('/login', function (req, res) {
             if (result.password == req.body.password) {
                 req.session.loggedIn = true;
                 req.session.email = result.email;
+                req.session.name = result.name;
                 res.redirect('/user/profile');
             } else {
                 loginDOM.window.document.getElementById('errorMsg').innerHTML = "Incorrect Password";
@@ -145,7 +185,9 @@ router.get('/register', function (req, res) {
 
 
 var multer = require('multer');
-const { table } = require('console');
+const {
+    table
+} = require('console');
 const user = require('../models/user');
 
 var storage = multer.diskStorage({
