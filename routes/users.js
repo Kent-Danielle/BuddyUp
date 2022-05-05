@@ -93,14 +93,9 @@ router.get('/admin', function (req, res) {
                     const tableDiv = adminPageDOM.window.document.getElementById("tableBody");
                     //const userTable = createTable(result, tableToInsert);
                     for (let i = 0; i < result.length; i++) {
-<<<<<<< HEAD
                         tableDiv.innerHTML += "<tr><th class='number-column text-center' scope=\"row\">" + "<button id=\"more-info\"><i id=\"plus\" class=\"fa-solid fa-circle-plus\"></i><i id=\"minus\" class=\"fa-solid fa-circle-minus\"></i></button>" + "<h4 id=\"list-number\">" + (i + 1) + "</h4>" + "</th><td class='name-column'>" + result[i].name +
                             "</td><td class='email-column'>" + result[i].email + "</td><td class='edit-column'><a class=\"text-dark\" href=\"#\"><i class=\"fa-solid fa-pen-to-square  \"></i></a></td></tr>" +
                             "<tr id=\"info\"><td colspan=2><table id=\"nested\"><tr><th id=\"mini-email\" scope=\"col\">Email</th><td class='mini-email-column'>" + result[i].email + "</td></tr><tr><th id=\"mini-edit\" scope=\"col\">Edit</th><td class='mini-edit-column'><a class=\"text-dark\" href=\"#\"><i class=\"fa-solid fa-pen-to-square\"></i></a></td></tr></table></td></tr>"
-=======
-                        tableDiv.innerHTML += "<tr><th scope=\"row\">" + (i + 1) + "</th><td>" + result[i].name +
-                            "</td><td>" + result[i].email + "</td><td><a class=\"text-dark\" href=\"/user/profile/" + result[i].name + "\"><i class=\"fa-solid fa-pen-to-square  \"></i></a></td></tr>"
->>>>>>> 1203c5d161b6d58022220d195f7e1476b16113b4
 
                     }
                     res.send(adminPageDOM.serialize());
