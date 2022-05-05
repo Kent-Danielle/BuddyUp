@@ -92,7 +92,7 @@ input[type="text"] {
     color: #dd375b99;
 }
 
-.nested {
+#info {
     display: none;
 }
 
@@ -121,7 +121,7 @@ input[type="text"] {
         display: none;
     }
 
-    #nested {
+    #info {
         display: none;
     }
 }
