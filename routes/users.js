@@ -55,6 +55,10 @@ router.get("/profile/:name", async function (req, res) {
 		profileDOM.window.document.getElementById("bio-text").innerHTML =
 			currentUser.about;
 		// profileDOM.window.document.getElementById('pfp').src = 'data:image/'+result.img.contentType+';base64,'+result.img.data.toString('base64');
+		res.header(
+			"Cache-Control",
+			"no-cache, private, no-store, must-revalidate, max-stale=0, post-check=0, pre-check=0"
+		);
 		res.send(profileDOM.serialize());
 	}
 });
@@ -71,6 +75,10 @@ router.get("/login", function (req, res) {
 	} else {
 		// if user is not logged in, go to the login page
 		let login = fs.readFileSync("./public/html/login.html", "utf-8");
+		res.header(
+			"Cache-Control",
+			"no-cache, private, no-store, must-revalidate, max-stale=0, post-check=0, pre-check=0"
+		);
 		res.send(login);
 	}
 });
@@ -117,6 +125,10 @@ router.get("/admin", function (req, res) {
 							result[i].name +
 							'"><i class="fa-solid fa-pen-to-square"></i></a></td></tr></table></td></tr>';
 					}
+					res.header(
+						"Cache-Control",
+						"no-cache, private, no-store, must-revalidate, max-stale=0, post-check=0, pre-check=0"
+					);
 					res.send(adminPageDOM.serialize());
 				}
 			});
@@ -317,6 +329,7 @@ router.get("/logout", function (req, res) {
 				res.status(400).send("Unable to log out");
 			} else {
 				// session deleted, redirect to home
+
 				res.redirect("/");
 			}
 		});
