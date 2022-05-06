@@ -1,7 +1,5 @@
 let nestedTable = document.getElementById("nested");
 
-//this is the plus/minus button
-const expandBtn = document.querySelectorAll("#more-info");
 const searchButton = document.getElementById("search-button");
 const search = document.getElementById("search");
 
@@ -23,24 +21,26 @@ searchButton.addEventListener("click", (event) => {
 		.then(function (result) {
 			let table = document.getElementById("tableBody");
 			table.innerHTML = result;
-		})
+			createListener();
+		});
 });
 
 createListener();
 function createListener() {
-	console.log("hi");
+	const expandBtn = document.querySelectorAll("#more-info");
 	for (let i = 0; i < expandBtn.length; i++) {
+		console.log("hi");
 		expandBtn[i].addEventListener("click", (event) => {
 			if (
 				document.getElementById("nested-table-" + (i + 1)).style.display !=
 				"block"
 			) {
-				document.getElementById("info").style.display = "table-row";
+				document.getElementById("info-" + (i + 1)).style.display = "table-row";
 				document.getElementById("nested-table-" + (i + 1)).style.display =
 					"block";
 				expandBtn[i].innerHTML = '<i class="fa-solid fa-circle-minus"></i>';
 			} else {
-				document.getElementById("info").style.display = "none";
+				document.getElementById("info-" + (i + 1)).style.display = "none";
 				document.getElementById("nested-table-" + (i + 1)).style.display =
 					"none";
 				expandBtn[i].innerHTML = '<i class="fa-solid fa-circle-plus"></i>';
@@ -48,19 +48,3 @@ function createListener() {
 		});
 	}
 }
-
-// function checkMedia(x) {
-// 	if (x.matches) {
-// 		// If media query matches
-// 		nestedTable.style.display = "none";
-
-// 		if (minus.style.display != "none") {
-// 			minus.style.display = "none";
-// 			plus.style.display = "block";
-// 		}
-// 	}
-// }
-
-// var x = window.matchMedia("(min-width: 855px)");
-// checkMedia(x); // Call listener function at run time
-// x.addListener(checkMedia); // Attach listener function on state changes

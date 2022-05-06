@@ -35,7 +35,7 @@ table {
     border: 1px solid rgba(255, 255, 255, 0.18) !important;
 }
 
-.number-column, .email-column, .name-column, .edit-column, .info-column, #info td {
+.number-column, .email-column, .name-column, .edit-column, .info-column, .info td {
     border: 0 !important;
 }
 
@@ -92,7 +92,7 @@ input[type="text"] {
     color: #dd375b99;
 }
 
-#info {
+.info {
     display: none;
 }
 
@@ -121,7 +121,7 @@ input[type="text"] {
         display: none;
     }
 
-    #info {
+    .info {
         display: none;
     }
 }

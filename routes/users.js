@@ -117,7 +117,9 @@ router.get("/admin", function (req, res) {
 							'</td><td class=\'edit-column text-center\'><a class="text-dark" href="/user/profile/' +
 							result[i].name +
 							'"><i class="fa-solid fa-pen-to-square  "></i></a></td></tr>' +
-							'<tr id="info"><td colspan=2><table id="nested-table-' +
+							'<tr class="info" id="info-' +
+							(i + 1) +
+							'"><td colspan=2><table id="nested-table-' +
 							(i + 1) +
 							'"class="nested mx-2"><tr><th id="mini-email" class="p-2" scope="col">Email</th><td class=\'mini-email-column px-1\'>' +
 							result[i].email +
@@ -161,7 +163,9 @@ router.post("/adminSearch", function (req, res) {
 					'</td><td class=\'edit-column text-center\'><a class="text-dark" href="/user/profile/' +
 					result[i].name +
 					'"><i class="fa-solid fa-pen-to-square  "></i></a></td></tr>' +
-					'<tr id="info"><td colspan=2><table id="nested-table-' +
+					'<tr class="info" id="info-' +
+					(i + 1) +
+					'"><td colspan=2><table id="nested-table-' +
 					(i + 1) +
 					'"class="nested mx-2"><tr><th id="mini-email" class="p-2" scope="col">Email</th><td class=\'mini-email-column px-1\'>' +
 					result[i].email +
@@ -177,6 +181,7 @@ router.post("/adminSearch", function (req, res) {
 		}
 	});
 });
+
 
 router.post("/banUser", function (req, res) {
 	res.setHeader("Content-Type", "application/json");
