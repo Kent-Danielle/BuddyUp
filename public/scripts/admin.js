@@ -1,3 +1,5 @@
+'use strict';
+
 let nestedTable = document.getElementById("nested");
 
 const searchButton = document.getElementById("search-button");

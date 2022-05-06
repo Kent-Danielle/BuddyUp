@@ -1,3 +1,5 @@
+'use strict';
+
 const express = require("express");
 const router = express.Router();
 const User = require("../models/user");
@@ -84,57 +86,59 @@ router.get("/login", function (req, res) {
 
 router.get("/admin", function (req, res) {
 	if (req.session.loggedIn) {
-		let isAdmin = User.findOne({
-			email: req.session.email,
-			admin: true,
-		});
-		let adminPage = fs.readFileSync("./public/html/admin.html", "utf-8");
-		let adminPageDOM = new JSDOM(adminPage);
-		if (isAdmin == null) {
-			res.redirect("/user/login");
-		} else {
-			User.find({}, function (err, result) {
-				if (err) {
-					adminPageDOM.window.document.getElementById("error").innerHTML =
-						"Error finding all users";
-				} else {
-					adminPageDOM.window.document.getElementById("name").innerHTML =
-						req.session.name;
-					const tableDiv =
-						adminPageDOM.window.document.getElementById("tableBody");
-					//const userTable = createTable(result, tableToInsert);
-					for (let i = 0; i < result.length; i++) {
-						tableDiv.innerHTML +=
-							"<tr><th class='number-column text-center' scope=\"row\">" +
-							'<button id="more-info"><i class="fa-solid fa-circle-plus"></i></button>' +
-							(i + 1) +
-							"</th><td class='name-column'>" +
-							result[i].name +
-							"</td><td class='email-column'>" +
-							result[i].email +
-							'</td><td class=\'edit-column text-center\'><a class="text-dark" href="/user/profile/' +
-							result[i].name +
-							'"><i class="fa-solid fa-pen-to-square  "></i></a></td></tr>' +
-							'<tr class="info" id="info-' +
-							(i + 1) +
-							'"><td colspan=2><table id="nested-table-' +
-							(i + 1) +
-							'"class="nested mx-2"><tr><th id="mini-email" class="p-2" scope="col">Email</th><td class=\'mini-email-column px-1\'>' +
-							result[i].email +
-							'</td></tr><tr><th id="mini-edit" class="p-2" scope="col">Edit</th><td class=\'mini-edit-column\'><a class="text-dark" href="/user/profile/' +
-							result[i].name +
-							'"><i class="fa-solid fa-pen-to-square"></i></a></td></tr></table></td></tr>';
-					}
-					res.header(
-						"Cache-Control",
-						"no-cache, private, no-store, must-revalidate, max-stale=0, post-check=0, pre-check=0"
-					);
-					res.send(adminPageDOM.serialize());
-				}
+			User.findOne({
+					email: req.session.email,
+					admin: true,
+			}).then((isAdmin) => {
+					let adminPage = fs.readFileSync("./public/html/admin.html", "utf-8");
+			let adminPageDOM = new JSDOM(adminPage);
+			if (isAdmin == null) {
+					res.redirect("/user/login");
+			} else {
+					User.find({}, function (err, result) {
+							if (err) {
+									adminPageDOM.window.document.getElementById("error").innerHTML =
+											"Error finding all users";
+							} else {
+									adminPageDOM.window.document.getElementById("name").innerHTML =
+											req.session.name;
+									const tableDiv =
+											adminPageDOM.window.document.getElementById("tableBody");
+									//const userTable = createTable(result, tableToInsert);
+									for (let i = 0; i < result.length; i++) {
+											tableDiv.innerHTML +=
+													"<tr><th class='number-column text-center' scope=\"row\">" +
+													'<button id="more-info"><i class="fa-solid fa-circle-plus"></i></button>' +
+													(i + 1) +
+													"</th><td class='name-column'>" +
+													result[i].name +
+													"</td><td class='email-column'>" +
+													result[i].email +
+													'</td><td class=\'edit-column text-center\'><a class="text-dark" href="/user/profile/' +
+													result[i].name +
+													'"><i class="fa-solid fa-pen-to-square  "></i></a></td></tr>' +
+													'<tr class="info" id="info-' +
+													(i + 1) +
+													'"><td colspan=2><table id="nested-table-' +
+													(i + 1) +
+													'"class="nested mx-2"><tr><th id="mini-email" class="p-2" scope="col">Email</th><td class=\'mini-email-column px-1\'>' +
+													result[i].email +
+													'</td></tr><tr><th id="mini-edit" class="p-2" scope="col">Edit</th><td class=\'mini-edit-column\'><a class="text-dark" href="/user/profile/' +
+													result[i].name +
+													'"><i class="fa-solid fa-pen-to-square"></i></a></td></tr></table></td></tr>';
+									}
+									res.header(
+											"Cache-Control",
+											"no-cache, private, no-store, must-revalidate, max-stale=0, post-check=0, pre-check=0"
+									);
+									res.send(adminPageDOM.serialize());
+							}
+					});
+			}
 			});
-		}
+
 	} else {
-		res.redirect("/user/login");
+			res.redirect("/user/login");
 	}
 });
 
