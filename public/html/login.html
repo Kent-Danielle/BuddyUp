@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <title>BuddyUp</title>
+    <meta name="buddyup template" content="BuddyUp" />
+    <link rel="icon" href="/images/favicon.png" />
+
+    <!------------------------>
+    <!-- Required meta tags -->
+    <!------------------------>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+
+    <!--------------------->
+    <!-- Other libraries -->
+    <!--------------------->
+
+    <!-- Material Icons -->
+    <link
+      href="https://fonts.googleapis.com/icon?family=Material+Icons"
+      rel="stylesheet"
+    />
+    <!-- Fontawesome -->
+    <script
+      src="https://kit.fontawesome.com/542cfc8e1c.js"
+      crossorigin="anonymous"
+    ></script>
+    <!-- Jquery -->
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+
+    <!------------------------>
+    <!-- styles of your own -->
+    <!------------------------>
+    <link rel="stylesheet" href="../styles/login.css" />
+    <link rel="stylesheet" href="../styles/styles.css" />
+  </head>
+  <body>
+    <div id="grid-container">
+      <!-- Body goes here -->
+      <div id="content">
+        <div id="form-container">
+          <div id="form-logo">
+            <img id="logo" src="../images/logo.png" alt="" />
+          </div>
+          <form action="/user/login" method="POST">
+            <h2>Welcome, gamer!</h2>
+            <h3>email</h3>
+            <input name="email" type="text" value="" />
+            <h3>password</h3>
+            <input name="password" type="password" value="" />
+            <div id="submit-container">
+              <input type="submit" value="login" />
+            </div>
+            <p>Need an account? <a href="/user/register">Start here!</a></p>
+            <h4 id="errorMsg"></h4>
+          </form>
+        </div>
+      </div>
+
+      <div id="img-container">
+        <img src="" alt="" id="header-img">
+      </div>
+    </div>
+    <!---------------------------->
+    <!-- Client-side Javascript -->
+    <!---------------------------->
+    <script src="../scripts/skeleton.js"></script>
+  </body>
+</html>

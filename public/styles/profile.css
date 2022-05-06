@@ -1,0 +1,125 @@
+/*----------------
+ * Color palette
+ *----------------
+ */
+:root {
+  --primary-light: #ffffff;
+  --secondary-light: #1664d6;
+  --accent-light: #dd375b;
+  --primary-dark: #262322;
+  --neutral-color: #797979;
+}
+/*----------------
+ * Element styling 
+ *----------------
+ */
+body {
+  background: rgb(63, 200, 251);
+  background: linear-gradient(
+    50deg,
+    rgba(63, 200, 251, 0.8) 0%,
+    rgba(252, 70, 215, 0.8) 50%,
+    rgba(252, 225, 70, 0.8) 100%
+  );
+  animation: gradient 30s ease infinite;
+  background-size: 300% 300%;
+}
+@keyframes gradient {
+  0% {
+    background-position: bottom left;
+  }
+  25% {
+    background-position: top left;
+  }
+  50% {
+    background-position: top right;
+  }
+  75% {
+    background-position: bottom right;
+  }
+  100% {
+    background-position: bottom left;
+  }
+}
+
+#top-profile {
+  position: relative;
+}
+
+#logout {
+  position: absolute;
+  top: 0.1rem;
+  right: 0.5rem;
+  font-size: 0.7rem;
+  padding: 0.3rem;
+  background: rgba(221, 55, 91, 0.66);
+  color: white;
+  box-shadow: 0 4px 30px rgba(0, 0, 0, 0.1);
+  backdrop-filter: blur(1.7px);
+  -webkit-backdrop-filter: blur(1.7px);
+  border: 1px solid rgba(221, 55, 91, 0.3);
+}
+
+#pfp-container {
+  position: relative;
+  width: 40%;
+  height: 0;
+  padding-bottom: 40%;
+}
+#pfp {
+  clip-path: circle();
+  object-fit: cover;
+  width: 100%;
+}
+#bottom-profile {
+  background: rgba(255, 255, 255, 0.2);
+  box-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.37);
+  backdrop-filter: blur(3px);
+  -webkit-backdrop-filter: blur(3px);
+  border-radius: 10px;
+  border: 1px solid rgba(255, 255, 255, 0.18);
+}
+#game {
+  color: white;
+  background: rgba(22, 100, 214, 0.71);
+  border-radius: 16px;
+  box-shadow: 0 4px 30px rgba(0, 0, 0, 0.1);
+  backdrop-filter: blur(2px);
+  -webkit-backdrop-filter: blur(5px);
+  border: 1px solid rgba(22, 100, 214, 0.3);
+}
+#write-btn {
+  background: rgba(255, 255, 255, 0.2);
+  box-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.17);
+  backdrop-filter: blur(3px);
+  -webkit-backdrop-filter: blur(3px);
+  border-radius: 10px;
+  border: 1px solid rgba(255, 255, 255, 0.18);
+}
+#story {
+  background: rgba(255, 255, 255, 0.2);
+  box-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.17);
+  backdrop-filter: blur(3px);
+  -webkit-backdrop-filter: blur(3px);
+  border-radius: 10px;
+  border: 1px solid rgba(255, 255, 255, 0.18);
+}
+/*----------------
+ * Mobile layout
+ *----------------
+ */
+@media only screen and (max-width: 844px) {
+  #lg-stories-container {
+    display: none !important;
+  }
+}
+
+/*----------------
+ * Desktop layout
+ *----------------
+ */
+@media only screen and (min-width: 845px) {
+  section#stories {
+    display: none !important;
+  }
+}

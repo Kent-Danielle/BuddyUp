@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <title>BuddyUp</title>
+    <meta name="buddyup template" content="BuddyUp" />
+    <link rel="shortcut icon" href="/images/favicon.png" />
+
+    <!------------------------>
+    <!-- Required meta tags -->
+    <!------------------------>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+
+    <!--------------------->
+    <!-- Other libraries -->
+    <!--------------------->
+
+    <!-- Material Icons -->
+    <link
+      href="https://fonts.googleapis.com/icon?family=Material+Icons"
+      rel="stylesheet"
+    />
+    <!-- Fontawesome -->
+    <script
+      src="https://kit.fontawesome.com/542cfc8e1c.js"
+      crossorigin="anonymous"
+    ></script>
+    <!-- Jquery -->
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+
+    <!------------------------>
+    <!-- styles of your own -->
+    <!------------------------>
+    <link rel="stylesheet" href="../styles/signup.css" />
+    <link rel="stylesheet" href="../styles/styles.css" />
+  </head>
+  <body>
+    <div id="grid-container">
+      <!-- Body goes here -->
+      <div id="content">
+        <div id="form-container">
+          <div id="form-logo">
+            <img id="logo" src="../images/logo.png" alt="" />
+          </div>
+          <form action="/user/createAccount" method="POST" enctype="multipart/form-data">
+            <h2>Welcome, gamer!</h2>
+            <h3>username</h3>
+            <input id="name" type="text" value="" name="name" />
+            <h3>email</h3>
+            <input name="email" type="text" value="" />
+            <h3>password</h3>
+            <input name="password" type="password" value="" />
+            <h3>tell us about yourself</h3>
+            <textarea name="about" id="bio" maxlength="280" rows="4" ></textarea>
+            <div id="submit-container">
+              <input type="submit" value="signup" />
+            </div>
+            <p>
+              Have an account?
+              <a href="/">Login here!</a>
+            </p>
+            <p id="errorMsg"></p>
+          </form>
+        </div>
+      </div>
+
+      <div id="img-container">
+        <img src="" alt="" id="header-img" />
+      </div>
+    </div>
+    <!---------------------------->
+    <!-- Client-side Javascript -->
+    <!---------------------------->
+    <script src="../scripts/skeleton.js"></script>
+  </body>
+</html>
