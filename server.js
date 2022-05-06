@@ -47,16 +47,14 @@ app.listen(process.env.PORT || port, function () {
 
 mongoose.connect(process.env.DATABASE_URL,
     { useNewUrlParser: true, useUnifiedTopology: true }, err => {
-        console.log('connected')
+        console.log('connected to database')
     });
 const db = mongoose.connection;
 
 db.on('error', error => {
     console.error(error);
 });
-db.once('open', () => {
-    console.log("connected to database!");
-})
+
 
 app.use('/', indexRouter);
 app.use('/user', userRouter);

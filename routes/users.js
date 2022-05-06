@@ -27,7 +27,6 @@ router.get("/profile/:name", async function (req, res) {
 			email: req.session.email,
 			admin: true,
 		});
-		console.log("admin stuff: " + isAdmin);
 		if (profileName == "self") {
 			if (isAdmin) {
 				res.redirect("/user/admin");
@@ -92,7 +91,6 @@ router.get("/admin", function (req, res) {
 		let adminPage = fs.readFileSync("./public/html/admin.html", "utf-8");
 		let adminPageDOM = new JSDOM(adminPage);
 		if (isAdmin == null) {
-			console.log("/admin: User! line 76");
 			res.redirect("/user/login");
 		} else {
 			User.find({}, function (err, result) {
@@ -185,8 +183,6 @@ router.post("/adminSearch", function (req, res) {
 
 router.post("/banUser", function (req, res) {
 	res.setHeader("Content-Type", "application/json");
-
-	console.log("Email", req.body.email);
 });
 
 router.post("/login", function (req, res) {
@@ -306,7 +302,6 @@ router.post(
 			let hasSameUsername = await User.findOne({ name: req.body.name });
 			if (hasSameEmail == null && hasSameUsername == null) {
 				const newUser = await user.save();
-				console.log(newUser);
 				res.redirect("/user/login");
 			} else {
 				let msg = "";
@@ -319,7 +314,6 @@ router.post(
 				res.send(loginDOM.serialize());
 			}
 		} catch (err) {
-			console.log(err);
 			loginDOM.window.document.getElementById("errorMsg").innerHTML =
 				"Failed to create account";
 			res.send(loginDOM.serialize());

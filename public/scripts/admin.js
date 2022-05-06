@@ -29,7 +29,6 @@ createListener();
 function createListener() {
 	const expandBtn = document.querySelectorAll("#more-info");
 	for (let i = 0; i < expandBtn.length; i++) {
-		console.log("hi");
 		expandBtn[i].addEventListener("click", (event) => {
 			if (
 				document.getElementById("nested-table-" + (i + 1)).style.display !=
