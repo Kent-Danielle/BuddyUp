@@ -122,6 +122,6 @@ input[type="text"] {
     }
 
     .info {
-        display: none;
+        display: none !important;
     }
 }
