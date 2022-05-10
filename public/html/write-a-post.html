@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <title>BuddyUp</title>
+  <meta name="buddyup template" content="BuddyUp" />
+  <link rel="icon" type="image/x-icon" href="/images/favicon.ico" />
+
+  <!------------------------>
+  <!-- Required meta tags -->
+  <!------------------------>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <!--------------------->
+  <!-- Other libraries -->
+  <!--------------------->
+
+  <!-- Bootstrap -->
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet"
+    integrity="sha384-EVSTQN3/azprG1Anm3QDgpJLIm9Nao0Yz1ztcQTwFspd3yD65VohhpuuCOmLASjC" crossorigin="anonymous" />
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js"
+    integrity="sha384-MrcW6ZMFYlzcLA8Nl+NtUVF0sA7MsXsP1UyJoMp4YLEuNSfAP+JcXn/tWtIaxVXM" crossorigin="anonymous">
+  </script>
+  <!-- Material Icons -->
+  <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet" />
+  <!-- Fontawesome -->
+  <script src="https://kit.fontawesome.com/542cfc8e1c.js" crossorigin="anonymous"></script>
+  <!-- Jquery -->
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+
+  <!------------------------>
+  <!-- styles of your own -->
+  <!------------------------>
+  <link rel="stylesheet" href="./styles/style.css" />
+  <link rel="stylesheet" href="./styles/write-a-post.css" />
+</head>
+
+<body>
+  <div id="grid-container">
+    <!-- Header/Navbar goes here -->
+    <div id="navbar"></div>
+
+    <!-- Body goes here -->
+    <div id="content" class="p-5">
+      <div id="form-logo" class="mb-5">
+        <img id="logo" src="/public/images/logo.png" alt="" style="display: flex;
+        justify-content: center;
+        height: 5rem;
+        margin-top: 1rem;"/>
+      </div>
+      <div id="title-box" class="form-group  mb-5">
+        <label for="title" class="  col-form-label">Title</label>
+        <input type="text" class="form-control" id="title" placeholder="Enter Title">
+      </div>
+      <div id="post-box" class="mb-5">
+        <div class="form-group">
+          <label for="post">Post</label>
+          <textarea class="form-control" id="post" rows="9"></textarea>
+        </div>
+      </div>
+      <form id="add-image" class="form-group mb-5">
+        <p>Add Image</p>
+        <input type="file" class="form-control-file" id="add-image">
+      </form>
+      <div id="buttons" class="d-flex justify-content-center">
+        <input class="btn btn-primary mx-2" type="button" value="Post">
+        <input class="btn btn-primary mx-2" type="button" value="Cancel">
+      </div>
+
+    </div>
+
+    <!-- Footer/Tabbars goes here -->
+    <div id="tabbar"></div>
+  </div>
+
+  <!---------------------------->
+  <!-- Client-side Javascript -->
+  <!---------------------------->
+</body>
+
+</html>
