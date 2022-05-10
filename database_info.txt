@@ -1,0 +1,61 @@
+[{
+  "_id": {
+    "$oid": "6274a6f3b34a17656da58720"
+  },
+  "name": "sam",
+  "email": "sambredenhof@gmail.com",
+  "password": "password",
+  "admin": false,
+  "banned": false,
+  "about": "i play games",
+  "games": [],
+  "__v": 0
+},{
+  "_id": {
+    "$oid": "62755016240c75c1fdbd9b2d"
+  },
+  "name": "Admin",
+  "email": "Admin@admin.com",
+  "password": "Admin",
+  "admin": true,
+  "banned": false,
+  "about": "I am an Admin",
+  "games": [],
+  "__v": 0
+},{
+  "_id": {
+    "$oid": "62757ff95a72a35f99ca2598"
+  },
+  "name": "Kent Danielle",
+  "email": "kent@my.bcit.ca",
+  "password": "testing",
+  "admin": false,
+  "banned": false,
+  "about": "I'm a valorant player.",
+  "games": [],
+  "__v": 0
+},{
+  "_id": {
+    "$oid": "627587275a72a35f99ca259f"
+  },
+  "name": "Danielle",
+  "email": "danielle@my.bcit.ca",
+  "password": "testing",
+  "admin": false,
+  "banned": false,
+  "about": "I'm a casual gamer looking for other people to play with.",
+  "games": [],
+  "__v": 0
+},{
+  "_id": {
+    "$oid": "62759f28fdeee1935f8b6bad"
+  },
+  "name": "Clay",
+  "email": "claytonhunter10@gmail.com",
+  "password": "EpicPassword",
+  "admin": false,
+  "banned": false,
+  "about": "I am mainly a CSGO and Rust gamer.",
+  "games": [],
+  "__v": 0
+}]

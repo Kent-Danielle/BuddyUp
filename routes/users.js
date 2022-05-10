@@ -263,8 +263,9 @@ router.get("/register", function (req, res) {
 });
 
 var multer = require("multer");
-const { table } = require("console");
+const { table, profile } = require("console");
 const user = require("../models/user");
+const { reset } = require("nodemon");
 
 var storage = multer.diskStorage({
 	destination: (req, file, cb) => {
@@ -337,6 +338,31 @@ router.get("/logout", function (req, res) {
 			}
 		});
 	}
+});
+
+router.get("/edit", async function (req, res) {
+	let profileEdit = fs.readFileSync("./public/html/profile_edit.html");
+	let profileEditDOM = new JSDOM(profileEdit);
+
+	let currentUser = await User.findOne({
+		email: req.session.email
+	});
+
+	let isAdmin = await User.findOne({
+		email: req.session.email,
+		admin: true
+	});
+
+	if (!isAdmin) {
+
+		profileEditDOM.window.document.getElementById("username").setAttribute("value", currentUser.name);
+		profileEditDOM.window.document.getElementById("about").innerHTML = currentUser.about;
+	
+		res.send(profileEditDOM.serialize());
+	} else {
+		console.log("Admin cannot edit their profile for now!")
+	}
+
 });
 
 module.exports = router;
