@@ -31,10 +31,10 @@ const userSchema = new mongoose.Schema({
         type: Array,
         required: false,
     },
-    // img: {
-    //     data: Buffer,
-    //     contentType: String
-    // }
+    img: {
+        type: String,
+        required: false
+    }
 })
 
 module.exports = mongoose.model('BBY-09-user', userSchema);

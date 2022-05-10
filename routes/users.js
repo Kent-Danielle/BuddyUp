@@ -1,11 +1,18 @@
 'use strict';
-
+var cloudinary = require('cloudinary');
+cloudinary.config({
+	cloud_name: 'buddyup-images',
+	api_key: '673686844465421',
+	api_secret: 'cxk0wwxInP62OzGTo26z2TZSnDU'
+});
 const express = require("express");
 const router = express.Router();
 const User = require("../models/user");
 const path = require("path");
 const fs = require("fs");
-const { JSDOM } = require("jsdom");
+const {
+	JSDOM
+} = require("jsdom");
 
 //get all users
 router.get("/", function (req, res) {
@@ -14,6 +21,10 @@ router.get("/", function (req, res) {
 	} else {
 		res.redirect("/user/login");
 	}
+});
+
+router.get("/profile/", async function (req, res) {
+	res.redirect("/user/profile/self");
 });
 
 router.get("/profile/:name", async function (req, res) {
@@ -55,6 +66,7 @@ router.get("/profile/:name", async function (req, res) {
 			currentUser.name;
 		profileDOM.window.document.getElementById("bio-text").innerHTML =
 			currentUser.about;
+		profileDOM.window.document.getElementById("pfp").src = currentUser.img;
 		// profileDOM.window.document.getElementById('pfp').src = 'data:image/'+result.img.contentType+';base64,'+result.img.data.toString('base64');
 		res.header(
 			"Cache-Control",
@@ -64,9 +76,6 @@ router.get("/profile/:name", async function (req, res) {
 	}
 });
 
-router.get("/profile/", async function (req, res) {
-	res.redirect("/user/profile/self");
-});
 
 //get all users
 router.get("/login", function (req, res) {
@@ -86,59 +95,59 @@ router.get("/login", function (req, res) {
 
 router.get("/admin", function (req, res) {
 	if (req.session.loggedIn) {
-			User.findOne({
-					email: req.session.email,
-					admin: true,
-			}).then((isAdmin) => {
-					let adminPage = fs.readFileSync("./public/html/admin.html", "utf-8");
+		User.findOne({
+			email: req.session.email,
+			admin: true,
+		}).then((isAdmin) => {
+			let adminPage = fs.readFileSync("./public/html/admin.html", "utf-8");
 			let adminPageDOM = new JSDOM(adminPage);
 			if (isAdmin == null) {
-					res.redirect("/user/login");
+				res.redirect("/user/login");
 			} else {
-					User.find({}, function (err, result) {
-							if (err) {
-									adminPageDOM.window.document.getElementById("error").innerHTML =
-											"Error finding all users";
-							} else {
-									adminPageDOM.window.document.getElementById("name").innerHTML =
-											req.session.name;
-									const tableDiv =
-											adminPageDOM.window.document.getElementById("tableBody");
-									//const userTable = createTable(result, tableToInsert);
-									for (let i = 0; i < result.length; i++) {
-											tableDiv.innerHTML +=
-													"<tr><th class='number-column text-center' scope=\"row\">" +
-													'<button id="more-info"><i class="fa-solid fa-circle-plus"></i></button>' +
-													(i + 1) +
-													"</th><td class='name-column'>" +
-													result[i].name +
-													"</td><td class='email-column'>" +
-													result[i].email +
-													'</td><td class=\'edit-column text-center\'><a class="text-dark" href="/user/profile/' +
-													result[i].name +
-													'"><i class="fa-solid fa-pen-to-square  "></i></a></td></tr>' +
-													'<tr class="info" id="info-' +
-													(i + 1) +
-													'"><td colspan=2><table id="nested-table-' +
-													(i + 1) +
-													'"class="nested mx-2"><tr><th id="mini-email" class="p-2" scope="col">Email</th><td class=\'mini-email-column px-1\'>' +
-													result[i].email +
-													'</td></tr><tr><th id="mini-edit" class="p-2" scope="col">Edit</th><td class=\'mini-edit-column\'><a class="text-dark" href="/user/profile/' +
-													result[i].name +
-													'"><i class="fa-solid fa-pen-to-square"></i></a></td></tr></table></td></tr>';
-									}
-									res.header(
-											"Cache-Control",
-											"no-cache, private, no-store, must-revalidate, max-stale=0, post-check=0, pre-check=0"
-									);
-									res.send(adminPageDOM.serialize());
-							}
-					});
+				User.find({}, function (err, result) {
+					if (err) {
+						adminPageDOM.window.document.getElementById("error").innerHTML =
+							"Error finding all users";
+					} else {
+						adminPageDOM.window.document.getElementById("name").innerHTML =
+							req.session.name;
+						const tableDiv =
+							adminPageDOM.window.document.getElementById("tableBody");
+						//const userTable = createTable(result, tableToInsert);
+						for (let i = 0; i < result.length; i++) {
+							tableDiv.innerHTML +=
+								"<tr><th class='number-column text-center' scope=\"row\">" +
+								'<button id="more-info"><i class="fa-solid fa-circle-plus"></i></button>' +
+								(i + 1) +
+								"</th><td class='name-column'>" +
+								result[i].name +
+								"</td><td class='email-column'>" +
+								result[i].email +
+								'</td><td class=\'edit-column text-center\'><a class="text-dark" href="/user/profile/' +
+								result[i].name +
+								'"><i class="fa-solid fa-pen-to-square  "></i></a></td></tr>' +
+								'<tr class="info" id="info-' +
+								(i + 1) +
+								'"><td colspan=2><table id="nested-table-' +
+								(i + 1) +
+								'"class="nested mx-2"><tr><th id="mini-email" class="p-2" scope="col">Email</th><td class=\'mini-email-column px-1\'>' +
+								result[i].email +
+								'</td></tr><tr><th id="mini-edit" class="p-2" scope="col">Edit</th><td class=\'mini-edit-column\'><a class="text-dark" href="/user/profile/' +
+								result[i].name +
+								'"><i class="fa-solid fa-pen-to-square"></i></a></td></tr></table></td></tr>';
+						}
+						res.header(
+							"Cache-Control",
+							"no-cache, private, no-store, must-revalidate, max-stale=0, post-check=0, pre-check=0"
+						);
+						res.send(adminPageDOM.serialize());
+					}
+				});
 			}
-			});
+		});
 
 	} else {
-			res.redirect("/user/login");
+		res.redirect("/user/login");
 	}
 });
 
@@ -263,15 +272,17 @@ router.get("/register", function (req, res) {
 });
 
 var multer = require("multer");
-const { table } = require("console");
+const {
+	table
+} = require("console");
 const user = require("../models/user");
 
 var storage = multer.diskStorage({
 	destination: (req, file, cb) => {
-		cb(null, "");
+		cb(null, "./public/data/pfp");
 	},
 	filename: (req, file, cb) => {
-		cb(null, "temp.png");
+		cb(null, Date.now() + path.extname(file.originalname));
 	},
 });
 
@@ -281,20 +292,8 @@ var upload = multer({
 
 router.post(
 	"/createAccount",
-	upload.single("image"),
+	upload.single("pfp"),
 	async function (req, res) {
-		const user = new User({
-			name: req.body.name,
-			email: req.body.email,
-			password: req.body.password,
-			about: req.body.about,
-			admin: false,
-			banned: false,
-			// img: {
-			//     data: fs.readFileSync('uploads/temp.png'),
-			//     contentType: 'image/png'
-			// }
-		});
 
 		let login = fs.readFileSync("./public/html/register.html", "utf-8");
 		let loginDOM = new JSDOM(login);
@@ -303,9 +302,27 @@ router.post(
 			let hasSameEmail = await User.findOne({
 				email: req.body.email,
 			});
-			let hasSameUsername = await User.findOne({ name: req.body.name });
+			let hasSameUsername = await User.findOne({
+				name: req.body.name
+			});
 			if (hasSameEmail == null && hasSameUsername == null) {
+				let upload = await cloudinary.v2.uploader.upload("./public/data/pfp/" + req.file.filename,
+					function (error, result) {
+						console.log(result, error)
+					});
+				const user = new User({
+					name: req.body.name,
+					email: req.body.email,
+					password: req.body.password,
+					about: req.body.about,
+					admin: false,
+					banned: false,
+					img: upload.url
+				});
 				const newUser = await user.save();
+				await fs.unlink("./public/data/pfp/" + req.file.filename,function(err){
+					if(err) return console.log(err);
+			   });
 				res.redirect("/user/login");
 			} else {
 				let msg = "";
@@ -318,6 +335,7 @@ router.post(
 				res.send(loginDOM.serialize());
 			}
 		} catch (err) {
+			console.log(err)
 			loginDOM.window.document.getElementById("errorMsg").innerHTML =
 				"Failed to create account";
 			res.send(loginDOM.serialize());
