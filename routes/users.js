@@ -80,15 +80,15 @@ router.get("/profile/:name", async function (req, res) {
 //get all users
 router.get("/login", function (req, res) {
 	// if user logged in, go to their profile page
+	res.header(
+		"Cache-Control",
+		"no-cache, private, no-store, must-revalidate, max-stale=0, post-check=0, pre-check=0"
+	);
 	if (req.session.loggedIn) {
 		res.redirect("/user/profile");
 	} else {
 		// if user is not logged in, go to the login page
 		let login = fs.readFileSync("./public/html/login.html", "utf-8");
-		res.header(
-			"Cache-Control",
-			"no-cache, private, no-store, must-revalidate, max-stale=0, post-check=0, pre-check=0"
-		);
 		res.send(login);
 	}
 });
