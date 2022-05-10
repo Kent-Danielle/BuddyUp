@@ -201,25 +201,30 @@ router.post("/banUser", function (req, res) {
 router.post("/login", function (req, res) {
 	let login = fs.readFileSync("./public/html/login.html", "utf-8");
 	let loginDOM = new JSDOM(login);
-
 	let currentUser = User.findOne({
 		email: req.body.email,
 	});
 	currentUser.then((result) => {
 		if (result == null) {
-			loginDOM.window.document.getElementById("errorMsg").innerHTML =
-				"Account not found";
-			res.send(loginDOM.serialize());
+			res.send({
+				success: "false",
+				message: "account not found"
+			})
 		} else {
 			if (result.password == req.body.password) {
 				req.session.loggedIn = true;
 				req.session.email = result.email;
 				req.session.name = result.name;
-				res.redirect("/user/profile");
+				res.send({
+					success: "true",
+					message: "logged in."
+				})
+				// res.redirect("/user/profile");
 			} else {
-				loginDOM.window.document.getElementById("errorMsg").innerHTML =
-					"Incorrect Password";
-				res.send(loginDOM.serialize());
+				res.send({
+					success: "false",
+					message: "incorrect password"
+				})
 			}
 		}
 	});
@@ -235,31 +240,6 @@ router.get("/login", function (req, res) {
 	}
 });
 
-router.post("/login", function (req, res) {
-	let login = fs.readFileSync("./public/html/login.html", "utf-8");
-	let loginDOM = new JSDOM(login);
-
-	let currentUser = User.findOne({
-		email: req.body.email,
-	});
-	currentUser.then((result) => {
-		if (result == null) {
-			loginDOM.window.document.getElementById("errorMsg").innerHTML =
-				"Account not found";
-			res.send(loginDOM.serialize());
-		} else {
-			if (result.password == req.body.password) {
-				req.session.loggedIn = true;
-				req.session.email = result.email;
-				res.redirect("/user/profile");
-			} else {
-				loginDOM.window.document.getElementById("errorMsg").innerHTML =
-					"Incorrect Password";
-				res.send(loginDOM.serialize());
-			}
-		}
-	});
-});
 
 //new user route
 router.get("/register", function (req, res) {
@@ -294,10 +274,6 @@ router.post(
 	"/createAccount",
 	upload.single("pfp"),
 	async function (req, res) {
-
-		let login = fs.readFileSync("./public/html/register.html", "utf-8");
-		let loginDOM = new JSDOM(login);
-
 		try {
 			let hasSameEmail = await User.findOne({
 				email: req.body.email,
@@ -306,10 +282,25 @@ router.post(
 				name: req.body.name
 			});
 			if (hasSameEmail == null && hasSameUsername == null) {
-				let upload = await cloudinary.v2.uploader.upload("./public/data/pfp/" + req.file.filename,
-					function (error, result) {
-						console.log(result, error)
+				let url = "/images/profile.png";
+				if(req.file != undefined){
+					let upload = await cloudinary.v2.uploader.upload("./public/data/pfp/" + req.file.filename,
+					function (error) {
+						if (error) {
+							res.send({
+								success: "false",
+								message: "failed to upload profile picture"
+							});
+							return;
+						}
+					})
+					await fs.unlink("./public/data/pfp/" + req.file.filename, function (err) {
+						if (err) {
+							console.log("Failed to remove old image")
+						};
 					});
+					url = upload.url;
+				}
 				const user = new User({
 					name: req.body.name,
 					email: req.body.email,
@@ -317,13 +308,13 @@ router.post(
 					about: req.body.about,
 					admin: false,
 					banned: false,
-					img: upload.url
+					img: url
 				});
 				const newUser = await user.save();
-				await fs.unlink("./public/data/pfp/" + req.file.filename,function(err){
-					if(err) return console.log(err);
-			   });
-				res.redirect("/user/login");
+				res.send({
+					success: "true",
+					message: "created account"
+				});
 			} else {
 				let msg = "";
 				if (hasSameEmail != null) {
@@ -331,14 +322,17 @@ router.post(
 				} else {
 					msg = "Username already exists!";
 				}
-				loginDOM.window.document.getElementById("errorMsg").innerHTML = msg;
-				res.send(loginDOM.serialize());
+				res.send({
+					success: "false",
+					message: msg
+				});
 			}
 		} catch (err) {
-			console.log(err)
-			loginDOM.window.document.getElementById("errorMsg").innerHTML =
-				"Failed to create account";
-			res.send(loginDOM.serialize());
+			console.log(err);
+			res.send({
+				success: "false",
+				message: "failed to create account"
+			});
 		}
 	}
 );
