@@ -266,6 +266,7 @@ var multer = require("multer");
 const { table, profile } = require("console");
 const user = require("../models/user");
 const { reset } = require("nodemon");
+const { db } = require("../models/user");
 
 var storage = multer.diskStorage({
 	destination: (req, file, cb) => {
@@ -340,27 +341,48 @@ router.get("/logout", function (req, res) {
 	}
 });
 
-router.get("/edit", async function (req, res) {
+// redirects the user to the edit profile page
+router.get("/edit", function (req, res) {
 	let profileEdit = fs.readFileSync("./public/html/profile_edit.html");
 	let profileEditDOM = new JSDOM(profileEdit);
+
+	res.send(profileEditDOM.serialize());
+});
+
+router.get("/info", async function(req, res) {
 
 	let currentUser = await User.findOne({
 		email: req.session.email
 	});
 
-	let isAdmin = await User.findOne({
-		email: req.session.email,
-		admin: true
-	});
+	res.send(currentUser);
+});
 
-	if (!isAdmin) {
+// updates the users information after editing and then redirects them back to their profile page
+router.post("/edit/submit", function(req, res) {
+	let newUserName = req.body.username;
+	let newAbout = req.body.about;
+	let gamesList = req.body.games;
 
-		profileEditDOM.window.document.getElementById("username").setAttribute("value", currentUser.name);
-		profileEditDOM.window.document.getElementById("about").innerHTML = currentUser.about;
-	
-		res.send(profileEditDOM.serialize());
-	} else {
-		console.log("Admin cannot edit their profile for now!")
+	try {
+		User.collection.updateOne(
+			{email: req.session.email},
+			{$set: {
+				name: newUserName,
+				about: newAbout,
+				games: gamesList
+			}}
+		).then(function(result) {
+			res.send({
+				data: result,
+				error: null
+			})
+		});
+	} catch (e) {
+		res.send({
+			data: null,
+			error: "failed to update account. Error: " + e
+		});
 	}
 
 });

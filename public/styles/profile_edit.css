@@ -1,0 +1,19 @@
+#edit-container {
+  margin: 20% 15%;
+}
+
+#error-msg {
+  margin: 0;
+  margin-top: 1rem;
+  text-align: center;
+  color: var(--accent-light);
+}
+
+textarea {
+  background-color: gray !important;
+}
+
+
+input {
+  background-color: gray !important;
+}
