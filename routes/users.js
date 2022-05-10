@@ -339,4 +339,11 @@ router.get("/logout", function (req, res) {
 	}
 });
 
+router.get("/write", async function (req, res) {
+	let writePost = fs.readFileSync("./public/html/write-a-post.html");
+	let writePostDOM = new JSDOM(writePost);
+	
+	res.send(writePostDOM.serialize());
+});
+
 module.exports = router;
