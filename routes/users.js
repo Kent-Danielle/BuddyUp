@@ -3,6 +3,7 @@
 const express = require("express");
 const router = express.Router();
 const User = require("../models/user");
+const AdminRequest = require("../models/admin-request");
 const path = require("path");
 const fs = require("fs");
 const { JSDOM } = require("jsdom");
@@ -29,6 +30,7 @@ router.get("/profile/:name", async function (req, res) {
 			email: req.session.email,
 			admin: true,
 		});
+
 		if (profileName == "self") {
 			if (isAdmin) {
 				res.redirect("/user/admin");
@@ -257,8 +259,8 @@ router.get("/register", function (req, res) {
 	if (req.session.loggedIn == true) {
 		res.redirect("/user/profile");
 	} else {
-		let login = fs.readFileSync("./public/html/register.html", "utf-8");
-		res.send(login);
+		let register = fs.readFileSync("./public/html/register.html", "utf-8");
+		res.send(register);
 	}
 });
 
@@ -290,6 +292,7 @@ router.post(
 			about: req.body.about,
 			admin: false,
 			banned: false,
+			promotion: false,
 			// img: {
 			//     data: fs.readFileSync('uploads/temp.png'),
 			//     contentType: 'image/png'
@@ -340,3 +343,54 @@ router.get("/logout", function (req, res) {
 });
 
 module.exports = router;
+
+/**
+ * Function for accessing the admin_promotion page
+ */
+router.get("/promotion", function (req, res) {
+	if (req.session.loggedIn == true) {
+		res.redirect("/user/profile");
+	} else {
+		let promotion = fs.readFileSync("./public/html/admin_promotion.html", "utf-8");
+		res.send(promotion);
+	}
+});
+
+router.post(
+	"/adminPromotion",
+	upload.single("image"),
+	async function (req, res) {
+		const adminReq = new AdminRequest({
+			name: req.body.name,
+			email: req.body.email,
+			reason: req.body.reason,
+		});
+
+		let login = fs.readFileSync("./public/html/admin_promotion.html", "utf-8");
+		let adminPromotionDOM = new JSDOM(login);
+
+		try {
+			let hasSameEmail = await User.findOne({
+				email: req.body.email,
+			});
+			let hasSameUsername = await User.findOne({ name: req.body.name });
+			if (hasSameEmail == null && hasSameUsername == null) {
+				let msg = "";
+				if (hasSameEmail == null) {
+					msg = "Email does not exists!";
+				} else {
+					msg = "Username does not exists!";
+				}
+				adminPromotionDOM.window.document.getElementById("errorMsg").innerHTML = msg;
+				res.send(adminPromotionDOM.serialize());
+			} else {
+				const newAdminReq = await adminReq.save();
+				res.redirect("/user/login");
+			}
+		} catch (err) {
+			adminPromotionDOM.window.document.getElementById("errorMsg").innerHTML =
+				"Failed to make a request";
+			res.send(adminPromotionDOM.serialize());
+		}
+	}
+);

@@ -31,6 +31,10 @@ const userSchema = new mongoose.Schema({
         type: Array,
         required: false,
     },
+    promotion: {
+        type: Boolean,
+        required: false
+    }
     // img: {
     //     data: Buffer,
     //     contentType: String
