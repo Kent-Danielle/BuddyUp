@@ -60,7 +60,7 @@
 
 		<!-- Body goes here -->
 		<div id="grid-container" class="container p-3">
-			<div id="top-profile" class="mb-4">
+			<div id="top-profile" class="mb-4 mt-4">
 				<a class="btn rounded-3" href="/user/logout" id="logout" role="button"
 					>LOGOUT</a
 				>
@@ -70,7 +70,7 @@
 			<div id="content">
 				<div
 					id="searchbar"
-					class="d-flex justify-content-start mb-4"
+					class="d-flex justify-content-start mb-3"
 					role="search"
 				>
 					<input
@@ -85,17 +85,77 @@
 						<i class="fa-solid fa-magnifying-glass"></i>
 					</button>
 				</div>
+				<div
+					id="filter-btns"
+					class="btn-group mb-2"
+					role="group"
+					aria-label="Basic checkbox toggle button group"
+				>
+					<input
+						type="checkbox"
+						class="btn-check"
+						id="adminFilter"
+						autocomplete="off"
+					/>
+					<label class="btn btn-outline-primary" for="adminFilter"
+						>Show Admins</label
+					>
+
+					<input
+						type="checkbox"
+						class="btn-check"
+						id="requestFilter"
+						autocomplete="off"
+					/>
+					<label class="btn btn-outline-primary" for="requestFilter"
+						>Show Admin Candidates</label
+					>
+				</div>
+				<div class="" id="newUser">
+					<button id="addUserButton" class="btn rounded-3 m-0 mb-3">
+						Add a New User
+					</button>
+				</div>
 				<table id="user-list" class="table border-0">
 					<thead>
 						<tr>
 							<th class="text-center" scope="col">#</th>
 							<th scope="col">Username</th>
 							<th id="email" scope="col">Email</th>
+							<th id="admin" scope="col">Admin</th>
+							<th id="promotion" scope="col">Promotion</th>
 							<th class="text-center" id="edit" scope="col">Edit</th>
 						</tr>
 					</thead>
 					<tbody id="tableBody"></tbody>
 				</table>
+			</div>
+		</div>
+
+		<!-- The Modal -->
+		<div id="myModal" class="modal d-flex justify-content-center">
+			<!-- Modal content -->
+			<div class="modal-content w-80 p-3 h-auto align-self-center">
+				<span class="close"><i id="closeModalButton"class="fa-solid fa-xmark"></i></span>
+				<form
+					action="/user/createAccountAdmin"
+					method="POST"
+					enctype="multipart/form-data"
+				>
+					<h3>username</h3>
+					<input id="name" type="text" value="" name="name" />
+					<h3>email</h3>
+					<input name="email" type="text" value="" />
+					<h3>password</h3>
+					<input name="password" type="password" value="" />
+					<h3>tell us about yourself</h3>
+					<textarea name="about" id="bio" maxlength="280" rows="4"></textarea>
+					<p id="textarea_remaining_char">280 characters left</p>
+					<div id="submit-container">
+						<input type="submit" value="create account" />
+					</div>
+				</form>
+				<p id="errorMsg"></p>
 			</div>
 		</div>
 

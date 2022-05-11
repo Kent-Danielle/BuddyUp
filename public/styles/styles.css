@@ -36,7 +36,9 @@ body {
  * Bootstrap styling 
  *----------------
  */
-
+.w-80 {
+  width: 80% !important;
+}
 
 /*----------------
  * Template styling 

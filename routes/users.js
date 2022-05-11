@@ -1,4 +1,4 @@
-'use strict';
+"use strict";
 
 const express = require("express");
 const router = express.Router();
@@ -88,62 +88,94 @@ router.get("/login", function (req, res) {
 
 router.get("/admin", function (req, res) {
 	if (req.session.loggedIn) {
-			User.findOne({
-					email: req.session.email,
-					admin: true,
-			}).then((isAdmin) => {
-					let adminPage = fs.readFileSync("./public/html/admin.html", "utf-8");
+		User.findOne({
+			email: req.session.email,
+			admin: true,
+		}).then((isAdmin) => {
+			let adminPage = fs.readFileSync("./public/html/admin.html", "utf-8");
 			let adminPageDOM = new JSDOM(adminPage);
 			if (isAdmin == null) {
-					res.redirect("/user/login");
+				res.redirect("/user/login");
 			} else {
-					User.find({}, function (err, result) {
-							if (err) {
-									adminPageDOM.window.document.getElementById("error").innerHTML =
-											"Error finding all users";
-							} else {
-									adminPageDOM.window.document.getElementById("name").innerHTML =
-											req.session.name;
-									const tableDiv =
-											adminPageDOM.window.document.getElementById("tableBody");
-									//const userTable = createTable(result, tableToInsert);
-									for (let i = 0; i < result.length; i++) {
-											tableDiv.innerHTML +=
-													"<tr><th class='number-column text-center' scope=\"row\">" +
-													'<button id="more-info"><i class="fa-solid fa-circle-plus"></i></button>' +
-													(i + 1) +
-													"</th><td class='name-column'>" +
-													result[i].name +
-													"</td><td class='email-column'>" +
-													result[i].email +
-													'</td><td class=\'edit-column text-center\'><a class="text-dark" href="/user/profile/' +
-													result[i].name +
-													'"><i class="fa-solid fa-pen-to-square  "></i></a></td></tr>' +
-													'<tr class="info" id="info-' +
-													(i + 1) +
-													'"><td colspan=2><table id="nested-table-' +
-													(i + 1) +
-													'"class="nested mx-2"><tr><th id="mini-email" class="p-2" scope="col">Email</th><td class=\'mini-email-column px-1\'>' +
-													result[i].email +
-													'</td></tr><tr><th id="mini-edit" class="p-2" scope="col">Edit</th><td class=\'mini-edit-column\'><a class="text-dark" href="/user/profile/' +
-													result[i].name +
-													'"><i class="fa-solid fa-pen-to-square"></i></a></td></tr></table></td></tr>';
-									}
-									res.header(
-											"Cache-Control",
-											"no-cache, private, no-store, must-revalidate, max-stale=0, post-check=0, pre-check=0"
-									);
-									res.send(adminPageDOM.serialize());
-							}
-					});
+				User.find({}, function (err, result) {
+					if (err) {
+						adminPageDOM.window.document.getElementById("error").innerHTML =
+							"Error finding all users";
+					} else {
+						adminPageDOM.window.document.getElementById("name").innerHTML =
+							req.session.name;
+						const tableDiv =
+							adminPageDOM.window.document.getElementById("tableBody");
+						//const userTable = createTable(result, tableToInsert);
+						for (let i = 0; i < result.length; i++) {
+							tableDiv.innerHTML +=
+								"<tr>" +
+								//HEADER
+								"<th class='number-column text-center' scope=\"row\">" +
+								"<button id='more-info'>" +
+								"<i class='fa-solid fa-circle-plus'>" +
+								"</i></button>" +
+								(i + 1) +
+								"</th>" +
+								//NAME COL
+								"<td class='name-column'>" +
+								result[i].name +
+								//EMAIL COL
+								"</td><td class='email-column'>" +
+								result[i].email +
+								//ADMIN COL
+								"</td><td class='admin-column text-center'>" +
+								(result[i].admin
+									? "<i class='fa-solid fa-check'></i>"
+									: "<i class='fa-solid fa-xmark'></i>") +
+								//PROMOTON COL
+								"</td><td class='promotion-column text-center'>" +
+								(result[i].promotion
+									? "<i class='fa-solid fa-check'></i>"
+									: "<i class='fa-solid fa-xmark'></i>") +
+								//EDIT BTNS COL
+								"</td><td class='edit-column text-center'>" +
+								"<a class='text-dark' href='/user/profile/" +
+								result[i].name +
+								"'><i class='fa-solid fa-pen-to-square'></i></a></td>" +
+								"</tr>" +
+								//ROW CONTAINING THE COMPACT TABLE
+								"<tr class='info' id='info-" +
+								(i + 1) +
+								"'><td colspan=4>" +
+								//THE COMPACT TABLE
+								"<table id='nested-table-" +
+								(i + 1) +
+								"'class='nested mx-2'>" +
+								//EMAIL ROW
+								"<tr><th id='mini-email' class='p-2' scope='col'>Email</th>" +
+								"<td class='mini-email-column px-1'>" +
+								result[i].email +
+								"</td>" +
+								//EDIT ROW
+								"</tr><tr><th id='mini-edit' class='p-2' scope='col'>Edit</th>" +
+								"<td class='mini-edit-column'><a class='text-dark' href='/user/profile/" +
+								result[i].name +
+								"'><i class='fa-solid fa-pen-to-square'></i></a></td></tr>" +
+								"</table></td></tr>";
+						}
+						res.header(
+							"Cache-Control",
+							"no-cache, private, no-store, must-revalidate, max-stale=0, post-check=0, pre-check=0"
+						);
+						res.send(adminPageDOM.serialize());
+					}
+				});
 			}
-			});
-
+		});
 	} else {
-			res.redirect("/user/login");
+		res.redirect("/user/login");
 	}
 });
 
+/**
+ * Function for searching in the dashboard
+ */
 router.post("/adminSearch", function (req, res) {
 	res.setHeader("Content-Type", "application/json");
 	let searchOptions = {};
@@ -157,25 +189,55 @@ router.post("/adminSearch", function (req, res) {
 			let tableDiv = "";
 			for (let i = 0; i < result.length; i++) {
 				tableDiv +=
-					"<tr><th class='number-column text-center' scope=\"row\">" +
-					'<button id="more-info"><i class="fa-solid fa-circle-plus"></i></button>' +
+					"<tr>" +
+					//HEADER
+					"<th class='number-column text-center' scope=\"row\">" +
+					"<button id='more-info'>" +
+					"<i class='fa-solid fa-circle-plus'>" +
+					"</i></button>" +
 					(i + 1) +
-					"</th><td class='name-column'>" +
+					"</th>" +
+					//NAME COL
+					"<td class='name-column'>" +
 					result[i].name +
+					//EMAIL COL
 					"</td><td class='email-column'>" +
 					result[i].email +
-					'</td><td class=\'edit-column text-center\'><a class="text-dark" href="/user/profile/' +
+					//ADMIN COL
+					"</td><td class='admin-column text-center'>" +
+					(result[i].admin
+						? "<i class='fa-solid fa-check'></i>"
+						: "<i class='fa-solid fa-xmark'></i>") +
+					//PROMOTON COL
+					"</td><td class='promotion-column text-center'>" +
+					(result[i].promotion
+						? "<i class='fa-solid fa-check'></i>"
+						: "<i class='fa-solid fa-xmark'></i>") +
+					//EDIT BTNS COL
+					"</td><td class='edit-column text-center'>" +
+					"<a class='text-dark' href='/user/profile/" +
 					result[i].name +
-					'"><i class="fa-solid fa-pen-to-square  "></i></a></td></tr>' +
-					'<tr class="info" id="info-' +
+					"'><i class='fa-solid fa-pen-to-square'></i></a></td>" +
+					"</tr>" +
+					//ROW CONTAINING THE COMPACT TABLE
+					"<tr class='info' id='info-" +
 					(i + 1) +
-					'"><td colspan=2><table id="nested-table-' +
+					"'><td colspan=4>" +
+					//THE COMPACT TABLE
+					"<table id='nested-table-" +
 					(i + 1) +
-					'"class="nested mx-2"><tr><th id="mini-email" class="p-2" scope="col">Email</th><td class=\'mini-email-column px-1\'>' +
+					"'class='nested mx-2'>" +
+					//EMAIL ROW
+					"<tr><th id='mini-email' class='p-2' scope='col'>Email</th>" +
+					"<td class='mini-email-column px-1'>" +
 					result[i].email +
-					'</td></tr><tr><th id="mini-edit" class="p-2" scope="col">Edit</th><td class=\'mini-edit-column\'><a class="text-dark" href="/user/profile/' +
+					"</td>" +
+					//EDIT ROW
+					"</tr><tr><th id='mini-edit' class='p-2' scope='col'>Edit</th>" +
+					"<td class='mini-edit-column'><a class='text-dark' href='/user/profile/" +
 					result[i].name +
-					'"><i class="fa-solid fa-pen-to-square"></i></a></td></tr></table></td></tr>';
+					"'><i class='fa-solid fa-pen-to-square'></i></a></td></tr>" +
+					"</table></td></tr>";
 			}
 			if (tableDiv == "") {
 				res.send("no results");
@@ -186,6 +248,155 @@ router.post("/adminSearch", function (req, res) {
 	});
 });
 
+/**
+ * Function for filtering admins in the dashboard
+ */
+router.post("/adminFilter", function (req, res) {
+	res.setHeader("Content-Type", "application/json");
+	let searchOptions = {};
+	if (req.body.input != null) {
+		searchOptions.admin = req.body.input;
+	}
+	User.find(searchOptions, function (err, result) {
+		if (err) {
+			res.send("Error finding users!");
+		} else {
+			let tableDiv = "";
+			for (let i = 0; i < result.length; i++) {
+				tableDiv +=
+					"<tr>" +
+					//HEADER
+					"<th class='number-column text-center' scope=\"row\">" +
+					"<button id='more-info'>" +
+					"<i class='fa-solid fa-circle-plus'>" +
+					"</i></button>" +
+					(i + 1) +
+					"</th>" +
+					//NAME COL
+					"<td class='name-column'>" +
+					result[i].name +
+					//EMAIL COL
+					"</td><td class='email-column'>" +
+					result[i].email +
+					//ADMIN COL
+					"</td><td class='admin-column text-center'>" +
+					(result[i].admin
+						? "<i class='fa-solid fa-check'></i>"
+						: "<i class='fa-solid fa-xmark'></i>") +
+					//PROMOTON COL
+					"</td><td class='promotion-column text-center'>" +
+					(result[i].promotion
+						? "<i class='fa-solid fa-check'></i>"
+						: "<i class='fa-solid fa-xmark'></i>") +
+					//EDIT BTNS COL
+					"</td><td class='edit-column text-center'>" +
+					"<a class='text-dark' href='/user/profile/" +
+					result[i].name +
+					"'><i class='fa-solid fa-pen-to-square'></i></a></td>" +
+					"</tr>" +
+					//ROW CONTAINING THE COMPACT TABLE
+					"<tr class='info' id='info-" +
+					(i + 1) +
+					"'><td colspan=4>" +
+					//THE COMPACT TABLE
+					"<table id='nested-table-" +
+					(i + 1) +
+					"'class='nested mx-2'>" +
+					//EMAIL ROW
+					"<tr><th id='mini-email' class='p-2' scope='col'>Email</th>" +
+					"<td class='mini-email-column px-1'>" +
+					result[i].email +
+					"</td>" +
+					//EDIT ROW
+					"</tr><tr><th id='mini-edit' class='p-2' scope='col'>Edit</th>" +
+					"<td class='mini-edit-column'><a class='text-dark' href='/user/profile/" +
+					result[i].name +
+					"'><i class='fa-solid fa-pen-to-square'></i></a></td></tr>" +
+					"</table></td></tr>";
+			}
+			if (tableDiv == "") {
+				res.send("no results");
+			} else {
+				res.send(tableDiv);
+			}
+		}
+	});
+});
+
+/**
+ * Function for filtering admin candidates in the dashboard
+ */
+router.post("/promotionFilter", function (req, res) {
+	res.setHeader("Content-Type", "application/json");
+	let searchOptions = {};
+	if (req.body.input != null) {
+		searchOptions.promotion = req.body.input;
+	}
+	User.find(searchOptions, function (err, result) {
+		if (err) {
+			res.send("Error finding users!");
+		} else {
+			let tableDiv = "";
+			for (let i = 0; i < result.length; i++) {
+				tableDiv +=
+					"<tr>" +
+					//HEADER
+					"<th class='number-column text-center' scope=\"row\">" +
+					"<button id='more-info'>" +
+					"<i class='fa-solid fa-circle-plus'>" +
+					"</i></button>" +
+					(i + 1) +
+					"</th>" +
+					//NAME COL
+					"<td class='name-column'>" +
+					result[i].name +
+					//EMAIL COL
+					"</td><td class='email-column'>" +
+					result[i].email +
+					//ADMIN COL
+					"</td><td class='admin-column text-center'>" +
+					(result[i].admin
+						? "<i class='fa-solid fa-check'></i>"
+						: "<i class='fa-solid fa-xmark'></i>") +
+					//PROMOTON COL
+					"</td><td class='promotion-column text-center'>" +
+					(result[i].promotion
+						? "<i class='fa-solid fa-check'></i>"
+						: "<i class='fa-solid fa-xmark'></i>") +
+					//EDIT BTNS COL
+					"</td><td class='edit-column text-center'>" +
+					"<a class='text-dark' href='/user/profile/" +
+					result[i].name +
+					"'><i class='fa-solid fa-pen-to-square'></i></a></td>" +
+					"</tr>" +
+					//ROW CONTAINING THE COMPACT TABLE
+					"<tr class='info' id='info-" +
+					(i + 1) +
+					"'><td colspan=4>" +
+					//THE COMPACT TABLE
+					"<table id='nested-table-" +
+					(i + 1) +
+					"'class='nested mx-2'>" +
+					//EMAIL ROW
+					"<tr><th id='mini-email' class='p-2' scope='col'>Email</th>" +
+					"<td class='mini-email-column px-1'>" +
+					result[i].email +
+					"</td>" +
+					//EDIT ROW
+					"</tr><tr><th id='mini-edit' class='p-2' scope='col'>Edit</th>" +
+					"<td class='mini-edit-column'><a class='text-dark' href='/user/profile/" +
+					result[i].name +
+					"'><i class='fa-solid fa-pen-to-square'></i></a></td></tr>" +
+					"</table></td></tr>";
+			}
+			if (tableDiv == "") {
+				res.send("no results");
+			} else {
+				res.send(tableDiv);
+			}
+		}
+	});
+});
 
 router.post("/banUser", function (req, res) {
 	res.setHeader("Content-Type", "application/json");
@@ -351,7 +562,10 @@ router.get("/promotion", function (req, res) {
 	if (req.session.loggedIn == true) {
 		res.redirect("/user/profile");
 	} else {
-		let promotion = fs.readFileSync("./public/html/admin_promotion.html", "utf-8");
+		let promotion = fs.readFileSync(
+			"./public/html/admin_promotion.html",
+			"utf-8"
+		);
 		res.send(promotion);
 	}
 });
@@ -381,16 +595,88 @@ router.post(
 				} else {
 					msg = "Username does not exists!";
 				}
-				adminPromotionDOM.window.document.getElementById("errorMsg").innerHTML = msg;
+				adminPromotionDOM.window.document.getElementById("errorMsg").innerHTML =
+					msg;
 				res.send(adminPromotionDOM.serialize());
 			} else {
 				const newAdminReq = await adminReq.save();
+				await User.updateOne(
+					{
+						email: req.body.email,
+					},
+					{
+						$set: { promotion: true },
+					}
+				);
 				res.redirect("/user/login");
 			}
 		} catch (err) {
 			adminPromotionDOM.window.document.getElementById("errorMsg").innerHTML =
 				"Failed to make a request";
 			res.send(adminPromotionDOM.serialize());
+		}
+	}
+);
+
+/**
+ * Function for accessing the admin_promotion page
+ */
+router.get("/promotion", function (req, res) {
+	if (req.session.loggedIn == true) {
+		res.redirect("/user/profile");
+	} else {
+		let promotion = fs.readFileSync(
+			"./public/html/admin_promotion.html",
+			"utf-8"
+		);
+		res.send(promotion);
+	}
+});
+
+
+router.post(
+	"/createAccountAdmin",
+	upload.single("image"),
+	async function (req, res) {
+		const user = new User({
+			name: req.body.name,
+			email: req.body.email,
+			password: req.body.password,
+			about: req.body.about,
+			admin: false,
+			banned: false,
+			promotion: false,
+			// img: {
+			//     data: fs.readFileSync('uploads/temp.png'),
+			//     contentType: 'image/png'
+			// }
+		});
+
+		let login = fs.readFileSync("./public/html/admin.html", "utf-8");
+		let loginDOM = new JSDOM(login);
+
+		try {
+			let hasSameEmail = await User.findOne({
+				email: req.body.email,
+			});
+			let hasSameUsername = await User.findOne({ name: req.body.name });
+			if (hasSameEmail == null && hasSameUsername == null) {
+				const newUser = await user.save();
+				res.redirect("/user/admin");
+			} else {
+				// let msg = "";
+				// if (hasSameEmail != null) {
+				// 	msg = "Email already exists!";
+				// } else {
+				// 	msg = "Username already exists!";
+				// }
+				// loginDOM.window.document.getElementById("errorMsg").innerText = msg;
+				// res.send(loginDOM.serialize());
+			}
+		} catch (err) {
+			// loginDOM.window.document.getElementById("errorMsg").innerText =
+			// 	"Failed to create account";
+			// res.send(loginDOM.serialize());
 		}
 	}
 );
