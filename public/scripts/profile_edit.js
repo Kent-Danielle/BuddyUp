@@ -2,7 +2,6 @@
 
 const usernameButton = document.getElementById("username");
 const aboutMeField = document.getElementById("about");
-const gameElements = document.getElementsByClassName("game-field");
 
 // adds a new game field with the value being the gameString parameter
 function addGameData(gameString) {
@@ -57,6 +56,7 @@ document.getElementById("add-game").addEventListener("click", function(e) {
 // use the fetch api to update the user's profile
 document.getElementById("update").addEventListener("click", function(e) {
   let gameNames = [];
+  const gameElements = document.getElementsByClassName("game-field");
   for (let i = 0; i < gameElements.length; i++) {
     gameNames[i] = gameElements[i].value;
   }
@@ -88,13 +88,21 @@ document.getElementById("update").addEventListener("click", function(e) {
     });
 });
 
-///////////////////////////////////////////////////
-// make sure games are valid (NEED TO FIX)
-document.getElementById("confirm-games-edit").addEventListener("click", function(e) {
-  for (let i = 0; i < gameElements.length; i++) {
-    if (gameElements[i].value === "") {
-      console.log("bad game name!");
-      $('#games-modal-toggle-label').modal({backdrop: 'static', keyboard: false})  
-    }
-  }
+let tempGamesDiv = [];
+let tempGameNames = [];
+let cancelled = false;
+
+// deletes all games from the list
+document.getElementById("delete-all-games").addEventListener("click", function(e) {
+  let gamesDiv = document.getElementById("games-div");
+  tempGamesDiv = gamesDiv.innerHTML;
+  let tempGameFields = document.getElementsByClassName("game-field");
+  tempGameNames = [];
+  for (let i = 0; i < tempGameNames.length; i++) {
+    tempGameNames[i] = tempGameFields[i].value;
+  } 
+  gamesDiv.innerHTML = "";
 });
+
+
+

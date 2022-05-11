@@ -34,13 +34,13 @@
 </head>
 <body>
 
-  <!-- go back arrow -->
-  <a id="go-back" href="/user/profile/self" class="btn btn-light" role="button">
-    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-arrow-90deg-left" viewbox="0 0 16 16">
-    <path fill-rule="evenodd" d="M1.146 4.854a.5.5 0 0 1 0-.708l4-4a.5.5 0 1 1 .708.708L2.707 4H12.5A2.5 2.5 0 0 1 15 6.5v8a.5.5 0 0 1-1 0v-8A1.5 1.5 0 0 0 12.5 5H2.707l3.147 3.146a.5.5 0 1 1-.708.708l-4-4z"/></svg>
-  </a>
-
   <div id="edit-container">
+
+    <!-- go back arrow -->
+    <a id="go-back" href="/user/profile/self" class="btn btn-light" role="button">
+      <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-arrow-90deg-left" viewbox="0 0 16 16">
+      <path fill-rule="evenodd" d="M1.146 4.854a.5.5 0 0 1 0-.708l4-4a.5.5 0 1 1 .708.708L2.707 4H12.5A2.5 2.5 0 0 1 15 6.5v8a.5.5 0 0 1-1 0v-8A1.5 1.5 0 0 0 12.5 5H2.707l3.147 3.146a.5.5 0 1 1-.708.708l-4-4z"/></svg>
+    </a>
 
         <!-- Changing your information-->
     <div class="mb-3">
@@ -58,12 +58,15 @@
         <div class="modal-content">
           <div class="modal-header">
             <h5 class="modal-title" id="games-modal-toggle-label">Games</h5>
-            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            <button id="games-modal-close" type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
           </div>
           <div class="modal-body">
 
             <!-- add a game button -->
             <button id="add-game" type="button" class="btn btn-secondary btn-sm">add game</button>
+
+            <!-- delete all games button -->
+            <button id="delete-all-games" type="button" class="btn btn-sm btn-secondary">delete all</button>
 
             <!-- Games will be added here via javascript-->
             <div id="games-div"></div>
@@ -76,16 +79,21 @@
       </div>
     </div>
 
-    <a class="btn btn-secondary" data-bs-toggle="modal" href="#games-modal-toggle" role="button">Edit your games</a>
+    <!-- edit games button -->
+    <a id="edit-games-button" class="btn btn-secondary" data-bs-toggle="modal" href="#games-modal-toggle" role="button">Edit your games</a>
 
-    <!-- Change image of user -->
-    <h1>upload image</h1>
-    <button id="profile-picture">Choose File</button>
+    <div id="bottom-sub-container">
+      <!-- Change image of user -->
+      <div id="image-upload" class="input-group mb-3">
+        <input type="file" class="form-control" id="inputGroupFile02">
+        <label class="input-group-text" for="inputGroupFile02">Upload</label>
+      </div>
 
-    <!-- Cancel or submit buttons -->
-    <a href="/user/profile/self" role="button" id="update" type="button" class="btn btn-secondary">Update</a>
-    <a role="button" class="btn btn-secondary" href="/user/profile/self">Cancel</a>
-  </div>
+      <!-- Cancel or submit buttons -->
+      <a href="/user/profile/self" role="button" id="update" type="button" class="btn btn-secondary">Update</a>
+      <a role="button" class="btn btn-secondary" id="cancel" href="/user/profile/self">Cancel</a>
+    </div>
+    </div>
 
   <h4 id="errorMsg"></h4>
 
