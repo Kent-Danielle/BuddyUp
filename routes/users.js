@@ -346,33 +346,35 @@ router.get("/logout", function (req, res) {
 	}
 });
 
-router.get("/write", function (req, res) {
-	let write = fs.readFileSync("./public/html/write-a-post.html", "utf-8");
-	res.send(write);
-
-	// if (req.session.loggedIn == true) {
-	// 	res.redirect("/user/write");
-	// } else {
-	// 	let login = fs.readFileSync("./public/html/login.html", "utf-8");
-	// 	res.send(login);
-	// }
+router.get("/write", async function (req, res) {
+	if (!req.session.loggedIn) {
+		res.redirect("/user/login");
+	} else {
+		let login = fs.readFileSync("./public/html/write-a-post.html", "utf-8");
+		res.send(login);
+	}
 });
 
-// router.post("/write", function (req, res) {
-// 	console.log("Test");
-// 	const timeline = new Timeline({
-// 		title: req.body.title,
-// 		email: req.body.content,
-// 	});
-// 	console.log("Test1");
+router.post("/write", async function (req, res) {
+	console.log(req.body.title);
+	console.log(req.body.content);
+	const storytimeline = await new Timeline({
+		title: req.body.title,
+		post: req.body.content
+	});
 
-// 	let write = fs.readFileSync("./public/html/write-a-post.html", "utf-8");
-// 	let writeDOM = new JSDOM(write);
-// 	console.log("Test2");
+	let write = fs.readFileSync("./public/html/write-a-post.html", "utf-8");
+	let writeDOM = new JSDOM(write);
 
-// 	const newPost = timeline.save();
-// 	res.redirect("/user/profile/self");
-// 	console.log("Test3");
-// });
+	try {
+		await storytimeline.save();
+		res.redirect("/user/profile/self");
+	} catch (err) {
+		writeDOM.window.document.getElementById("errorMsg").innerHTML =
+		err;
+		res.send(writeDOM.serialize());
+	}
+
+});
 
 module.exports = router;

@@ -2,16 +2,16 @@
 
 const mongoose = require('mongoose');
 
-const userSchema = new mongoose.Schema({
-    
+const timelineSchema = new mongoose.Schema({
+
     title: {
         type: String,
-        required: true
+        required: false
     },
     post: {
         type: String,
-        required: true
+        required: false
     }
 })
 
-module.exports = mongoose.model('BBY-09-users-timeline', userSchema);
+module.exports = mongoose.model('BBY-09-users-timeline', timelineSchema);
