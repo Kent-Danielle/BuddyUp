@@ -3,9 +3,12 @@
 const express = require("express");
 const router = express.Router();
 const User = require("../models/user");
+const Timeline = require("../models/user-timeline");
 const path = require("path");
 const fs = require("fs");
-const { JSDOM } = require("jsdom");
+const {
+	JSDOM
+} = require("jsdom");
 
 //get all users
 router.get("/", function (req, res) {
@@ -86,59 +89,59 @@ router.get("/login", function (req, res) {
 
 router.get("/admin", function (req, res) {
 	if (req.session.loggedIn) {
-			User.findOne({
-					email: req.session.email,
-					admin: true,
-			}).then((isAdmin) => {
-					let adminPage = fs.readFileSync("./public/html/admin.html", "utf-8");
+		User.findOne({
+			email: req.session.email,
+			admin: true,
+		}).then((isAdmin) => {
+			let adminPage = fs.readFileSync("./public/html/admin.html", "utf-8");
 			let adminPageDOM = new JSDOM(adminPage);
 			if (isAdmin == null) {
-					res.redirect("/user/login");
+				res.redirect("/user/login");
 			} else {
-					User.find({}, function (err, result) {
-							if (err) {
-									adminPageDOM.window.document.getElementById("error").innerHTML =
-											"Error finding all users";
-							} else {
-									adminPageDOM.window.document.getElementById("name").innerHTML =
-											req.session.name;
-									const tableDiv =
-											adminPageDOM.window.document.getElementById("tableBody");
-									//const userTable = createTable(result, tableToInsert);
-									for (let i = 0; i < result.length; i++) {
-											tableDiv.innerHTML +=
-													"<tr><th class='number-column text-center' scope=\"row\">" +
-													'<button id="more-info"><i class="fa-solid fa-circle-plus"></i></button>' +
-													(i + 1) +
-													"</th><td class='name-column'>" +
-													result[i].name +
-													"</td><td class='email-column'>" +
-													result[i].email +
-													'</td><td class=\'edit-column text-center\'><a class="text-dark" href="/user/profile/' +
-													result[i].name +
-													'"><i class="fa-solid fa-pen-to-square  "></i></a></td></tr>' +
-													'<tr class="info" id="info-' +
-													(i + 1) +
-													'"><td colspan=2><table id="nested-table-' +
-													(i + 1) +
-													'"class="nested mx-2"><tr><th id="mini-email" class="p-2" scope="col">Email</th><td class=\'mini-email-column px-1\'>' +
-													result[i].email +
-													'</td></tr><tr><th id="mini-edit" class="p-2" scope="col">Edit</th><td class=\'mini-edit-column\'><a class="text-dark" href="/user/profile/' +
-													result[i].name +
-													'"><i class="fa-solid fa-pen-to-square"></i></a></td></tr></table></td></tr>';
-									}
-									res.header(
-											"Cache-Control",
-											"no-cache, private, no-store, must-revalidate, max-stale=0, post-check=0, pre-check=0"
-									);
-									res.send(adminPageDOM.serialize());
-							}
-					});
+				User.find({}, function (err, result) {
+					if (err) {
+						adminPageDOM.window.document.getElementById("error").innerHTML =
+							"Error finding all users";
+					} else {
+						adminPageDOM.window.document.getElementById("name").innerHTML =
+							req.session.name;
+						const tableDiv =
+							adminPageDOM.window.document.getElementById("tableBody");
+						//const userTable = createTable(result, tableToInsert);
+						for (let i = 0; i < result.length; i++) {
+							tableDiv.innerHTML +=
+								"<tr><th class='number-column text-center' scope=\"row\">" +
+								'<button id="more-info"><i class="fa-solid fa-circle-plus"></i></button>' +
+								(i + 1) +
+								"</th><td class='name-column'>" +
+								result[i].name +
+								"</td><td class='email-column'>" +
+								result[i].email +
+								'</td><td class=\'edit-column text-center\'><a class="text-dark" href="/user/profile/' +
+								result[i].name +
+								'"><i class="fa-solid fa-pen-to-square  "></i></a></td></tr>' +
+								'<tr class="info" id="info-' +
+								(i + 1) +
+								'"><td colspan=2><table id="nested-table-' +
+								(i + 1) +
+								'"class="nested mx-2"><tr><th id="mini-email" class="p-2" scope="col">Email</th><td class=\'mini-email-column px-1\'>' +
+								result[i].email +
+								'</td></tr><tr><th id="mini-edit" class="p-2" scope="col">Edit</th><td class=\'mini-edit-column\'><a class="text-dark" href="/user/profile/' +
+								result[i].name +
+								'"><i class="fa-solid fa-pen-to-square"></i></a></td></tr></table></td></tr>';
+						}
+						res.header(
+							"Cache-Control",
+							"no-cache, private, no-store, must-revalidate, max-stale=0, post-check=0, pre-check=0"
+						);
+						res.send(adminPageDOM.serialize());
+					}
+				});
 			}
-			});
+		});
 
 	} else {
-			res.redirect("/user/login");
+		res.redirect("/user/login");
 	}
 });
 
@@ -263,7 +266,9 @@ router.get("/register", function (req, res) {
 });
 
 var multer = require("multer");
-const { table } = require("console");
+const {
+	table
+} = require("console");
 const user = require("../models/user");
 
 var storage = multer.diskStorage({
@@ -303,7 +308,9 @@ router.post(
 			let hasSameEmail = await User.findOne({
 				email: req.body.email,
 			});
-			let hasSameUsername = await User.findOne({ name: req.body.name });
+			let hasSameUsername = await User.findOne({
+				name: req.body.name
+			});
 			if (hasSameEmail == null && hasSameUsername == null) {
 				const newUser = await user.save();
 				res.redirect("/user/login");
@@ -339,11 +346,33 @@ router.get("/logout", function (req, res) {
 	}
 });
 
-router.get("/write", async function (req, res) {
-	let writePost = fs.readFileSync("./public/html/write-a-post.html");
-	let writePostDOM = new JSDOM(writePost);
-	
-	res.send(writePostDOM.serialize());
+router.get("/write", function (req, res) {
+	let write = fs.readFileSync("./public/html/write-a-post.html", "utf-8");
+	res.send(write);
+
+	// if (req.session.loggedIn == true) {
+	// 	res.redirect("/user/write");
+	// } else {
+	// 	let login = fs.readFileSync("./public/html/login.html", "utf-8");
+	// 	res.send(login);
+	// }
 });
+
+// router.post("/write", function (req, res) {
+// 	console.log("Test");
+// 	const timeline = new Timeline({
+// 		title: req.body.title,
+// 		email: req.body.content,
+// 	});
+// 	console.log("Test1");
+
+// 	let write = fs.readFileSync("./public/html/write-a-post.html", "utf-8");
+// 	let writeDOM = new JSDOM(write);
+// 	console.log("Test2");
+
+// 	const newPost = timeline.save();
+// 	res.redirect("/user/profile/self");
+// 	console.log("Test3");
+// });
 
 module.exports = router;

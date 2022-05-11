@@ -35,8 +35,8 @@
   <!------------------------>
   <!-- styles of your own -->
   <!------------------------>
-  <link rel="stylesheet" href="./styles/style.css" />
-  <link rel="stylesheet" href="./styles/write-a-post.css" />
+  <link rel="stylesheet" href="../styles/style.css" />
+  <link rel="stylesheet" href="../styles/write-a-post.css" />
 </head>
 
 <body>
@@ -45,32 +45,29 @@
     <div id="navbar"></div>
 
     <!-- Body goes here -->
-    <div id="content" class="p-5">
+    <div id="content" class="p-2">
       <div id="form-logo" class="mb-5">
-        <img id="logo" src="../images/logo.png" alt="" style="display: flex;
-        justify-content: center;
-        height: 5rem;
-        margin-top: 1rem;" />
+        <img id="logo" src="../images/logo.png" alt="" />
       </div>
-      <div id="title-box" class="form-group  mb-5">
-        <label for="title" class="  col-form-label">Title</label>
-        <input type="text" class="form-control" id="title" placeholder="Enter Title">
-      </div>
-      <div id="post-box" class="mb-5">
-        <div class="form-group">
-          <label for="post">Post</label>
-          <textarea class="form-control" id="tinytext" rows="9"></textarea>
+      <form id="input-container" class="p-4" method="POST" action="/user/write" enctype="multipart/form-data">
+        <div id="title-box" class="form-group  mb-5">
+          <label for="title" class="  col-form-label">Title</label>
+          <input type="text" class="form-control" id="title" placeholder="Enter Title" name="title">
         </div>
-      </div>
-      <form id="add-image" class="form-group mb-5">
-        <p>Add Image</p>
-        <input type="file" class="form-control-file" id="add-image">
+        <div id="post-box" class="mb-5 form-group">
+          <label for="post">Post</label>
+          <textarea class="form-control" id="tinytext" rows="9" name="content"></textarea>
+        </div>
+        <form id="add-image" class="form-group mb-5">
+          <p>Add Image</p>
+          <input type="file" class="form-control-file" id="add-image">
+        </form>
+        <div id="buttons" class="d-flex justify-content-center">
+          <input class="btn btn-primary mx-2" type="submit" value="Post">
+          <input class="btn btn-primary mx-2" type="submit" value="Cancel">
+        </div>
+        <p id="errorMsg"></p>
       </form>
-      <div id="buttons" class="d-flex justify-content-center">
-        <input class="btn btn-primary mx-2" type="button" value="Post">
-        <input class="btn btn-primary mx-2" type="button" value="Cancel">
-      </div>
-
     </div>
 
     <!-- Footer/Tabbars goes here -->
