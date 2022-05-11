@@ -28,6 +28,7 @@ searchButton.addEventListener("click", (event) => {
 		.then(function (result) {
 			let table = document.getElementById("tableBody");
 			table.innerHTML = result;
+			createDeleteListener();
 			createListener();
 		});
 });
@@ -56,6 +57,7 @@ adminFilterButton.addEventListener("change", (event) => {
 		.then(function (result) {
 			let table = document.getElementById("tableBody");
 			table.innerHTML = result;
+			createDeleteListener();
 			createListener();
 		});
 });
@@ -84,6 +86,7 @@ requestFilterButton.addEventListener("change", (event) => {
 				let table = document.getElementById("tableBody");
 				table.innerHTML = result;
 				createListener();
+				createDeleteListener();
 			});
 	} else {
 		let data = {
@@ -104,6 +107,7 @@ requestFilterButton.addEventListener("change", (event) => {
 				let table = document.getElementById("tableBody");
 				table.innerHTML = result;
 				createListener();
+				createDeleteListener();
 			});
 	}
 });
@@ -134,8 +138,43 @@ function createListener() {
 	}
 }
 
+/**
+ * Function for delete button
+ */
+createDeleteListener();
+function createDeleteListener() {
+	const modalText = document.getElementById("modalText");
+	const loggedInName = document.getElementById("name").innerText;
+	const deleteBtn = document.querySelectorAll("#confirmModal");
+	const cancelBtn = document.getElementById("noBtn");
+	const confirmBtn = document.getElementById("yesBtn");
+	var confirmModal = document.getElementById("confirmDeleteModal");
+	for (let i = 0; i < deleteBtn.length; i++) {
+		deleteBtn[i].addEventListener("click", (event) => {
+			if (loggedInName == deleteBtn[i].value) {
+				modalText.innerText = "You can't delete yourself";
+				confirmModal.style.setProperty("display", "flex", "important");
+				confirmBtn.style.setProperty("display", "none", "important");
+			} else {
+				modalText.innerHTML =
+					"Do you want to delete " + deleteBtn[i].value + "'s account?";
+				confirmBtn.href = "/user/delete/" + deleteBtn[i].value;
+				confirmBtn.style.setProperty("display", "inline-block", "important");
+				confirmModal.style.setProperty("display", "flex", "important");
+			}
+		});
+	}
+
+	cancelBtn.addEventListener("click", (event) => {
+		confirmModal.style.setProperty("display", "none", "important");
+	});
+}
+
+/**
+ * Scripts for the modal popup for add user function
+ */
 // Get the modal
-var modal = document.getElementById("myModal");
+var modal = document.getElementById("addUserModal");
 
 // Get the button that opens the modal
 var btn = document.getElementById("addUserButton");
@@ -145,12 +184,12 @@ var closeModal = document.getElementById("closeModalButton");
 
 // When the user clicks on the button, open the modal
 btn.onclick = function () {
-	modal.style.setProperty('display', 'flex', 'important');
+	modal.style.setProperty("display", "flex", "important");
 };
 
 // When the user clicks on <span> (x), close the modal
 closeModal.onclick = function () {
-	modal.style.setProperty('display', 'none', 'important');
+	modal.style.setProperty("display", "none", "important");
 };
 
 // When the user clicks anywhere outside of the modal, close it

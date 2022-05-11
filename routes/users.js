@@ -137,7 +137,13 @@ router.get("/admin", function (req, res) {
 								"</td><td class='edit-column text-center'>" +
 								"<a class='text-dark' href='/user/profile/" +
 								result[i].name +
-								"'><i class='fa-solid fa-pen-to-square'></i></a></td>" +
+								"'><i class='fa-solid fa-pen-to-square'></i></a>" +
+								//DELETE BTNS COL
+								"</td><td class='delete-column text-center'>" +
+								"<button id='confirmModal' value='" +
+								result[i].name +
+								"'>" +
+								"<i class='fa-solid fa-trash'></i></button>" +
 								"</tr>" +
 								//ROW CONTAINING THE COMPACT TABLE
 								"<tr class='info' id='info-" +
@@ -156,7 +162,13 @@ router.get("/admin", function (req, res) {
 								"</tr><tr><th id='mini-edit' class='p-2' scope='col'>Edit</th>" +
 								"<td class='mini-edit-column'><a class='text-dark' href='/user/profile/" +
 								result[i].name +
-								"'><i class='fa-solid fa-pen-to-square'></i></a></td></tr>" +
+								"'><i class='fa-solid fa-pen-to-square'></i></a></td>" +
+								//DELETE ROW
+								"</tr><tr><th id='mini-delete' class='p-2' scope='col'>Delete</th>" +
+								"<td class='mini-delete-column'><button id='confirmModal' value='" +
+								result[i].name +
+								"'>" +
+								"<i class='fa-solid fa-trash'></i></button></td>" +
 								"</table></td></tr>";
 						}
 						res.header(
@@ -217,7 +229,13 @@ router.post("/adminSearch", function (req, res) {
 					"</td><td class='edit-column text-center'>" +
 					"<a class='text-dark' href='/user/profile/" +
 					result[i].name +
-					"'><i class='fa-solid fa-pen-to-square'></i></a></td>" +
+					"'><i class='fa-solid fa-pen-to-square'></i></a>" +
+					//DELETE BTNS COL
+					"</td><td class='delete-column text-center'>" +
+					"<button id='confirmModal' value='" +
+					result[i].name +
+					"'>" +
+					"<i class='fa-solid fa-trash'></i></button>" +
 					"</tr>" +
 					//ROW CONTAINING THE COMPACT TABLE
 					"<tr class='info' id='info-" +
@@ -236,7 +254,13 @@ router.post("/adminSearch", function (req, res) {
 					"</tr><tr><th id='mini-edit' class='p-2' scope='col'>Edit</th>" +
 					"<td class='mini-edit-column'><a class='text-dark' href='/user/profile/" +
 					result[i].name +
-					"'><i class='fa-solid fa-pen-to-square'></i></a></td></tr>" +
+					"'><i class='fa-solid fa-pen-to-square'></i></a></td>" +
+					//DELETE ROW
+					"</tr><tr><th id='mini-delete' class='p-2' scope='col'>Delete</th>" +
+					"<td class='mini-delete-column'><button id='confirmModal' value='" +
+					result[i].name +
+					"'>" +
+					"<i class='fa-solid fa-trash'></i></button></td>" +
 					"</table></td></tr>";
 			}
 			if (tableDiv == "") {
@@ -292,7 +316,13 @@ router.post("/adminFilter", function (req, res) {
 					"</td><td class='edit-column text-center'>" +
 					"<a class='text-dark' href='/user/profile/" +
 					result[i].name +
-					"'><i class='fa-solid fa-pen-to-square'></i></a></td>" +
+					"'><i class='fa-solid fa-pen-to-square'></i></a>" +
+					//DELETE BTNS COL
+					"</td><td class='delete-column text-center'>" +
+					"<button id='confirmModal' value='" +
+					result[i].name +
+					"'>" +
+					"<i class='fa-solid fa-trash'></i></button>" +
 					"</tr>" +
 					//ROW CONTAINING THE COMPACT TABLE
 					"<tr class='info' id='info-" +
@@ -311,7 +341,13 @@ router.post("/adminFilter", function (req, res) {
 					"</tr><tr><th id='mini-edit' class='p-2' scope='col'>Edit</th>" +
 					"<td class='mini-edit-column'><a class='text-dark' href='/user/profile/" +
 					result[i].name +
-					"'><i class='fa-solid fa-pen-to-square'></i></a></td></tr>" +
+					"'><i class='fa-solid fa-pen-to-square'></i></a></td>" +
+					//DELETE ROW
+					"</tr><tr><th id='mini-delete' class='p-2' scope='col'>Delete</th>" +
+					"<td class='mini-delete-column'><button id='confirmModal' value='" +
+					result[i].name +
+					"'>" +
+					"<i class='fa-solid fa-trash'></i></button></td>" +
 					"</table></td></tr>";
 			}
 			if (tableDiv == "") {
@@ -367,7 +403,13 @@ router.post("/promotionFilter", function (req, res) {
 					"</td><td class='edit-column text-center'>" +
 					"<a class='text-dark' href='/user/profile/" +
 					result[i].name +
-					"'><i class='fa-solid fa-pen-to-square'></i></a></td>" +
+					"'><i class='fa-solid fa-pen-to-square'></i></a>" +
+					//DELETE BTNS COL
+					"</td><td class='delete-column text-center'>" +
+					"<button id='confirmModal' value='" +
+					result[i].name +
+					"'>" +
+					"<i class='fa-solid fa-trash'></i></button>" +
 					"</tr>" +
 					//ROW CONTAINING THE COMPACT TABLE
 					"<tr class='info' id='info-" +
@@ -386,7 +428,13 @@ router.post("/promotionFilter", function (req, res) {
 					"</tr><tr><th id='mini-edit' class='p-2' scope='col'>Edit</th>" +
 					"<td class='mini-edit-column'><a class='text-dark' href='/user/profile/" +
 					result[i].name +
-					"'><i class='fa-solid fa-pen-to-square'></i></a></td></tr>" +
+					"'><i class='fa-solid fa-pen-to-square'></i></a></td>" +
+					//DELETE ROW
+					"</tr><tr><th id='mini-delete' class='p-2' scope='col'>Delete</th>" +
+					"<td class='mini-delete-column'><button id='confirmModal' value='" +
+					result[i].name +
+					"'>" +
+					"<i class='fa-solid fa-trash'></i></button></td>" +
 					"</table></td></tr>";
 			}
 			if (tableDiv == "") {
@@ -633,7 +681,9 @@ router.get("/promotion", function (req, res) {
 	}
 });
 
-
+/**
+ * Function for creating a new user from the admin dashboard
+ */
 router.post(
 	"/createAccountAdmin",
 	upload.single("image"),
@@ -680,3 +730,20 @@ router.post(
 		}
 	}
 );
+
+/**
+ * Function for deleting a new user from the admin dashboard
+ */
+router.get("/delete/:name", async function (req, res) {
+	var profileName = req.params["name"];
+	if (!req.session.loggedIn || req.session.name == req.params["name"]) {
+		res.redirect("/user/login");
+	}
+
+	await User.deleteOne({ name: req.params["name"] });
+	res.header(
+		"Cache-Control",
+		"no-cache, private, no-store, must-revalidate, max-stale=0, post-check=0, pre-check=0"
+	);
+	res.redirect("/user/admin");
+});
