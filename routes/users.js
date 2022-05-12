@@ -1,5 +1,12 @@
 "use strict";
 
+var cloudinary = require('cloudinary');
+cloudinary.config({
+    cloud_name: 'buddyup-images',
+    api_key: '673686844465421',
+    api_secret: 'cxk0wwxInP62OzGTo26z2TZSnDU'
+});
+
 const express = require("express");
 const router = express.Router();
 const User = require("../models/user");
@@ -268,10 +275,10 @@ const { db } = require("../models/user");
 
 var storage = multer.diskStorage({
 	destination: (req, file, cb) => {
-		cb(null, "");
+			cb(null, "./public/images/");
 	},
 	filename: (req, file, cb) => {
-		cb(null, "temp.png");
+			cb(null, Date.now() + path.extname(file.originalname));
 	},
 });
 
@@ -347,34 +354,79 @@ router.get("/edit", function (req, res) {
 	res.send(profileEditDOM.serialize());
 });
 
+// sends the logged in user's information over to the client side
 router.get("/info", async function (req, res) {
 	let currentUser = await User.findOne({
 		email: req.session.email,
 	});
-
 	res.send(currentUser);
 });
 
 // updates the users information after editing and then redirects them back to their profile page
-router.post("/edit/submit", async function (req, res) {
-	let newUserName = req.body.username;
-	let newAbout = req.body.about;
+router.post("/edit/submit", upload.single("image"), async function (req, res) {
 	try {
+		let noEmailChange =  req.body.email === req.session.email;
+
 		let hasSameEmail = await User.findOne({
 			email: req.body.email,
 		});
-		let hasSameUsername = await User.findOne({ name: req.body.name });
-		if (hasSameEmail == null && hasSameUsername == null) {
-			await User.updateOne(
-				{ email: req.session.email },
-				{
-					$set: {
-						name: newUserName,
-						about: newAbout,
-					},
-				}
-			);
-			res.redirect("/user/profile/self");
+
+		let noNameChange = req.body.name === req.session.name;
+
+		let hasSameUsername = await User.findOne({ 
+			name: req.body.name 
+		});
+
+		if ((hasSameEmail == null || noEmailChange) && (hasSameUsername == null || noNameChange)) {
+			let url;
+			if(req.file != undefined){
+				let upload = await cloudinary.v2.uploader.upload("./public/images/" + req.file.filename,
+				function (error) {
+						if (error) {
+								res.send({
+										success: false,
+										message: "failed to upload profile picture"
+								});
+								return;
+						}
+				})
+				await fs.unlink("./public/images/" + req.file.filename, function (err) {
+						if (err) {
+								console.log("Failed to remove old image");
+						}
+				});
+				url = upload.url;
+			}
+			if (url != null) {
+				console.log(url);
+				await User.updateOne(
+					{ email: req.session.email },
+					{
+						$set: {
+							img: url,
+							name: req.body.name,
+							about: req.body.about,
+							email: req.body.email,
+							password: req.body.password,
+						},
+					}
+				);
+			} else {
+				await User.updateOne(
+					{ email: req.session.email },
+					{
+						$set: {
+							name: req.body.name,
+							about: req.body.about,
+							email: req.body.email,
+							password: req.body.password
+						},
+					}
+				);
+			}
+			res.send({
+				success: true
+			});
 		} else {
 			let msg = "";
 			if (hasSameEmail != null) {
@@ -382,11 +434,14 @@ router.post("/edit/submit", async function (req, res) {
 			} else {
 				msg = "Username already exists!";
 			}
-			res.send(msg);
+			res.send({
+				success: false,
+				error: msg
+			});
 		}
 	} catch (e) {
 		res.send({
-			data: null,
+			success: false,
 			error: "failed to update account. Error: " + e,
 		});
 	}
