@@ -54,7 +54,7 @@ app.listen(process.env.PORT || port, function () {
 //
 
 
-mongoose.connect(process.env.DATABASE_URL, {
+mongoose.connect("mongodb+srv://sambredenhof:Sam123@buddyup.9ft5l.mongodb.net/COMP2800?retryWrites=true&w=majority", {
     useNewUrlParser: true,
     useUnifiedTopology: true
 }, async err => {

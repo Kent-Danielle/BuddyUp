@@ -1,4 +1,14 @@
 {
+  "name": "buddyup",
+  "version": "1.0.0",
+  "description": "Chat for gamers.",
+  "main": "server.js",
+  "keywords": [
+    "buddyup",
+    "heroku"
+  ],
+  "author": "uptech",
+  "license": "MIT",
   "dependencies": {
     "body-parser": "^1.20.0",
     "cloudinary": "^1.29.1",
@@ -14,7 +24,13 @@
     "nodemon": "^2.0.16",
     "tiny-editor": "^0.3.0"
   },
+  "scripts": {
+    "start": "node server.js"
+  },
   "devDependencies": {
     "dotenv": "^16.0.0"
+  },
+  "engines": {
+    "node": "16.x"
   }
 }
