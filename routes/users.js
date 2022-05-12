@@ -1,4 +1,4 @@
-'use strict';
+"use strict";
 
 const express = require("express");
 const router = express.Router();
@@ -86,59 +86,58 @@ router.get("/login", function (req, res) {
 
 router.get("/admin", function (req, res) {
 	if (req.session.loggedIn) {
-			User.findOne({
-					email: req.session.email,
-					admin: true,
-			}).then((isAdmin) => {
-					let adminPage = fs.readFileSync("./public/html/admin.html", "utf-8");
+		User.findOne({
+			email: req.session.email,
+			admin: true,
+		}).then((isAdmin) => {
+			let adminPage = fs.readFileSync("./public/html/admin.html", "utf-8");
 			let adminPageDOM = new JSDOM(adminPage);
 			if (isAdmin == null) {
-					res.redirect("/user/login");
+				res.redirect("/user/login");
 			} else {
-					User.find({}, function (err, result) {
-							if (err) {
-									adminPageDOM.window.document.getElementById("error").innerHTML =
-											"Error finding all users";
-							} else {
-									adminPageDOM.window.document.getElementById("name").innerHTML =
-											req.session.name;
-									const tableDiv =
-											adminPageDOM.window.document.getElementById("tableBody");
-									//const userTable = createTable(result, tableToInsert);
-									for (let i = 0; i < result.length; i++) {
-											tableDiv.innerHTML +=
-													"<tr><th class='number-column text-center' scope=\"row\">" +
-													'<button id="more-info"><i class="fa-solid fa-circle-plus"></i></button>' +
-													(i + 1) +
-													"</th><td class='name-column'>" +
-													result[i].name +
-													"</td><td class='email-column'>" +
-													result[i].email +
-													'</td><td class=\'edit-column text-center\'><a class="text-dark" href="/user/profile/' +
-													result[i].name +
-													'"><i class="fa-solid fa-pen-to-square  "></i></a></td></tr>' +
-													'<tr class="info" id="info-' +
-													(i + 1) +
-													'"><td colspan=2><table id="nested-table-' +
-													(i + 1) +
-													'"class="nested mx-2"><tr><th id="mini-email" class="p-2" scope="col">Email</th><td class=\'mini-email-column px-1\'>' +
-													result[i].email +
-													'</td></tr><tr><th id="mini-edit" class="p-2" scope="col">Edit</th><td class=\'mini-edit-column\'><a class="text-dark" href="/user/profile/' +
-													result[i].name +
-													'"><i class="fa-solid fa-pen-to-square"></i></a></td></tr></table></td></tr>';
-									}
-									res.header(
-											"Cache-Control",
-											"no-cache, private, no-store, must-revalidate, max-stale=0, post-check=0, pre-check=0"
-									);
-									res.send(adminPageDOM.serialize());
-							}
-					});
+				User.find({}, function (err, result) {
+					if (err) {
+						adminPageDOM.window.document.getElementById("error").innerHTML =
+							"Error finding all users";
+					} else {
+						adminPageDOM.window.document.getElementById("name").innerHTML =
+							req.session.name;
+						const tableDiv =
+							adminPageDOM.window.document.getElementById("tableBody");
+						//const userTable = createTable(result, tableToInsert);
+						for (let i = 0; i < result.length; i++) {
+							tableDiv.innerHTML +=
+								"<tr><th class='number-column text-center' scope=\"row\">" +
+								'<button id="more-info"><i class="fa-solid fa-circle-plus"></i></button>' +
+								(i + 1) +
+								"</th><td class='name-column'>" +
+								result[i].name +
+								"</td><td class='email-column'>" +
+								result[i].email +
+								'</td><td class=\'edit-column text-center\'><a class="text-dark" href="/user/profile/' +
+								result[i].name +
+								'"><i class="fa-solid fa-pen-to-square  "></i></a></td></tr>' +
+								'<tr class="info" id="info-' +
+								(i + 1) +
+								'"><td colspan=2><table id="nested-table-' +
+								(i + 1) +
+								'"class="nested mx-2"><tr><th id="mini-email" class="p-2" scope="col">Email</th><td class=\'mini-email-column px-1\'>' +
+								result[i].email +
+								'</td></tr><tr><th id="mini-edit" class="p-2" scope="col">Edit</th><td class=\'mini-edit-column\'><a class="text-dark" href="/user/profile/' +
+								result[i].name +
+								'"><i class="fa-solid fa-pen-to-square"></i></a></td></tr></table></td></tr>';
+						}
+						res.header(
+							"Cache-Control",
+							"no-cache, private, no-store, must-revalidate, max-stale=0, post-check=0, pre-check=0"
+						);
+						res.send(adminPageDOM.serialize());
+					}
+				});
 			}
-			});
-
+		});
 	} else {
-			res.redirect("/user/login");
+		res.redirect("/user/login");
 	}
 });
 
@@ -183,7 +182,6 @@ router.post("/adminSearch", function (req, res) {
 		}
 	});
 });
-
 
 router.post("/banUser", function (req, res) {
 	res.setHeader("Content-Type", "application/json");
@@ -349,42 +347,49 @@ router.get("/edit", function (req, res) {
 	res.send(profileEditDOM.serialize());
 });
 
-router.get("/info", async function(req, res) {
-
+router.get("/info", async function (req, res) {
 	let currentUser = await User.findOne({
-		email: req.session.email
+		email: req.session.email,
 	});
 
 	res.send(currentUser);
 });
 
 // updates the users information after editing and then redirects them back to their profile page
-router.post("/edit/submit", function(req, res) {
+router.post("/edit/submit", async function (req, res) {
 	let newUserName = req.body.username;
 	let newAbout = req.body.about;
-	let gamesList = req.body.games;
-
 	try {
-		User.collection.updateOne(
-			{email: req.session.email},
-			{$set: {
-				name: newUserName,
-				about: newAbout,
-				games: gamesList
-			}}
-		).then(function(result) {
-			res.send({
-				data: result,
-				error: null
-			})
+		let hasSameEmail = await User.findOne({
+			email: req.body.email,
 		});
+		let hasSameUsername = await User.findOne({ name: req.body.name });
+		if (hasSameEmail == null && hasSameUsername == null) {
+			await User.updateOne(
+				{ email: req.session.email },
+				{
+					$set: {
+						name: newUserName,
+						about: newAbout,
+					},
+				}
+			);
+			res.redirect("/user/profile/self");
+		} else {
+			let msg = "";
+			if (hasSameEmail != null) {
+				msg = "Email already exists!";
+			} else {
+				msg = "Username already exists!";
+			}
+			res.send(msg);
+		}
 	} catch (e) {
 		res.send({
 			data: null,
-			error: "failed to update account. Error: " + e
+			error: "failed to update account. Error: " + e,
 		});
 	}
-
 });
 
 module.exports = router;
