@@ -1,8 +1,8 @@
 document.getElementById("submit").addEventListener("click", async(e) =>{
     e.preventDefault();
+    document.getElementById("loadingMsg").innerHTML = "loading...";
     let form = document.getElementById("input-container");
     let formData = new FormData(form);
-    console.log(tinymce.get("tinytext").getContent({format : 'raw'}));
     formData.set("content", tinymce.get("tinytext").getContent({format : 'raw'}));
     fetch("/user/write", {
         method: "POST",
@@ -14,6 +14,7 @@ document.getElementById("submit").addEventListener("click", async(e) =>{
             window.location.replace("/user/profile");
         } else {
             document.getElementById("errorMsg").innerHTML = result.message;
+            document.getElementById("loadinMsg").innerHTML = "";
         }
     });
 });

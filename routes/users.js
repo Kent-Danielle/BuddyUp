@@ -64,6 +64,26 @@ router.get("/profile/:name", async function (req, res) {
 			currentUser.name;
 		profileDOM.window.document.getElementById("bio-text").innerHTML =
 			currentUser.about;
+
+
+		let allPosts = await Timeline.find({
+			author: currentUser.name
+		});
+		let stories = '';
+		for(let i = 0; i < allPosts.length; i++){
+			stories += '<div id="story" class="rounded-3 py-1 px-3 my-3">'
+			+'<h4 id="story-title" class="mt-2 mb-0">'
+			+ allPosts[i].title
+			+ '</h4><p id="story-date" class="mb-0">May 4, 2022</p><p id="story-body" class="mb-3">'
+			+ allPosts[i].post
+			+'</p><div id="story-img-container" class="mb-3"><div class="row"><div class="col-12">';
+			if(allPosts[i].img != null){
+				stories += '<div class="card"><div class="card-img"><img src=' + allPosts[i].img + ' alt="" id="story-img" class="card-img"/></div></div>';
+			}
+			stories += '</div></div></div></div>';
+		}
+		profileDOM.window.document.getElementById("lg-stories-container").innerHTML += stories;
+		profileDOM.window.document.getElementById("stories-container").innerHTML += stories;
 		// profileDOM.window.document.getElementById('pfp').src = 'data:image/'+result.img.contentType+';base64,'+result.img.data.toString('base64');
 		res.header(
 			"Cache-Control",
@@ -372,9 +392,10 @@ var uploadPost = multer({
 });
 
 router.post("/write", uploadPost.single("post-image"), async function (req, res) {
+	let upload = null;
 	try {
 		try {
-			let upload = await cloudinary.v2.uploader.upload("./public/images/" + req.file.filename,
+			upload = await cloudinary.v2.uploader.upload("./public/images/" + req.file.filename,
 				function (error) {
 
 				})
@@ -382,10 +403,8 @@ router.post("/write", uploadPost.single("post-image"), async function (req, res)
 
 			});
 		} catch (error) {
-
+			console.log(error)
 		}
-
-		console.log(req.body.content);
 
 		const storytimeline = await new Timeline({
 			author: req.session.name,
