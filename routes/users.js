@@ -536,21 +536,26 @@ router.post(
 			let hasSameUsername = await User.findOne({ name: req.body.name });
 			if (hasSameEmail == null && hasSameUsername == null) {
 				const newUser = await user.save();
-				res.redirect("/user/admin");
+				res.send({
+					success: true,
+				});
 			} else {
-				// let msg = "";
-				// if (hasSameEmail != null) {
-				// 	msg = "Email already exists!";
-				// } else {
-				// 	msg = "Username already exists!";
-				// }
-				// loginDOM.window.document.getElementById("errorMsg").innerText = msg;
-				// res.send(loginDOM.serialize());
+				let msg = "";
+				if (hasSameEmail != null) {
+					msg = "Email already exists!";
+				} else {
+					msg = "Username already exists!";
+				}
+				res.send({
+					success: false,
+					error: msg,
+				});
 			}
 		} catch (err) {
-			// loginDOM.window.document.getElementById("errorMsg").innerText =
-			// 	"Failed to create account";
-			// res.send(loginDOM.serialize());
+			res.send({
+				success: false,
+				error: "failed to update account. Error: " + e,
+			});
 		}
 	}
 );

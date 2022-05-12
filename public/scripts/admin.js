@@ -225,6 +225,7 @@ function createEditListener() {
 document
 	.getElementById("submitButton")
 	.addEventListener("click", async function (e) {
+		let submitBtn = document.getElementById("submitButton");
 		e.preventDefault();
 		let oldName = await localStorage.getItem("oldName");
 		let nameField = document.getElementById("nameField");
@@ -238,7 +239,12 @@ document
 			password: passwordField.value,
 			about: bioField.value,
 		};
-		let result = fetch("/user/editAccountAdmin", {
+
+		let fetchPath =
+			submitBtn.value == "create account"
+				? "/user/createAccountAdmin"
+				: "/user/editAccountAdmin";
+		let result = fetch(fetchPath, {
 			method: "POST",
 			headers: {
 				Accept: "application/json",
@@ -294,7 +300,7 @@ function createAddListener() {
 
 	// When the user clicks on the button, open the modal
 	btn.onclick = function () {
-		form.href = "/user/createAccountAdmin";
+		document.getElementById("submitButton").value = "create account";
 		modal.style.setProperty("display", "flex", "important");
 	};
 
