@@ -1,0 +1,9 @@
+An admin account sign in information: 
+  email: Admin@admin.com
+  password: Admin
+
+A regular user account sign in information:
+  email: sambredenhof@gmail.com
+  password: password
+
+The url for the database is in the .env file

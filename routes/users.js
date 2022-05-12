@@ -333,8 +333,10 @@ router.get("/register", function (req, res) {
 });
 
 var multer = require("multer");
-const { table } = require("console");
+const { table, profile } = require("console");
 const user = require("../models/user");
+const { reset } = require("nodemon");
+const { db } = require("../models/user");
 
 var storage = multer.diskStorage({
 	destination: (req, file, cb) => {
@@ -350,9 +352,6 @@ var upload = multer({
 });
 
 router.post("/createAccount", upload.single("pfp"), async function (req, res) {
-	let login = fs.readFileSync("./public/html/register.html", "utf-8");
-	let loginDOM = new JSDOM(login);
-
 	try {
 		let hasSameEmail = await User.findOne({
 			email: req.body.email,
@@ -375,14 +374,11 @@ router.post("/createAccount", upload.single("pfp"), async function (req, res) {
 						}
 					}
 				);
-				await fs.unlink(
-					"./public/images/" + req.file.filename,
-					function (err) {
-						if (err) {
-							console.log("Failed to remove old image");
-						}
+				await fs.unlink("./public/images/" + req.file.filename, function (err) {
+					if (err) {
+						console.log("Failed to remove old image");
 					}
-				);
+				});
 				url = upload.url;
 			}
 			const user = new User({
@@ -431,6 +427,116 @@ router.get("/logout", function (req, res) {
 
 				res.redirect("/");
 			}
+		});
+	}
+});
+
+// redirects the user to the edit profile page
+router.get("/edit", function (req, res) {
+	if (req.session.loggedIn == true) {
+		let profileEdit = fs.readFileSync("./public/html/profile_edit.html");
+		let profileEditDOM = new JSDOM(profileEdit);
+
+		res.send(profileEditDOM.serialize());
+	} else {
+		res.redirect("/user/login");
+	}
+});
+
+router.get("/info", async function (req, res) {
+	let currentUser = await User.findOne({
+		email: req.session.email,
+	});
+
+	res.send(currentUser);
+});
+
+// updates the users information after editing and then redirects them back to their profile page
+router.post("/edit/submit", upload.single("image"), async function (req, res) {
+	try {
+		let noEmailChange = req.body.email === req.session.email;
+
+		let hasSameEmail = await User.findOne({
+			email: req.body.email,
+		});
+
+		let noNameChange = req.body.name === req.session.name;
+
+		let hasSameUsername = await User.findOne({
+			name: req.body.name,
+		});
+
+		if (
+			(hasSameEmail == null || noEmailChange) &&
+			(hasSameUsername == null || noNameChange)
+		) {
+			let url;
+			if (req.file != undefined) {
+				let upload = await cloudinary.v2.uploader.upload(
+					"./public/images/" + req.file.filename,
+					function (error) {
+						if (error) {
+							res.send({
+								success: false,
+								message: "failed to upload profile picture",
+							});
+							return;
+						}
+					}
+				);
+				await fs.unlink("./public/images/" + req.file.filename, function (err) {
+					if (err) {
+						console.log("Failed to remove old image");
+					}
+				});
+				url = upload.url;
+			}
+			if (url != null) {
+				await User.updateOne(
+					{ email: req.session.email },
+					{
+						$set: {
+							img: url,
+							name: req.body.name,
+							about: req.body.about,
+							email: req.body.email,
+							password: req.body.password,
+						},
+					}
+				);
+			} else {
+				await User.updateOne(
+					{ email: req.session.email },
+					{
+						$set: {
+							name: req.body.name,
+							about: req.body.about,
+							email: req.body.email,
+							password: req.body.password,
+						},
+					}
+				);
+			}
+			req.session.email = req.body.email;
+			res.send({
+				success: true,
+			});
+		} else {
+			let msg = "";
+			if (hasSameEmail != null) {
+				msg = "Email already exists!";
+			} else {
+				msg = "Username already exists!";
+			}
+			res.send({
+				success: false,
+				error: msg,
+			});
+		}
+	} catch (e) {
+		res.send({
+			success: false,
+			error: "failed to update account. Error: " + e,
 		});
 	}
 });
@@ -520,8 +626,29 @@ router.get("/promotion", function (req, res) {
  */
 router.post(
 	"/createAccountAdmin",
-	upload.single("image"),
+	upload.single("pfp"),
 	async function (req, res) {
+		let url = "/images/profile.png";
+		if (req.file != undefined) {
+			let upload = await cloudinary.v2.uploader.upload(
+				"./public/images/" + req.file.filename,
+				function (error) {
+					if (error) {
+						res.send({
+							success: "false",
+							message: "failed to upload profile picture",
+						});
+						return;
+					}
+				}
+			);
+			await fs.unlink("./public/images/" + req.file.filename, function (err) {
+				if (err) {
+					console.log("Failed to remove old image");
+				}
+			});
+			url = upload.url;
+		}
 		const user = new User({
 			name: req.body.name,
 			email: req.body.email,
@@ -530,10 +657,7 @@ router.post(
 			admin: false,
 			banned: false,
 			promotion: false,
-			// img: {
-			//     data: fs.readFileSync('uploads/temp.png'),
-			//     contentType: 'image/png'
-			// }
+			img: url,
 		});
 
 		let login = fs.readFileSync("./public/html/admin.html", "utf-8");
@@ -592,7 +716,7 @@ router.get("/delete/:name", async function (req, res) {
  */
 router.post(
 	"/editAccountAdmin",
-	upload.single("image"),
+	upload.single("pfp"),
 	async function (req, res) {
 		try {
 			let oldUser = await User.findOne({
@@ -615,17 +739,56 @@ router.post(
 				(hasSameEmail == null || noEmailChange) &&
 				(hasSameUsername == null || noNameChange)
 			) {
-				let update = await User.updateOne(
-					{ email: oldUser.email },
-					{
-						$set: {
-							name: req.body.name,
-							about: req.body.about,
-							email: req.body.email,
-							password: req.body.password,
-						},
-					}
-				);
+				let url;
+				if (req.file != undefined) {
+					let upload = await cloudinary.v2.uploader.upload(
+						"./public/images/" + req.file.filename,
+						function (error) {
+							if (error) {
+								res.send({
+									success: false,
+									message: "failed to upload profile picture",
+								});
+								return;
+							}
+						}
+					);
+					await fs.unlink(
+						"./public/images/" + req.file.filename,
+						function (err) {
+							if (err) {
+								console.log("Failed to remove old image");
+							}
+						}
+					);
+					url = upload.url;
+				}
+				if (url != null) {
+					await User.updateOne(
+						{ email: oldUser.email },
+						{
+							$set: {
+								img: url,
+								name: req.body.name,
+								about: req.body.about,
+								email: req.body.email,
+								password: req.body.password,
+							},
+						}
+					);
+				} else {
+					await User.updateOne(
+						{ email: oldUser.email },
+						{
+							$set: {
+								name: req.body.name,
+								about: req.body.about,
+								email: req.body.email,
+								password: req.body.password,
+							},
+						}
+					);
+				}
 				res.send({
 					success: true,
 				});

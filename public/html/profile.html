@@ -34,7 +34,7 @@
 		/>
 		<!-- Fontawesome -->
 		<script
-			src="https://kit.fontawesome.com/542cfc8e1c.js"
+			src="https://kit.fontawesome.com/8bb76a9e5f.js"
 			crossorigin="anonymous"
 		></script>
 		<!-- Jquery -->
@@ -62,7 +62,15 @@
 						>
 						<div id="pfp-container">
 							<img src="/images/profile.png" alt="" id="pfp" />
+							<a
+								class="rounded-3 p-0"
+								href="/user/edit"
+								id="edit-profile-button"
+								role="button"
+								><i class="fa-solid fa-pen-to-square"></i
+							></a>
 						</div>
+
 						<div id="info-container">
 							<h2 id="username">Username</h2>
 							<p id="bio-text">
@@ -164,8 +172,7 @@
 			</div>
 		</div>
 
-		<!-- Footer/Tabbars goes here -->
-		<div id="tabbar"></div>
+		<!-- Edit Modal goes here -->
 
 		<!---------------------------->
 		<!-- Client-side Javascript -->

@@ -228,29 +228,16 @@ document
 		let submitBtn = document.getElementById("submitButton");
 		e.preventDefault();
 		let oldName = await localStorage.getItem("oldName");
-		let nameField = document.getElementById("nameField");
-		let emailField = document.getElementById("emailField");
-		let passwordField = document.getElementById("passwordField");
-		let bioField = document.getElementById("bioField");
-		let data = {
-			oldName: oldName,
-			name: nameField.value,
-			email: emailField.value,
-			password: passwordField.value,
-			about: bioField.value,
-		};
-
+		let form = document.getElementById("userForm");
+		let formData = new FormData(form);
+		formData.append("oldName", oldName);
 		let fetchPath =
 			submitBtn.value == "create account"
 				? "/user/createAccountAdmin"
 				: "/user/editAccountAdmin";
 		let result = fetch(fetchPath, {
 			method: "POST",
-			headers: {
-				Accept: "application/json",
-				"Content-Type": "application/json",
-			},
-			body: JSON.stringify(data),
+			body: formData,
 		})
 			.then(function (response) {
 				return response.json();
@@ -316,3 +303,14 @@ function createAddListener() {
 		}
 	};
 }
+
+document
+	.getElementById("file-container")
+	.addEventListener("click", function () {
+		document.getElementById("pfp").click();
+	});
+
+document.getElementById("pfp").addEventListener("change", function () {
+	document.getElementById("file-label").innerHTML =
+		document.getElementById("pfp").files[0].name;
+});
