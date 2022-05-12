@@ -74,7 +74,7 @@ router.get("/profile/:name", async function (req, res) {
 			stories += '<div id="story" class="rounded-3 py-1 px-3 my-3">'
 			+'<h4 id="story-title" class="mt-2 mb-0">'
 			+ allPosts[i].title
-			+ '</h4><p id="story-date" class="mb-0">May 4, 2022</p><p id="story-body" class="mb-3">'
+			+ '</h4><p id="story-body" class="mb-3">'
 			+ allPosts[i].post
 			+'</p><div id="story-img-container" class="mb-3"><div class="row"><div class="col-12">';
 			if(allPosts[i].img != null){
