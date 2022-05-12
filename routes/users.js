@@ -1,10 +1,12 @@
 "use strict";
+
 var cloudinary = require("cloudinary");
 cloudinary.config({
 	cloud_name: "buddyup-images",
 	api_key: "673686844465421",
 	api_secret: "cxk0wwxInP62OzGTo26z2TZSnDU",
 });
+
 const express = require("express");
 const router = express.Router();
 const User = require("../models/user");
@@ -443,11 +445,11 @@ router.get("/edit", function (req, res) {
 	}
 });
 
+// sends the logged in user's information over to the client side
 router.get("/info", async function (req, res) {
 	let currentUser = await User.findOne({
 		email: req.session.email,
 	});
-
 	res.send(currentUser);
 });
 
@@ -517,7 +519,6 @@ router.post("/edit/submit", upload.single("image"), async function (req, res) {
 					}
 				);
 			}
-			req.session.email = req.body.email;
 			res.send({
 				success: true,
 			});
