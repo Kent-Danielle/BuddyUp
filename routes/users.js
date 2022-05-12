@@ -342,33 +342,34 @@ router.post("/login", function (req, res) {
 		currentUser = User.findOne({
 			email: req.body.email,
 		});
+		currentUser.then((result) => {
+			if (result == null) {
+				res.send({
+					success: "false",
+					message: "account not found",
+				});
+			} else {
+				if (result.password == req.body.password) {
+					req.session.loggedIn = true;
+					req.session.email = result.email;
+					req.session.name = result.name;
+					res.send({
+						success: "true",
+						message: "logged in.",
+					});
+					// res.redirect("/user/profile");
+				} else {
+					res.send({
+						success: "false",
+						message: "incorrect password",
+					});
+				}
+			}
+		});
 	} catch (error) {
 		return;
 	}
-	currentUser.then((result) => {
-		if (result == null) {
-			res.send({
-				success: "false",
-				message: "account not found",
-			});
-		} else {
-			if (result.password == req.body.password) {
-				req.session.loggedIn = true;
-				req.session.email = result.email;
-				req.session.name = result.name;
-				res.send({
-					success: "true",
-					message: "logged in.",
-				});
-				// res.redirect("/user/profile");
-			} else {
-				res.send({
-					success: "false",
-					message: "incorrect password",
-				});
-			}
-		}
-	});
+
 });
 
 //get all users
