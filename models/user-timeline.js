@@ -4,13 +4,17 @@ const mongoose = require('mongoose');
 
 const timelineSchema = new mongoose.Schema({
 
+    author: {
+        type: String,
+        required: true
+    },
     title: {
         type: String,
-        required: false
+        required: true
     },
     post: {
         type: String,
-        required: false
+        required: true
     }
 })
 

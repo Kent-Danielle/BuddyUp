@@ -356,9 +356,8 @@ router.get("/write", async function (req, res) {
 });
 
 router.post("/write", async function (req, res) {
-	console.log(req.body.title);
-	console.log(req.body.content);
 	const storytimeline = await new Timeline({
+		author: req.session.name,
 		title: req.body.title,
 		post: req.body.content
 	});
@@ -371,10 +370,9 @@ router.post("/write", async function (req, res) {
 		res.redirect("/user/profile/self");
 	} catch (err) {
 		writeDOM.window.document.getElementById("errorMsg").innerHTML =
-		err;
+			err;
 		res.send(writeDOM.serialize());
 	}
-
 });
 
 module.exports = router;
