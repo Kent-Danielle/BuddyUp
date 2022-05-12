@@ -28,7 +28,7 @@ searchButton.addEventListener("click", (event) => {
 		.then(function (result) {
 			let table = document.getElementById("tableBody");
 			table.innerHTML = result;
-			createDeleteListener();
+			createEditListener();
 			createListener();
 		});
 });
@@ -57,7 +57,7 @@ adminFilterButton.addEventListener("change", (event) => {
 		.then(function (result) {
 			let table = document.getElementById("tableBody");
 			table.innerHTML = result;
-			createDeleteListener();
+			createEditListener();
 			createListener();
 		});
 });
@@ -86,7 +86,7 @@ requestFilterButton.addEventListener("change", (event) => {
 				let table = document.getElementById("tableBody");
 				table.innerHTML = result;
 				createListener();
-				createDeleteListener();
+				createEditListener();
 			});
 	} else {
 		let data = {
@@ -107,7 +107,7 @@ requestFilterButton.addEventListener("change", (event) => {
 				let table = document.getElementById("tableBody");
 				table.innerHTML = result;
 				createListener();
-				createDeleteListener();
+				createEditListener();
 			});
 	}
 });
@@ -170,6 +170,70 @@ function createDeleteListener() {
 	});
 }
 
+/**
+ * Function for edit button
+ */
+createEditListener();
+function createEditListener() {
+	const closeBtn = document.getElementById("closeModalButton");
+	const submitBtn = document.getElementById("submitButton");
+	const editModalBtn = document.querySelectorAll("#editModalButton");
+	var editModal = document.getElementById("addUserModal");
+	const form = document.getElementById("userForm");
+	for (let i = 0; i < editModalBtn.length; i++) {
+		editModalBtn[i].addEventListener("click", async function (event) {
+			await localStorage.setItem("oldName", editModalBtn[i].value);
+			editModal.style.setProperty("display", "flex", "important");
+			// form.href = "/user/editAccountAdmin";
+			submitBtn.value = "update account";
+		});
+	}
+
+	closeBtn.addEventListener("click", (event) => {
+		editModal.style.setProperty("display", "none", "important");
+	});
+}
+
+// use the fetch api to update the user's profile
+document
+	.getElementById("submitButton")
+	.addEventListener("click", async function (e) {
+		e.preventDefault();
+		let oldName = await localStorage.getItem("oldName");
+		let nameField = document.getElementById("nameField");
+		let emailField = document.getElementById("emailField");
+		let passwordField = document.getElementById("passwordField");
+		let bioField = document.getElementById("bioField");
+		let data = {
+			oldName: oldName,
+			name: nameField.value,
+			email: emailField.value,
+			password: passwordField.value,
+			about: bioField.value,
+		};
+		let result = fetch("/user/editAccountAdmin", {
+			method: "POST",
+			headers: {
+				Accept: "application/json",
+				"Content-Type": "application/json",
+			},
+			body: JSON.stringify(data),
+		})
+			.then(function (response) {
+				return response.json();
+			})
+			.then(function (result) {
+				if (result.success) {
+					window.location.replace("/user/admin");
+				} else {
+					document.getElementById("errorMsg").innerText = result.error;
+				}
+			});
+	});
+
+/**
+ * Script for text area remaining char status
+ */
 const textarea = document.querySelector("textarea");
 
 textarea.addEventListener("input", ({ currentTarget: target }) => {
@@ -188,28 +252,34 @@ textarea.addEventListener("input", ({ currentTarget: target }) => {
 /**
  * Scripts for the modal popup for add user function
  */
-// Get the modal
-var modal = document.getElementById("addUserModal");
+createAddListener();
+function createAddListener() {
+	// Get the modal
+	var modal = document.getElementById("addUserModal");
 
-// Get the button that opens the modal
-var btn = document.getElementById("addUserButton");
+	// Get the button that opens the modal
+	var btn = document.getElementById("addUserButton");
 
-// Get the <span> element that closes the modal
-var closeModal = document.getElementById("closeModalButton");
+	// Get the <span> element that closes the modal
+	var closeModal = document.getElementById("closeModalButton");
 
-// When the user clicks on the button, open the modal
-btn.onclick = function () {
-	modal.style.setProperty("display", "flex", "important");
-};
+	const form = document.getElementById("userForm");
 
-// When the user clicks on <span> (x), close the modal
-closeModal.onclick = function () {
-	modal.style.setProperty("display", "none", "important");
-};
+	// When the user clicks on the button, open the modal
+	btn.onclick = function () {
+		form.href = "/user/createAccountAdmin";
+		modal.style.setProperty("display", "flex", "important");
+	};
 
-// When the user clicks anywhere outside of the modal, close it
-window.onclick = function (event) {
-	if (event.target == modal) {
-		modal.style.display = "none";
-	}
-};
+	// When the user clicks on <span> (x), close the modal
+	closeModal.onclick = function () {
+		modal.style.setProperty("display", "none", "important");
+	};
+
+	// When the user clicks anywhere outside of the modal, close it
+	window.onclick = function (event) {
+		if (event.target == modal) {
+			modal.style.display = "none";
+		}
+	};
+}

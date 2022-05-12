@@ -141,21 +141,20 @@
 					><i id="closeModalButton" class="fa-solid fa-xmark"></i
 				></span>
 				<form
-					action="/user/createAccountAdmin"
-					method="POST"
-					enctype="multipart/form-data"
+					id="userForm"
+
 				>
 					<h3>username</h3>
-					<input id="name" type="text" value="" name="name" />
+					<input id="nameField" type="text" value="" name="name" />
 					<h3>email</h3>
-					<input name="email" type="text" value="" />
+					<input id ="emailField" name="email" type="text" value="" />
 					<h3>password</h3>
-					<input name="password" type="password" value="" />
+					<input id="passwordField" name="password" type="password" value="" />
 					<h3>tell us about yourself</h3>
-					<textarea name="about" id="bio" maxlength="280" rows="4"></textarea>
+					<textarea name="about" id="bioField" maxlength="280" rows="4"></textarea>
 					<p id="textarea_remaining_char">280 characters left</p>
 					<div id="submit-container">
-						<input type="submit" value="create account" />
+						<input id="submitButton" type="submit" value="create account" />
 					</div>
 				</form>
 				<p id="errorMsg"></p>
@@ -183,8 +182,6 @@
 				</div>
 			</div>
 		</div>
-
-		<!-- Footer/Tabbars goes here -->
 
 		<!---------------------------->
 		<!-- Client-side Javascript -->

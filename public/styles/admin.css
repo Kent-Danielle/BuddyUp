@@ -185,6 +185,13 @@ th {
 	padding: 0;
 }
 
+#editModalButton {
+	color: var(--secondary-light);
+	background: none;
+	border: none;
+	padding: 0;
+}
+
 /* The Close Button */
 .close {
 	color: var(--accent-light);

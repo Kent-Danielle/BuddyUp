@@ -114,9 +114,10 @@ function tableHTMLBuilder(result, i) {
 			: "<i class='fa-solid fa-xmark'></i>") +
 		//EDIT BTNS COL
 		"</td><td class='edit-column text-center'>" +
-		"<a class='text-dark' href='/user/profile/" +
+		"<button id='editModalButton' value='" +
 		result.name +
-		"'><i class='fa-solid fa-pen-to-square'></i></a>" +
+		"'>" +
+		"<i class='fa-solid fa-pen-to-square'></i></button>" +
 		//DELETE BTNS COL
 		"</td><td class='delete-column text-center'>" +
 		"<button id='confirmModal' value='" +
@@ -139,9 +140,9 @@ function tableHTMLBuilder(result, i) {
 		"</td>" +
 		//EDIT ROW
 		"</tr><tr><th id='mini-edit' class='p-2' scope='col'>Edit</th>" +
-		"<td class='mini-edit-column'><a class='text-dark' href='/user/profile/" +
+		"<td class='mini-edit-column'><button id='editModalButton' value='" +
 		result.name +
-		"'><i class='fa-solid fa-pen-to-square'></i></a></td>" +
+		"'><i class='fa-solid fa-pen-to-square'></i></button></td>" +
 		//DELETE ROW
 		"</tr><tr><th id='mini-delete' class='p-2' scope='col'>Delete</th>" +
 		"<td class='mini-delete-column'><button id='confirmModal' value='" +
@@ -570,3 +571,66 @@ router.get("/delete/:name", async function (req, res) {
 	);
 	res.redirect("/user/admin");
 });
+
+/**
+ * Function for creating a new user from the admin dashboard
+ */
+router.post(
+	"/editAccountAdmin",
+	upload.single("image"),
+	async function (req, res) {
+		try {
+			let oldUser = await User.findOne({
+				name: req.body.oldName,
+			});
+
+			let noEmailChange = req.body.email === oldUser.email;
+
+			let hasSameEmail = await User.findOne({
+				email: req.body.email,
+			});
+
+			let noNameChange = req.body.name === oldUser.name;
+
+			let hasSameUsername = await User.findOne({
+				name: req.body.name,
+			});
+
+			if (
+				(hasSameEmail == null || noEmailChange) &&
+				(hasSameUsername == null || noNameChange)
+			) {
+				let update = await User.updateOne(
+					{ email: oldUser.email },
+					{
+						$set: {
+							name: req.body.name,
+							about: req.body.about,
+							email: req.body.email,
+							password: req.body.password,
+						},
+					}
+				);
+				res.send({
+					success: true
+				});
+			} else {
+				let msg = "";
+				if (hasSameEmail != null) {
+					msg = "Email already exists!";
+				} else {
+					msg = "Username already exists!";
+				}
+				res.send({
+					success: false,
+					error: msg,
+				});
+			}
+		} catch (e) {
+			res.send({
+				success: false,
+				error: "failed to update account. Error: " + e,
+			});
+		}
+	}
+);
