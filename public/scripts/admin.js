@@ -179,6 +179,8 @@ function createEditListener() {
 	let emailField = document.getElementById("emailField");
 	let passwordField = document.getElementById("passwordField");
 	let bioField = document.getElementById("bioField");
+	let isAdmin = document.getElementById("isAdmin");
+	let reasonField = document.getElementById("reason");
 	const closeBtn = document.getElementById("closeModalButton");
 	const submitBtn = document.getElementById("submitButton");
 	const editModalBtn = document.querySelectorAll("#editModalButton");
@@ -207,6 +209,13 @@ function createEditListener() {
 						emailField.value = result.email;
 						passwordField.value = result.password;
 						bioField.value = result.about;
+						isAdmin.checked = result.admin;
+						if(result.reason != null && result.reason != '' && result.reason != undefined && result.admin == false){
+							document.getElementById("reasonTitle").innerHTML = "reason for admin request";
+							reasonField.innerHTML = result.reason;
+						} else {
+							document.getElementById("reasonTitle").innerHTML = "";
+						}
 						editModal.style.setProperty("display", "flex", "important");
 						submitBtn.value = "update account";
 					} else {

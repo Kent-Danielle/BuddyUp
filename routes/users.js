@@ -603,20 +603,20 @@ router.post("/edit/submit", upload.single("image"), async function (req, res) {
 
 module.exports = router;
 
-/**
- * Function for accessing the admin_promotion page
- */
-router.get("/promotion", function (req, res) {
-	if (req.session.loggedIn == true) {
-		res.redirect("/user/profile");
-	} else {
-		let promotion = fs.readFileSync(
-			"./public/html/admin_promotion.html",
-			"utf-8"
-		);
-		res.send(promotion);
-	}
-});
+// /**
+//  * Function for accessing the admin_promotion page
+//  */
+// router.get("/promotion", function (req, res) {
+// 	if (req.session.loggedIn == true) {
+// 		res.redirect("/user/profile");
+// 	} else {
+// 		let promotion = fs.readFileSync(
+// 			"./public/html/admin_promotion.html",
+// 			"utf-8"
+// 		);
+// 		res.send(promotion);
+// 	}
+// });
 
 router.post(
 	"/adminPromotion",
@@ -710,19 +710,22 @@ router.post(
 			});
 			url = upload.secure_url;
 		}
+		let adminValue;
+		if(req.body.admin == "on"){
+			adminValue = true;
+		} else {
+			adminValue = false;
+		}
 		const user = new User({
 			name: req.body.name,
 			email: req.body.email,
 			password: req.body.password,
 			about: req.body.about,
-			admin: false,
+			admin: adminValue,
 			banned: false,
 			promotion: false,
 			img: url,
 		});
-
-		let login = fs.readFileSync("./public/html/admin.html", "utf-8");
-		let loginDOM = new JSDOM(login);
 
 		try {
 			let hasSameEmail = await User.findOne({
@@ -886,9 +889,23 @@ router.post(
 			let oldUser = await User.findOne({
 				name: req.body.oldName,
 			});
-
+			let reasonObj = null;
+			try {
+				reasonObj = await AdminRequest.findOne({
+					name: req.body.oldName,
+				});
+			} catch (error) {
+			}
+			let obj;
 			if (oldUser != null) {
-				res.send(oldUser);
+				obj = oldUser.toObject();
+				// let responseObj = JSON.parse(oldUser);
+				if(reasonObj != null){
+					obj.reason = reasonObj.reason;
+				} else {
+					obj.reason = '';
+				}
+				res.send(obj);
 			} else {
 				res.send({
 					success: false,
@@ -896,6 +913,7 @@ router.post(
 				});
 			}
 		} catch (e) {
+			console.log(e)
 			res.send({
 				success: false,
 				error: "failed to update account. Error: " + e,
