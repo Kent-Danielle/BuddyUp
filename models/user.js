@@ -34,6 +34,10 @@ const userSchema = new mongoose.Schema({
     img: {
         type: String,
         required: false
+    },
+    promotion: {
+        type: Boolean,
+        required: false
     }
 })
 

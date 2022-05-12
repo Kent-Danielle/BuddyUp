@@ -1,18 +1,17 @@
-'use strict';
-var cloudinary = require('cloudinary');
+"use strict";
+var cloudinary = require("cloudinary");
 cloudinary.config({
-	cloud_name: 'buddyup-images',
-	api_key: '673686844465421',
-	api_secret: 'cxk0wwxInP62OzGTo26z2TZSnDU'
+	cloud_name: "buddyup-images",
+	api_key: "673686844465421",
+	api_secret: "cxk0wwxInP62OzGTo26z2TZSnDU",
 });
 const express = require("express");
 const router = express.Router();
 const User = require("../models/user");
+const AdminRequest = require("../models/admin-request");
 const path = require("path");
 const fs = require("fs");
-const {
-	JSDOM
-} = require("jsdom");
+const { JSDOM } = require("jsdom");
 
 //get all users
 router.get("/", function (req, res) {
@@ -40,6 +39,7 @@ router.get("/profile/:name", async function (req, res) {
 			email: req.session.email,
 			admin: true,
 		});
+
 		if (profileName == "self") {
 			if (isAdmin) {
 				res.redirect("/user/admin");
@@ -76,7 +76,6 @@ router.get("/profile/:name", async function (req, res) {
 	}
 });
 
-
 //get all users
 router.get("/login", function (req, res) {
 	// if user logged in, go to their profile page
@@ -92,6 +91,74 @@ router.get("/login", function (req, res) {
 		res.send(login);
 	}
 });
+
+function tableHTMLBuilder(result, i) {
+	var table =
+		"<tr>" +
+		//HEADER
+		"<th class='number-column text-center' scope=\"row\">" +
+		"<button id='more-info'>" +
+		"<i class='fa-solid fa-circle-plus'>" +
+		"</i></button>" +
+		(i + 1) +
+		"</th>" +
+		//NAME COL
+		"<td class='name-column'>" +
+		result.name +
+		//EMAIL COL
+		"</td><td class='email-column'>" +
+		result.email +
+		//ADMIN COL
+		"</td><td class='admin-column text-center'>" +
+		(result.admin
+			? "<i class='fa-solid fa-check'></i>"
+			: "<i class='fa-solid fa-xmark'></i>") +
+		//PROMOTON COL
+		"</td><td class='promotion-column text-center'>" +
+		(result.promotion
+			? "<i class='fa-solid fa-check'></i>"
+			: "<i class='fa-solid fa-xmark'></i>") +
+		//EDIT BTNS COL
+		"</td><td class='edit-column text-center'>" +
+		"<button id='editModalButton' value='" +
+		result.name +
+		"'>" +
+		"<i class='fa-solid fa-pen-to-square'></i></button>" +
+		//DELETE BTNS COL
+		"</td><td class='delete-column text-center'>" +
+		"<button id='confirmModal' value='" +
+		result.name +
+		"'>" +
+		"<i class='fa-solid fa-trash'></i></button>" +
+		"</tr>" +
+		//ROW CONTAINING THE COMPACT TABLE
+		"<tr class='info' id='info-" +
+		(i + 1) +
+		"'><td colspan=4>" +
+		//THE COMPACT TABLE
+		"<table id='nested-table-" +
+		(i + 1) +
+		"'class='nested mx-2'>" +
+		//EMAIL ROW
+		"<tr><th id='mini-email' class='p-2' scope='col'>Email</th>" +
+		"<td class='mini-email-column px-1'>" +
+		result.email +
+		"</td>" +
+		//EDIT ROW
+		"</tr><tr><th id='mini-edit' class='p-2' scope='col'>Edit</th>" +
+		"<td class='mini-edit-column'><button id='editModalButton' value='" +
+		result.name +
+		"'><i class='fa-solid fa-pen-to-square'></i></button></td>" +
+		//DELETE ROW
+		"</tr><tr><th id='mini-delete' class='p-2' scope='col'>Delete</th>" +
+		"<td class='mini-delete-column'><button id='confirmModal' value='" +
+		result.name +
+		"'>" +
+		"<i class='fa-solid fa-trash'></i></button></td>" +
+		"</table></td></tr>";
+
+	return table;
+}
 
 router.get("/admin", function (req, res) {
 	if (req.session.loggedIn) {
@@ -115,26 +182,7 @@ router.get("/admin", function (req, res) {
 							adminPageDOM.window.document.getElementById("tableBody");
 						//const userTable = createTable(result, tableToInsert);
 						for (let i = 0; i < result.length; i++) {
-							tableDiv.innerHTML +=
-								"<tr><th class='number-column text-center' scope=\"row\">" +
-								'<button id="more-info"><i class="fa-solid fa-circle-plus"></i></button>' +
-								(i + 1) +
-								"</th><td class='name-column'>" +
-								result[i].name +
-								"</td><td class='email-column'>" +
-								result[i].email +
-								'</td><td class=\'edit-column text-center\'><a class="text-dark" href="/user/profile/' +
-								result[i].name +
-								'"><i class="fa-solid fa-pen-to-square  "></i></a></td></tr>' +
-								'<tr class="info" id="info-' +
-								(i + 1) +
-								'"><td colspan=2><table id="nested-table-' +
-								(i + 1) +
-								'"class="nested mx-2"><tr><th id="mini-email" class="p-2" scope="col">Email</th><td class=\'mini-email-column px-1\'>' +
-								result[i].email +
-								'</td></tr><tr><th id="mini-edit" class="p-2" scope="col">Edit</th><td class=\'mini-edit-column\'><a class="text-dark" href="/user/profile/' +
-								result[i].name +
-								'"><i class="fa-solid fa-pen-to-square"></i></a></td></tr></table></td></tr>';
+							tableDiv.innerHTML += tableHTMLBuilder(result[i], i);
 						}
 						res.header(
 							"Cache-Control",
@@ -145,12 +193,14 @@ router.get("/admin", function (req, res) {
 				});
 			}
 		});
-
 	} else {
 		res.redirect("/user/login");
 	}
 });
 
+/**
+ * Function for searching in the dashboard
+ */
 router.post("/adminSearch", function (req, res) {
 	res.setHeader("Content-Type", "application/json");
 	let searchOptions = {};
@@ -163,26 +213,7 @@ router.post("/adminSearch", function (req, res) {
 		} else {
 			let tableDiv = "";
 			for (let i = 0; i < result.length; i++) {
-				tableDiv +=
-					"<tr><th class='number-column text-center' scope=\"row\">" +
-					'<button id="more-info"><i class="fa-solid fa-circle-plus"></i></button>' +
-					(i + 1) +
-					"</th><td class='name-column'>" +
-					result[i].name +
-					"</td><td class='email-column'>" +
-					result[i].email +
-					'</td><td class=\'edit-column text-center\'><a class="text-dark" href="/user/profile/' +
-					result[i].name +
-					'"><i class="fa-solid fa-pen-to-square  "></i></a></td></tr>' +
-					'<tr class="info" id="info-' +
-					(i + 1) +
-					'"><td colspan=2><table id="nested-table-' +
-					(i + 1) +
-					'"class="nested mx-2"><tr><th id="mini-email" class="p-2" scope="col">Email</th><td class=\'mini-email-column px-1\'>' +
-					result[i].email +
-					'</td></tr><tr><th id="mini-edit" class="p-2" scope="col">Edit</th><td class=\'mini-edit-column\'><a class="text-dark" href="/user/profile/' +
-					result[i].name +
-					'"><i class="fa-solid fa-pen-to-square"></i></a></td></tr></table></td></tr>';
+				tableDiv += tableHTMLBuilder(result[i], i);
 			}
 			if (tableDiv == "") {
 				res.send("no results");
@@ -193,6 +224,57 @@ router.post("/adminSearch", function (req, res) {
 	});
 });
 
+/**
+ * Function for filtering admins in the dashboard
+ */
+router.post("/adminFilter", function (req, res) {
+	res.setHeader("Content-Type", "application/json");
+	let searchOptions = {};
+	if (req.body.input != null) {
+		searchOptions.admin = req.body.input;
+	}
+	User.find(searchOptions, function (err, result) {
+		if (err) {
+			res.send("Error finding users!");
+		} else {
+			let tableDiv = "";
+			for (let i = 0; i < result.length; i++) {
+				tableDiv += tableHTMLBuilder(result[i], i);
+			}
+			if (tableDiv == "") {
+				res.send("no results");
+			} else {
+				res.send(tableDiv);
+			}
+		}
+	});
+});
+
+/**
+ * Function for filtering admin candidates in the dashboard
+ */
+router.post("/promotionFilter", function (req, res) {
+	res.setHeader("Content-Type", "application/json");
+	let searchOptions = {};
+	if (req.body.input != null) {
+		searchOptions.promotion = req.body.input;
+	}
+	User.find(searchOptions, function (err, result) {
+		if (err) {
+			res.send("Error finding users!");
+		} else {
+			let tableDiv = "";
+			for (let i = 0; i < result.length; i++) {
+				tableDiv += tableHTMLBuilder(result[i], i);
+			}
+			if (tableDiv == "") {
+				res.send("no results");
+			} else {
+				res.send(tableDiv);
+			}
+		}
+	});
+});
 
 router.post("/banUser", function (req, res) {
 	res.setHeader("Content-Type", "application/json");
@@ -208,8 +290,8 @@ router.post("/login", function (req, res) {
 		if (result == null) {
 			res.send({
 				success: "false",
-				message: "account not found"
-			})
+				message: "account not found",
+			});
 		} else {
 			if (result.password == req.body.password) {
 				req.session.loggedIn = true;
@@ -217,14 +299,14 @@ router.post("/login", function (req, res) {
 				req.session.name = result.name;
 				res.send({
 					success: "true",
-					message: "logged in."
-				})
+					message: "logged in.",
+				});
 				// res.redirect("/user/profile");
 			} else {
 				res.send({
 					success: "false",
-					message: "incorrect password"
-				})
+					message: "incorrect password",
+				});
 			}
 		}
 	});
@@ -240,26 +322,23 @@ router.get("/login", function (req, res) {
 	}
 });
 
-
 //new user route
 router.get("/register", function (req, res) {
 	if (req.session.loggedIn == true) {
 		res.redirect("/user/profile");
 	} else {
-		let login = fs.readFileSync("./public/html/register.html", "utf-8");
-		res.send(login);
+		let register = fs.readFileSync("./public/html/register.html", "utf-8");
+		res.send(register);
 	}
 });
 
 var multer = require("multer");
-const {
-	table
-} = require("console");
+const { table } = require("console");
 const user = require("../models/user");
 
 var storage = multer.diskStorage({
 	destination: (req, file, cb) => {
-		cb(null, "./public/data/pfp");
+		cb(null, "./public/images/");
 	},
 	filename: (req, file, cb) => {
 		cb(null, Date.now() + path.extname(file.originalname));
@@ -270,72 +349,77 @@ var upload = multer({
 	storage: storage,
 });
 
-router.post(
-	"/createAccount",
-	upload.single("pfp"),
-	async function (req, res) {
-		try {
-			let hasSameEmail = await User.findOne({
-				email: req.body.email,
-			});
-			let hasSameUsername = await User.findOne({
-				name: req.body.name
-			});
-			if (hasSameEmail == null && hasSameUsername == null) {
-				let url = "/images/profile.png";
-				if(req.file != undefined){
-					let upload = await cloudinary.v2.uploader.upload("./public/data/pfp/" + req.file.filename,
+router.post("/createAccount", upload.single("pfp"), async function (req, res) {
+	let login = fs.readFileSync("./public/html/register.html", "utf-8");
+	let loginDOM = new JSDOM(login);
+
+	try {
+		let hasSameEmail = await User.findOne({
+			email: req.body.email,
+		});
+		let hasSameUsername = await User.findOne({
+			name: req.body.name,
+		});
+		if (hasSameEmail == null && hasSameUsername == null) {
+			let url = "/images/profile.png";
+			if (req.file != undefined) {
+				let upload = await cloudinary.v2.uploader.upload(
+					"./public/images/" + req.file.filename,
 					function (error) {
 						if (error) {
 							res.send({
 								success: "false",
-								message: "failed to upload profile picture"
+								message: "failed to upload profile picture",
 							});
 							return;
 						}
-					})
-					await fs.unlink("./public/data/pfp/" + req.file.filename, function (err) {
+					}
+				);
+				await fs.unlink(
+					"./public/images/" + req.file.filename,
+					function (err) {
 						if (err) {
-							console.log("Failed to remove old image")
-						};
-					});
-					url = upload.url;
-				}
-				const user = new User({
-					name: req.body.name,
-					email: req.body.email,
-					password: req.body.password,
-					about: req.body.about,
-					admin: false,
-					banned: false,
-					img: url
-				});
-				const newUser = await user.save();
-				res.send({
-					success: "true",
-					message: "created account"
-				});
-			} else {
-				let msg = "";
-				if (hasSameEmail != null) {
-					msg = "Email already exists!";
-				} else {
-					msg = "Username already exists!";
-				}
-				res.send({
-					success: "false",
-					message: msg
-				});
+							console.log("Failed to remove old image");
+						}
+					}
+				);
+				url = upload.url;
 			}
-		} catch (err) {
-			console.log(err);
+			const user = new User({
+				name: req.body.name,
+				email: req.body.email,
+				password: req.body.password,
+				about: req.body.about,
+				admin: false,
+				banned: false,
+				promotion: false,
+				img: url,
+			});
+			const newUser = await user.save();
+			res.send({
+				success: "true",
+				message: "created account",
+			});
+		} else {
+			let msg = "";
+			if (hasSameEmail != null) {
+				msg = "Email already exists!";
+			} else {
+				msg = "Username already exists!";
+			}
 			res.send({
 				success: "false",
-				message: "failed to create account"
+				message: msg,
 			});
 		}
+	} catch (err) {
+		console.log(err);
+		res.send({
+			success: "false",
+			message: "failed to create account",
+		});
 	}
-);
+});
 
 router.get("/logout", function (req, res) {
 	if (req.session) {
@@ -352,3 +436,242 @@ router.get("/logout", function (req, res) {
 });
 
 module.exports = router;
+
+/**
+ * Function for accessing the admin_promotion page
+ */
+router.get("/promotion", function (req, res) {
+	if (req.session.loggedIn == true) {
+		res.redirect("/user/profile");
+	} else {
+		let promotion = fs.readFileSync(
+			"./public/html/admin_promotion.html",
+			"utf-8"
+		);
+		res.send(promotion);
+	}
+});
+
+router.post(
+	"/adminPromotion",
+	upload.single("image"),
+	async function (req, res) {
+		const adminReq = new AdminRequest({
+			name: req.body.name,
+			email: req.body.email,
+			reason: req.body.reason,
+		});
+
+		let login = fs.readFileSync("./public/html/admin_promotion.html", "utf-8");
+		let adminPromotionDOM = new JSDOM(login);
+
+		try {
+			let hasSameEmail = await User.findOne({
+				email: req.body.email,
+			});
+			let hasSameUsername = await User.findOne({ name: req.body.name });
+			if (hasSameEmail == null && hasSameUsername == null) {
+				let msg = "";
+				if (hasSameEmail == null) {
+					msg = "Email does not exists!";
+				} else {
+					msg = "Username does not exists!";
+				}
+				adminPromotionDOM.window.document.getElementById("errorMsg").innerHTML =
+					msg;
+				res.send(adminPromotionDOM.serialize());
+			} else {
+				const newAdminReq = await adminReq.save();
+				await User.updateOne(
+					{
+						email: req.body.email,
+					},
+					{
+						$set: { promotion: true },
+					}
+				);
+				res.redirect("/user/login");
+			}
+		} catch (err) {
+			adminPromotionDOM.window.document.getElementById("errorMsg").innerHTML =
+				"Failed to make a request";
+			res.send(adminPromotionDOM.serialize());
+		}
+	}
+);
+
+/**
+ * Function for accessing the admin_promotion page
+ */
+router.get("/promotion", function (req, res) {
+	if (req.session.loggedIn == true) {
+		res.redirect("/user/profile");
+	} else {
+		let promotion = fs.readFileSync(
+			"./public/html/admin_promotion.html",
+			"utf-8"
+		);
+		res.send(promotion);
+	}
+});
+
+/**
+ * Function for creating a new user from the admin dashboard
+ */
+router.post(
+	"/createAccountAdmin",
+	upload.single("image"),
+	async function (req, res) {
+		const user = new User({
+			name: req.body.name,
+			email: req.body.email,
+			password: req.body.password,
+			about: req.body.about,
+			admin: false,
+			banned: false,
+			promotion: false,
+			// img: {
+			//     data: fs.readFileSync('uploads/temp.png'),
+			//     contentType: 'image/png'
+			// }
+		});
+
+		let login = fs.readFileSync("./public/html/admin.html", "utf-8");
+		let loginDOM = new JSDOM(login);
+
+		try {
+			let hasSameEmail = await User.findOne({
+				email: req.body.email,
+			});
+			let hasSameUsername = await User.findOne({ name: req.body.name });
+			if (hasSameEmail == null && hasSameUsername == null) {
+				const newUser = await user.save();
+				res.send({
+					success: true,
+				});
+			} else {
+				let msg = "";
+				if (hasSameEmail != null) {
+					msg = "Email already exists!";
+				} else {
+					msg = "Username already exists!";
+				}
+				res.send({
+					success: false,
+					error: msg,
+				});
+			}
+		} catch (err) {
+			res.send({
+				success: false,
+				error: "failed to update account. Error: " + e,
+			});
+		}
+	}
+);
+
+/**
+ * Function for deleting a new user from the admin dashboard
+ */
+router.get("/delete/:name", async function (req, res) {
+	var profileName = req.params["name"];
+	if (!req.session.loggedIn || req.session.name == req.params["name"]) {
+		res.redirect("/user/login");
+	}
+
+	await User.deleteOne({ name: req.params["name"] });
+	res.header(
+		"Cache-Control",
+		"no-cache, private, no-store, must-revalidate, max-stale=0, post-check=0, pre-check=0"
+	);
+	res.redirect("/user/admin");
+});
+
+/**
+ * Function for creating a new user from the admin dashboard
+ */
+router.post(
+	"/editAccountAdmin",
+	upload.single("image"),
+	async function (req, res) {
+		try {
+			let oldUser = await User.findOne({
+				name: req.body.oldName,
+			});
+
+			let noEmailChange = req.body.email === oldUser.email;
+
+			let hasSameEmail = await User.findOne({
+				email: req.body.email,
+			});
+
+			let noNameChange = req.body.name === oldUser.name;
+
+			let hasSameUsername = await User.findOne({
+				name: req.body.name,
+			});
+
+			if (
+				(hasSameEmail == null || noEmailChange) &&
+				(hasSameUsername == null || noNameChange)
+			) {
+				let update = await User.updateOne(
+					{ email: oldUser.email },
+					{
+						$set: {
+							name: req.body.name,
+							about: req.body.about,
+							email: req.body.email,
+							password: req.body.password,
+						},
+					}
+				);
+				res.send({
+					success: true,
+				});
+			} else {
+				let msg = "";
+				if (hasSameEmail != null) {
+					msg = "Email already exists!";
+				} else {
+					msg = "Username already exists!";
+				}
+				res.send({
+					success: false,
+					error: msg,
+				});
+			}
+		} catch (e) {
+			res.send({
+				success: false,
+				error: "failed to update account. Error: " + e,
+			});
+		}
+	}
+);
+
+router.post(
+	"/loadEditModal",
+	upload.single("image"),
+	async function (req, res) {
+		try {
+			let oldUser = await User.findOne({
+				name: req.body.oldName,
+			});
+
+			if (oldUser != null) {
+				res.send(oldUser);
+			} else {
+				res.send({
+					success: false,
+					error: "Error Occured!",
+				});
+			}
+		} catch (e) {
+			res.send({
+				success: false,
+				error: "failed to update account. Error: " + e,
+			});
+		}
+	}
+);

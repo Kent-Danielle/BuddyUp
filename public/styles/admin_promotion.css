@@ -9,7 +9,6 @@
 	--primary-dark: #262322;
 	--neutral-color: #797979;
 }
-
 /*----------------
  * Element styling 
  *----------------
@@ -25,7 +24,6 @@ body {
 	animation: gradient 30s ease infinite;
 	background-size: 300% 300%;
 }
-
 @keyframes gradient {
 	0% {
 		background-position: bottom left;
@@ -47,18 +45,15 @@ body {
 h3 {
 	margin: 0.5rem 0.2rem;
 }
-
 #grid-container {
 	display: grid;
 	width: 100%;
 	min-height: 100vh !important;
 }
-
 #content {
 	position: relative;
 	grid-area: main;
 }
-
 #form-container {
 	position: absolute;
 	top: 45%;
@@ -79,45 +74,26 @@ h3 {
 	height: 5rem;
 	margin-top: 1rem;
 }
-
 form {
 	margin-top: 1rem;
 	padding: 1.3rem;
 }
-
-form>h2 {
-  margin: 0 0 0.1rem;
+form > h2 {
+	margin: 0 0 0.1rem;
 }
-
-form>h3 {
-  margin: 0.7rem 0 0.1rem;
-  font-variant: small-caps;
+form > h3 {
+	margin: 0.7rem 0 0.1rem;
+	font-variant: small-caps;
 }
-
-input[type="file"] {
-  display: none;
+form > input[type="text"],
+form > input[type="password"] {
+	box-sizing: border-box;
+	border: none;
+	border-bottom: 2px solid var(--accent-light);
+	padding: 0.3rem;
+	width: 100%;
+	background-color: rgba(255, 255, 255, 0);
 }
-
-#file-container{
-  width: 100%;
-  resize: none;
-  background-color: rgba(255, 255, 255, 0);
-  border: 2px solid var(--accent-light);
-  border-radius: 0.5rem;
-  padding: 0.3rem;
-  cursor: pointer;
-}
-
-form>input[type="text"],
-form>input[type="password"] {
-  box-sizing: border-box;
-  border: none;
-  border-bottom: 2px solid var(--accent-light);
-  padding: 0.3rem;
-  width: 100%;
-  background-color: rgba(255, 255, 255, 0);
-}
-
 textarea {
 	width: 100%;
 	resize: none;
@@ -130,7 +106,6 @@ form > #submit-container {
 	justify-content: center;
 	margin: 1rem 0;
 }
-
 input[type="submit"] {
 	box-sizing: border-box;
 	color: white;
@@ -143,24 +118,28 @@ input[type="submit"] {
 	width: 100%;
 	font-variant: small-caps;
 }
-
 #errorMsg {
 	text-align: center;
 }
 form > p {
+	text-align: start;
 	text-align: center;
 	margin: 0;
 }
-
 form a {
 	color: var(--secondary-light);
 }
 #textarea_remaining_char {
-  text-align: start;
 	font-size: 0.8rem;
 	color: var(--primary-dark);
 }
-
+.back-button {
+	position: absolute;
+	top: 3%;
+	left: 3%;
+	font-size: 2rem;
+	color: var(--primary-dark);
+}
 /*----------------
  * Mobile layout
  *----------------
