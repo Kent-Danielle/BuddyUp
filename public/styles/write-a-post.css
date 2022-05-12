@@ -1,0 +1,76 @@
+/*----------------
+ * Color palette
+ *----------------
+ */
+:root {
+	--primary-light: #ffffff;
+	--secondary-light: #1664d6;
+	--accent-light: #dd375b;
+	--primary-dark: #262322;
+	--neutral-color: #797979;
+	--text-black: rgb(0, 0, 0);
+}
+
+#form-logo {
+	display: flex;
+	justify-content: center;
+	height: 5rem;
+	margin-top: 1rem;
+}
+
+body {
+	background: rgb(63, 200, 251);
+	background: linear-gradient(
+		50deg,
+		rgba(63, 200, 251, 0.8) 0%,
+		rgba(252, 70, 215, 0.8) 50%,
+		rgba(252, 225, 70, 0.8) 100%
+	);
+	animation: gradient 60s ease infinite;
+	background-size: 300% 300%;
+}
+
+#errorMsg {
+	margin: 0;
+	margin-top: 1rem;
+	text-align: center;
+	color: var(--accent-light);
+}
+#loadingMsg {
+	margin: 0;
+	margin-top: 1rem;
+	text-align: center;
+	color: var(--accent-dark);
+}
+
+#input-container {
+	background: rgba(255, 255, 255, 0.2) !important;
+	box-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.37) !important;
+	backdrop-filter: blur(3px) !important;
+	-webkit-backdrop-filter: blur(3px) !important;
+	border-radius: 10px !important;
+	border: 1px solid rgba(255, 255, 255, 0.18) !important;
+}
+input[type="file"] {
+	display: none;
+}
+
+#file-container {
+	width: 100%;
+	resize: none;
+	background-color: rgba(255, 255, 255, 0);
+	border: 2px solid var(--accent-light);
+	border-radius: 0.5rem;
+	padding: 0.3rem;
+	cursor: pointer;
+}
+
+form input[type="text"]{
+  color: var(--primary-dark);
+  box-sizing: border-box !important;
+  border: none !important;
+  border-bottom: 2px solid var(--accent-light) !important;
+  padding: 0.3rem !important;
+  width: 100% !important;
+  background-color: rgba(255, 255, 255, 0) !important;
+}

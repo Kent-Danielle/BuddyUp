@@ -7,13 +7,22 @@ cloudinary.config({
 	api_secret: "cxk0wwxInP62OzGTo26z2TZSnDU",
 });
 
+var cloudinary = require('cloudinary');
+cloudinary.config({
+	cloud_name: 'buddyup-images',
+	api_key: '673686844465421',
+	api_secret: 'cxk0wwxInP62OzGTo26z2TZSnDU'
+});
 const express = require("express");
 const router = express.Router();
 const User = require("../models/user");
 const AdminRequest = require("../models/admin-request");
+const Timeline = require("../models/user-timeline");
 const path = require("path");
 const fs = require("fs");
-const { JSDOM } = require("jsdom");
+const {
+	JSDOM
+} = require("jsdom");
 
 //get all users
 router.get("/", function (req, res) {
@@ -69,6 +78,26 @@ router.get("/profile/:name", async function (req, res) {
 		profileDOM.window.document.getElementById("bio-text").innerHTML =
 			currentUser.about;
 		profileDOM.window.document.getElementById("pfp").src = currentUser.img;
+
+
+		let allPosts = await Timeline.find({
+			author: currentUser.name
+		});
+		let stories = '';
+		for(let i = 0; i < allPosts.length; i++){
+			stories += '<div id="story" class="rounded-3 py-1 px-3 my-3">'
+			+'<h4 id="story-title" class="mt-2 mb-0">'
+			+ allPosts[i].title
+			+ '</h4><p id="story-body" class="mb-3">'
+			+ allPosts[i].post
+			+'</p><div id="story-img-container" class="mb-3"><div class="row"><div class="col-12">';
+			if(allPosts[i].img != null){
+				stories += '<div class="card"><div class="card-img"><img src=' + allPosts[i].img + ' alt="" id="story-img" class="card-img"/></div></div>';
+			}
+			stories += '</div></div></div></div>';
+		}
+		profileDOM.window.document.getElementById("lg-stories-container").innerHTML += stories;
+		profileDOM.window.document.getElementById("stories-container").innerHTML += stories;
 		// profileDOM.window.document.getElementById('pfp').src = 'data:image/'+result.img.contentType+';base64,'+result.img.data.toString('base64');
 		res.header(
 			"Cache-Control",
@@ -195,6 +224,7 @@ router.get("/admin", function (req, res) {
 				});
 			}
 		});
+
 	} else {
 		res.redirect("/user/login");
 	}
@@ -335,10 +365,6 @@ router.get("/register", function (req, res) {
 });
 
 var multer = require("multer");
-const { table, profile } = require("console");
-const user = require("../models/user");
-const { reset } = require("nodemon");
-const { db } = require("../models/user");
 
 var storage = multer.diskStorage({
 	destination: (req, file, cb) => {
@@ -839,3 +865,62 @@ router.post(
 		}
 	}
 );
+router.get("/write", async function (req, res) {
+	if (!req.session.loggedIn) {
+		res.redirect("/user/login");
+	} else {
+		let login = fs.readFileSync("./public/html/write-a-post.html", "utf-8");
+		res.send(login);
+	}
+});
+
+var storagePost = multer.diskStorage({
+	destination: (req, file, cb) => {
+		cb(null, "./public/images/");
+	},
+	filename: (req, file, cb) => {
+		cb(null, Date.now() + path.extname(file.originalname));
+	},
+});
+
+var uploadPost = multer({
+	storage: storagePost,
+});
+
+router.post("/write", uploadPost.single("post-image"), async function (req, res) {
+	let upload = null;
+	try {
+		try {
+			upload = await cloudinary.v2.uploader.upload("./public/images/" + req.file.filename,
+				function (error) {
+
+				})
+			await fs.unlink("./public/images/" + req.file.filename, function (err) {
+
+			});
+		} catch (error) {
+			console.log(error)
+		}
+
+		const storytimeline = await new Timeline({
+			author: req.session.name,
+			title: req.body.title,
+			post: req.body.content,
+			img: upload.url
+		});
+
+		await storytimeline.save();
+		res.send({
+			success: "true",
+			message: "failed to upload profile picture"
+		});
+	} catch (err) {
+		res.send({
+			success: "false",
+			message: "failed to create a post"
+		});
+		console.log(err);
+	}
+});
+
+module.exports = router;

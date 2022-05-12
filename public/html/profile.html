@@ -34,7 +34,7 @@
 		/>
 		<!-- Fontawesome -->
 		<script
-			src="https://kit.fontawesome.com/8bb76a9e5f.js"
+			src="https://kit.fontawesome.com/542cfc8e1c.js"
 			crossorigin="anonymous"
 		></script>
 		<!-- Jquery -->
@@ -46,6 +46,7 @@
 		<link rel="stylesheet" href="/styles/styles.css" />
 		<link rel="stylesheet" href="/styles/profile.css" />
 	</head>
+
 	<body>
 		<!-- Body goes here -->
 		<div id="content" class="container-fluid">
@@ -61,7 +62,6 @@
 							>LOGOUT</a
 						>
 						<div id="pfp-container">
-							<img src="/images/profile.png" alt="" id="pfp" />
 							<a
 								class="rounded-3 p-0"
 								href="/user/edit"
@@ -69,8 +69,8 @@
 								role="button"
 								><i class="fa-solid fa-pen-to-square"></i
 							></a>
+							<img src="/images/profile.png" alt="" id="pfp" />
 						</div>
-
 						<div id="info-container">
 							<h2 id="username">Username</h2>
 							<p id="bio-text">
@@ -97,12 +97,13 @@
 						<section id="stories">
 							<h3>Stories</h3>
 							<div id="stories-container">
-								<button
+								<a
 									id="write-btn"
 									class="btn rounded-pill w-100 mx-0 mb-2 text-start"
+									href="/user/write"
 								>
 									Write a story...
-								</button>
+								</a>
 								<!-- Stories placeholder -->
 								<!-- <div id="story" class="rounded-3 py-1 px-3 my-3">
 									<h4 id="story-title" class="mt-2 mb-0">Title</h4>
@@ -135,12 +136,13 @@
 					</div>
 				</div>
 				<div id="lg-stories-container" class="col-lg-8 pt-3">
-					<button
+					<a
 						id="write-btn"
 						class="btn rounded-pill w-100 mx-0 mb-2 text-start"
+						href="/user/write"
 					>
 						Write a story...
-					</button>
+					</a>
 					<!-- Stories placeholder -->
 					<!-- <div id="story" class="rounded-3 py-1 px-3 my-3">
 						<h4 id="story-title" class="mt-2 mb-0">Title</h4>
@@ -171,8 +173,6 @@
 				</div>
 			</div>
 		</div>
-
-		<!-- Edit Modal goes here -->
 
 		<!---------------------------->
 		<!-- Client-side Javascript -->
