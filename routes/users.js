@@ -36,27 +36,36 @@ router.get("/profile/:name", async function (req, res) {
 	if (!req.session.loggedIn) {
 		res.redirect("/user/login");
 	} else {
-		let currentUser = await User.findOne({
-			email: req.session.email,
-		});
+		let currentUser;
+		let isAdmin;
+		try {
+			currentUser = await User.findOne({
+				email: req.session.email,
+			});
 
-		let isAdmin = await User.findOne({
-			email: req.session.email,
-			admin: true,
-		});
-
+			isAdmin = await User.findOne({
+				email: req.session.email,
+				admin: true,
+			});
+		} catch (error) {
+			return;
+		}
 		if (profileName == "self") {
 			if (isAdmin) {
 				res.redirect("/user/admin");
 				return;
 			}
 		} else {
-			if (isAdmin) {
-				currentUser = await User.findOne({
-					name: profileName,
-				});
-			} else {
-				res.redirect("/user/profile/self");
+			try {
+				if (isAdmin) {
+					currentUser = await User.findOne({
+						name: profileName,
+					});
+				} else {
+					res.redirect("/user/profile/self");
+					return;
+				}
+			} catch (error) {
 				return;
 			}
 		}
@@ -73,19 +82,24 @@ router.get("/profile/:name", async function (req, res) {
 			currentUser.about;
 		profileDOM.window.document.getElementById("pfp").src = currentUser.img;
 
+		let allPosts;
+		try {
+			allPosts = await Timeline.find({
+				author: currentUser.name
+			});
+		} catch (error) {
+			return;
+		}
 
-		let allPosts = await Timeline.find({
-			author: currentUser.name
-		});
 		let stories = '';
-		for(let i = 0; i < allPosts.length; i++){
-			stories += '<div id="story" class="rounded-3 py-1 px-3 my-3">'
-			+'<h4 id="story-title" class="mt-2 mb-0">'
-			+ allPosts[i].title
-			+ '</h4><p id="story-body" class="mb-3">'
-			+ allPosts[i].post
-			+'</p><div id="story-img-container" class="mb-3"><div class="row"><div class="col-12">';
-			if(allPosts[i].img != null){
+		for (let i = 0; i < allPosts.length; i++) {
+			stories += '<div id="story" class="rounded-3 py-1 px-3 my-3">' +
+				'<h4 id="story-title" class="mt-2 mb-0">' +
+				allPosts[i].title +
+				'</h4><p id="story-body" class="mb-3">' +
+				allPosts[i].post +
+				'</p><div id="story-img-container" class="mb-3"><div class="row"><div class="col-12">';
+			if (allPosts[i].img != null) {
 				stories += '<div class="card"><div class="card-img"><img src=' + allPosts[i].img + ' alt="" id="story-img" class="card-img"/></div></div>';
 			}
 			stories += '</div></div></div></div>';
@@ -135,14 +149,14 @@ function tableHTMLBuilder(result, i) {
 		result.email +
 		//ADMIN COL
 		"</td><td class='admin-column text-center'>" +
-		(result.admin
-			? "<i class='fa-solid fa-check'></i>"
-			: "<i class='fa-solid fa-xmark'></i>") +
+		(result.admin ?
+			"<i class='fa-solid fa-check'></i>" :
+			"<i class='fa-solid fa-xmark'></i>") +
 		//PROMOTON COL
 		"</td><td class='promotion-column text-center'>" +
-		(result.promotion
-			? "<i class='fa-solid fa-check'></i>"
-			: "<i class='fa-solid fa-xmark'></i>") +
+		(result.promotion ?
+			"<i class='fa-solid fa-check'></i>" :
+			"<i class='fa-solid fa-xmark'></i>") +
 		//EDIT BTNS COL
 		"</td><td class='edit-column text-center'>" +
 		"<button id='editModalButton' value='" +
@@ -187,38 +201,41 @@ function tableHTMLBuilder(result, i) {
 
 router.get("/admin", function (req, res) {
 	if (req.session.loggedIn) {
-		User.findOne({
-			email: req.session.email,
-			admin: true,
-		}).then((isAdmin) => {
-			let adminPage = fs.readFileSync("./public/html/admin.html", "utf-8");
-			let adminPageDOM = new JSDOM(adminPage);
-			if (isAdmin == null) {
-				res.redirect("/user/login");
-			} else {
-				User.find({}, function (err, result) {
-					if (err) {
-						adminPageDOM.window.document.getElementById("error").innerHTML =
-							"Error finding all users";
-					} else {
-						adminPageDOM.window.document.getElementById("name").innerHTML =
-							req.session.name;
-						const tableDiv =
-							adminPageDOM.window.document.getElementById("tableBody");
-						//const userTable = createTable(result, tableToInsert);
-						for (let i = 0; i < result.length; i++) {
-							tableDiv.innerHTML += tableHTMLBuilder(result[i], i);
+		try {
+			User.findOne({
+				email: req.session.email,
+				admin: true,
+			}).then((isAdmin) => {
+				let adminPage = fs.readFileSync("./public/html/admin.html", "utf-8");
+				let adminPageDOM = new JSDOM(adminPage);
+				if (isAdmin == null) {
+					res.redirect("/user/login");
+				} else {
+					User.find({}, function (err, result) {
+						if (err) {
+							adminPageDOM.window.document.getElementById("error").innerHTML =
+								"Error finding all users";
+						} else {
+							adminPageDOM.window.document.getElementById("name").innerHTML =
+								req.session.name;
+							const tableDiv =
+								adminPageDOM.window.document.getElementById("tableBody");
+							//const userTable = createTable(result, tableToInsert);
+							for (let i = 0; i < result.length; i++) {
+								tableDiv.innerHTML += tableHTMLBuilder(result[i], i);
+							}
+							res.header(
+								"Cache-Control",
+								"no-cache, private, no-store, must-revalidate, max-stale=0, post-check=0, pre-check=0"
+							);
+							res.send(adminPageDOM.serialize());
 						}
-						res.header(
-							"Cache-Control",
-							"no-cache, private, no-store, must-revalidate, max-stale=0, post-check=0, pre-check=0"
-						);
-						res.send(adminPageDOM.serialize());
-					}
-				});
-			}
-		});
-
+					});
+				}
+			});
+		} catch (error) {
+			return;
+		}
 	} else {
 		res.redirect("/user/login");
 	}
@@ -233,21 +250,25 @@ router.post("/adminSearch", function (req, res) {
 	if (req.body.input != null || req.body.input != "") {
 		searchOptions.name = new RegExp(req.body.input, "i");
 	}
-	User.find(searchOptions, function (err, result) {
-		if (err) {
-			res.send("Error finding users!");
-		} else {
-			let tableDiv = "";
-			for (let i = 0; i < result.length; i++) {
-				tableDiv += tableHTMLBuilder(result[i], i);
-			}
-			if (tableDiv == "") {
-				res.send("no results");
+	try {
+		User.find(searchOptions, function (err, result) {
+			if (err) {
+				res.send("Error finding users!");
 			} else {
-				res.send(tableDiv);
+				let tableDiv = "";
+				for (let i = 0; i < result.length; i++) {
+					tableDiv += tableHTMLBuilder(result[i], i);
+				}
+				if (tableDiv == "") {
+					res.send("no results");
+				} else {
+					res.send(tableDiv);
+				}
 			}
-		}
-	});
+		});
+	} catch (error) {
+		return;
+	}
 });
 
 /**
@@ -259,21 +280,26 @@ router.post("/adminFilter", function (req, res) {
 	if (req.body.input != null) {
 		searchOptions.admin = req.body.input;
 	}
-	User.find(searchOptions, function (err, result) {
-		if (err) {
-			res.send("Error finding users!");
-		} else {
-			let tableDiv = "";
-			for (let i = 0; i < result.length; i++) {
-				tableDiv += tableHTMLBuilder(result[i], i);
-			}
-			if (tableDiv == "") {
-				res.send("no results");
+	try {
+		User.find(searchOptions, function (err, result) {
+			if (err) {
+				res.send("Error finding users!");
 			} else {
-				res.send(tableDiv);
+				let tableDiv = "";
+				for (let i = 0; i < result.length; i++) {
+					tableDiv += tableHTMLBuilder(result[i], i);
+				}
+				if (tableDiv == "") {
+					res.send("no results");
+				} else {
+					res.send(tableDiv);
+				}
 			}
-		}
-	});
+		});
+	} catch (error) {
+		return;
+	}
+
 });
 
 /**
@@ -285,21 +311,25 @@ router.post("/promotionFilter", function (req, res) {
 	if (req.body.input != null) {
 		searchOptions.promotion = req.body.input;
 	}
-	User.find(searchOptions, function (err, result) {
-		if (err) {
-			res.send("Error finding users!");
-		} else {
-			let tableDiv = "";
-			for (let i = 0; i < result.length; i++) {
-				tableDiv += tableHTMLBuilder(result[i], i);
-			}
-			if (tableDiv == "") {
-				res.send("no results");
+	try {
+		User.find(searchOptions, function (err, result) {
+			if (err) {
+				res.send("Error finding users!");
 			} else {
-				res.send(tableDiv);
+				let tableDiv = "";
+				for (let i = 0; i < result.length; i++) {
+					tableDiv += tableHTMLBuilder(result[i], i);
+				}
+				if (tableDiv == "") {
+					res.send("no results");
+				} else {
+					res.send(tableDiv);
+				}
 			}
-		}
-	});
+		});
+	} catch (error) {
+		return;
+	}
 });
 
 router.post("/banUser", function (req, res) {
@@ -307,11 +337,14 @@ router.post("/banUser", function (req, res) {
 });
 
 router.post("/login", function (req, res) {
-	let login = fs.readFileSync("./public/html/login.html", "utf-8");
-	let loginDOM = new JSDOM(login);
-	let currentUser = User.findOne({
-		email: req.body.email,
-	});
+	let currentUser;
+	try {
+		currentUser = User.findOne({
+			email: req.body.email,
+		});
+	} catch (error) {
+		return;
+	}
 	currentUser.then((result) => {
 		if (result == null) {
 			res.send({
@@ -467,10 +500,14 @@ router.get("/edit", function (req, res) {
 
 // sends the logged in user's information over to the client side
 router.get("/info", async function (req, res) {
-	let currentUser = await User.findOne({
-		email: req.session.email,
-	});
-	res.send(currentUser);
+	try {
+		let currentUser = await User.findOne({
+			email: req.session.email,
+		});
+		res.send(currentUser);
+	} catch (error) {
+		return;
+	}
 });
 
 // updates the users information after editing and then redirects them back to their profile page
@@ -514,30 +551,28 @@ router.post("/edit/submit", upload.single("image"), async function (req, res) {
 				url = upload.secure_url;
 			}
 			if (url != null) {
-				await User.updateOne(
-					{ email: req.session.email },
-					{
-						$set: {
-							img: url,
-							name: req.body.name,
-							about: req.body.about,
-							email: req.body.email,
-							password: req.body.password,
-						},
-					}
-				);
+				await User.updateOne({
+					email: req.session.email
+				}, {
+					$set: {
+						img: url,
+						name: req.body.name,
+						about: req.body.about,
+						email: req.body.email,
+						password: req.body.password,
+					},
+				});
 			} else {
-				await User.updateOne(
-					{ email: req.session.email },
-					{
-						$set: {
-							name: req.body.name,
-							about: req.body.about,
-							email: req.body.email,
-							password: req.body.password,
-						},
-					}
-				);
+				await User.updateOne({
+					email: req.session.email
+				}, {
+					$set: {
+						name: req.body.name,
+						about: req.body.about,
+						email: req.body.email,
+						password: req.body.password,
+					},
+				});
 			}
 			res.send({
 				success: true,
@@ -596,7 +631,9 @@ router.post(
 			let hasSameEmail = await User.findOne({
 				email: req.body.email,
 			});
-			let hasSameUsername = await User.findOne({ name: req.body.name });
+			let hasSameUsername = await User.findOne({
+				name: req.body.name
+			});
 			if (hasSameEmail == null && hasSameUsername == null) {
 				let msg = "";
 				if (hasSameEmail == null) {
@@ -609,14 +646,13 @@ router.post(
 				res.send(adminPromotionDOM.serialize());
 			} else {
 				const newAdminReq = await adminReq.save();
-				await User.updateOne(
-					{
-						email: req.body.email,
+				await User.updateOne({
+					email: req.body.email,
+				}, {
+					$set: {
+						promotion: true
 					},
-					{
-						$set: { promotion: true },
-					}
-				);
+				});
 				res.redirect("/user/login");
 			}
 		} catch (err) {
@@ -688,7 +724,9 @@ router.post(
 			let hasSameEmail = await User.findOne({
 				email: req.body.email,
 			});
-			let hasSameUsername = await User.findOne({ name: req.body.name });
+			let hasSameUsername = await User.findOne({
+				name: req.body.name
+			});
 			if (hasSameEmail == null && hasSameUsername == null) {
 				const newUser = await user.save();
 				res.send({
@@ -719,12 +757,16 @@ router.post(
  * Function for deleting a new user from the admin dashboard
  */
 router.get("/delete/:name", async function (req, res) {
-	var profileName = req.params["name"];
 	if (!req.session.loggedIn || req.session.name == req.params["name"]) {
 		res.redirect("/user/login");
 	}
-
-	await User.deleteOne({ name: req.params["name"] });
+	try {
+		await User.deleteOne({
+			name: req.params["name"]
+		});
+	} catch (error) {
+		return;
+	}
 	res.header(
 		"Cache-Control",
 		"no-cache, private, no-store, must-revalidate, max-stale=0, post-check=0, pre-check=0"
@@ -785,30 +827,28 @@ router.post(
 					url = upload.secure_url;
 				}
 				if (url != null) {
-					await User.updateOne(
-						{ email: oldUser.email },
-						{
-							$set: {
-								img: url,
-								name: req.body.name,
-								about: req.body.about,
-								email: req.body.email,
-								password: req.body.password,
-							},
-						}
-					);
+					await User.updateOne({
+						email: oldUser.email
+					}, {
+						$set: {
+							img: url,
+							name: req.body.name,
+							about: req.body.about,
+							email: req.body.email,
+							password: req.body.password,
+						},
+					});
 				} else {
-					await User.updateOne(
-						{ email: oldUser.email },
-						{
-							$set: {
-								name: req.body.name,
-								about: req.body.about,
-								email: req.body.email,
-								password: req.body.password,
-							},
-						}
-					);
+					await User.updateOne({
+						email: oldUser.email
+					}, {
+						$set: {
+							name: req.body.name,
+							about: req.body.about,
+							email: req.body.email,
+							password: req.body.password,
+						},
+					});
 				}
 				res.send({
 					success: true,
