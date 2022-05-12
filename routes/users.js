@@ -612,7 +612,7 @@ router.post(
 					}
 				);
 				res.send({
-					success: true
+					success: true,
 				});
 			} else {
 				let msg = "";
@@ -624,6 +624,32 @@ router.post(
 				res.send({
 					success: false,
 					error: msg,
+				});
+			}
+		} catch (e) {
+			res.send({
+				success: false,
+				error: "failed to update account. Error: " + e,
+			});
+		}
+	}
+);
+
+router.post(
+	"/loadEditModal",
+	upload.single("image"),
+	async function (req, res) {
+		try {
+			let oldUser = await User.findOne({
+				name: req.body.oldName,
+			});
+
+			if (oldUser != null) {
+				res.send(oldUser);
+			} else {
+				res.send({
+					success: false,
+					error: "Error Occured!",
 				});
 			}
 		} catch (e) {

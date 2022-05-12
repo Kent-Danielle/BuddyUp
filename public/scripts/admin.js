@@ -175,6 +175,10 @@ function createDeleteListener() {
  */
 createEditListener();
 function createEditListener() {
+	let nameField = document.getElementById("nameField");
+	let emailField = document.getElementById("emailField");
+	let passwordField = document.getElementById("passwordField");
+	let bioField = document.getElementById("bioField");
 	const closeBtn = document.getElementById("closeModalButton");
 	const submitBtn = document.getElementById("submitButton");
 	const editModalBtn = document.querySelectorAll("#editModalButton");
@@ -183,9 +187,32 @@ function createEditListener() {
 	for (let i = 0; i < editModalBtn.length; i++) {
 		editModalBtn[i].addEventListener("click", async function (event) {
 			await localStorage.setItem("oldName", editModalBtn[i].value);
-			editModal.style.setProperty("display", "flex", "important");
-			// form.href = "/user/editAccountAdmin";
-			submitBtn.value = "update account";
+			let data = {
+				oldName: editModalBtn[i].value,
+			};
+			fetch("/user/loadEditModal", {
+				method: "POST",
+				headers: {
+					Accept: "application/json",
+					"Content-Type": "application/json",
+				},
+				body: JSON.stringify(data),
+			})
+				.then(function (response) {
+					return response.json();
+				})
+				.then(function (result) {
+					if (result != null) {
+						nameField.value = result.name;
+						emailField.value = result.email;
+						passwordField.value = result.password;
+						bioField.value = result.about;
+						editModal.style.setProperty("display", "flex", "important");
+						submitBtn.value = "update account";
+					} else {
+						document.getElementById("userForm").innerHTML = result.error;
+					}
+				});
 		});
 	}
 
