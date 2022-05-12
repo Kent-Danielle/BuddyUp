@@ -370,7 +370,7 @@ router.post("/write", async function (req, res) {
 		res.redirect("/user/profile/self");
 	} catch (err) {
 		writeDOM.window.document.getElementById("errorMsg").innerHTML =
-			err;
+			"Invalid Input!";
 		res.send(writeDOM.serialize());
 	}
 });
