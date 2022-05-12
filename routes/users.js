@@ -711,7 +711,7 @@ router.post(
 			url = upload.secure_url;
 		}
 		let adminValue;
-		if(req.body.admin == "on"){
+		if (req.body.admin == "on") {
 			adminValue = true;
 		} else {
 			adminValue = false;
@@ -833,6 +833,12 @@ router.post(
 					);
 					url = upload.secure_url;
 				}
+				let adminValue;
+				if (req.body.admin == "on") {
+					adminValue = true;
+				} else {
+					adminValue = false;
+				}
 				if (url != null) {
 					await User.updateOne({
 						email: oldUser.email
@@ -842,6 +848,7 @@ router.post(
 							name: req.body.name,
 							about: req.body.about,
 							email: req.body.email,
+							admin: adminValue,
 							password: req.body.password,
 						},
 					});
@@ -853,6 +860,7 @@ router.post(
 							name: req.body.name,
 							about: req.body.about,
 							email: req.body.email,
+							admin: adminValue,
 							password: req.body.password,
 						},
 					});
@@ -894,13 +902,12 @@ router.post(
 				reasonObj = await AdminRequest.findOne({
 					name: req.body.oldName,
 				});
-			} catch (error) {
-			}
+			} catch (error) {}
 			let obj;
 			if (oldUser != null) {
 				obj = oldUser.toObject();
 				// let responseObj = JSON.parse(oldUser);
-				if(reasonObj != null){
+				if (reasonObj != null) {
 					obj.reason = reasonObj.reason;
 				} else {
 					obj.reason = '';
