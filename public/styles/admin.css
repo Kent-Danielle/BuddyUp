@@ -49,7 +49,7 @@ body {
 		rgba(252, 70, 215, 0.8) 50%,
 		rgba(252, 225, 70, 0.8) 100%
 	);
-	animation: gradient 60s ease infinite;
+	animation: gradient 180s ease infinite;
 	background-size: 300% 300%;
 }
 @keyframes gradient {
