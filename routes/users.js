@@ -86,6 +86,73 @@ router.get("/login", function (req, res) {
 	}
 });
 
+function tableHTMLBuilder(result, i) {
+	var table =
+		"<tr>" +
+		//HEADER
+		"<th class='number-column text-center' scope=\"row\">" +
+		"<button id='more-info'>" +
+		"<i class='fa-solid fa-circle-plus'>" +
+		"</i></button>" +
+		(i + 1) +
+		"</th>" +
+		//NAME COL
+		"<td class='name-column'>" +
+		result.name +
+		//EMAIL COL
+		"</td><td class='email-column'>" +
+		result.email +
+		//ADMIN COL
+		"</td><td class='admin-column text-center'>" +
+		(result.admin
+			? "<i class='fa-solid fa-check'></i>"
+			: "<i class='fa-solid fa-xmark'></i>") +
+		//PROMOTON COL
+		"</td><td class='promotion-column text-center'>" +
+		(result.promotion
+			? "<i class='fa-solid fa-check'></i>"
+			: "<i class='fa-solid fa-xmark'></i>") +
+		//EDIT BTNS COL
+		"</td><td class='edit-column text-center'>" +
+		"<a class='text-dark' href='/user/profile/" +
+		result.name +
+		"'><i class='fa-solid fa-pen-to-square'></i></a>" +
+		//DELETE BTNS COL
+		"</td><td class='delete-column text-center'>" +
+		"<button id='confirmModal' value='" +
+		result.name +
+		"'>" +
+		"<i class='fa-solid fa-trash'></i></button>" +
+		"</tr>" +
+		//ROW CONTAINING THE COMPACT TABLE
+		"<tr class='info' id='info-" +
+		(i + 1) +
+		"'><td colspan=4>" +
+		//THE COMPACT TABLE
+		"<table id='nested-table-" +
+		(i + 1) +
+		"'class='nested mx-2'>" +
+		//EMAIL ROW
+		"<tr><th id='mini-email' class='p-2' scope='col'>Email</th>" +
+		"<td class='mini-email-column px-1'>" +
+		result.email +
+		"</td>" +
+		//EDIT ROW
+		"</tr><tr><th id='mini-edit' class='p-2' scope='col'>Edit</th>" +
+		"<td class='mini-edit-column'><a class='text-dark' href='/user/profile/" +
+		result.name +
+		"'><i class='fa-solid fa-pen-to-square'></i></a></td>" +
+		//DELETE ROW
+		"</tr><tr><th id='mini-delete' class='p-2' scope='col'>Delete</th>" +
+		"<td class='mini-delete-column'><button id='confirmModal' value='" +
+		result.name +
+		"'>" +
+		"<i class='fa-solid fa-trash'></i></button></td>" +
+		"</table></td></tr>";
+
+	return table;
+}
+
 router.get("/admin", function (req, res) {
 	if (req.session.loggedIn) {
 		User.findOne({
@@ -108,68 +175,7 @@ router.get("/admin", function (req, res) {
 							adminPageDOM.window.document.getElementById("tableBody");
 						//const userTable = createTable(result, tableToInsert);
 						for (let i = 0; i < result.length; i++) {
-							tableDiv.innerHTML +=
-								"<tr>" +
-								//HEADER
-								"<th class='number-column text-center' scope=\"row\">" +
-								"<button id='more-info'>" +
-								"<i class='fa-solid fa-circle-plus'>" +
-								"</i></button>" +
-								(i + 1) +
-								"</th>" +
-								//NAME COL
-								"<td class='name-column'>" +
-								result[i].name +
-								//EMAIL COL
-								"</td><td class='email-column'>" +
-								result[i].email +
-								//ADMIN COL
-								"</td><td class='admin-column text-center'>" +
-								(result[i].admin
-									? "<i class='fa-solid fa-check'></i>"
-									: "<i class='fa-solid fa-xmark'></i>") +
-								//PROMOTON COL
-								"</td><td class='promotion-column text-center'>" +
-								(result[i].promotion
-									? "<i class='fa-solid fa-check'></i>"
-									: "<i class='fa-solid fa-xmark'></i>") +
-								//EDIT BTNS COL
-								"</td><td class='edit-column text-center'>" +
-								"<a class='text-dark' href='/user/profile/" +
-								result[i].name +
-								"'><i class='fa-solid fa-pen-to-square'></i></a>" +
-								//DELETE BTNS COL
-								"</td><td class='delete-column text-center'>" +
-								"<button id='confirmModal' value='" +
-								result[i].name +
-								"'>" +
-								"<i class='fa-solid fa-trash'></i></button>" +
-								"</tr>" +
-								//ROW CONTAINING THE COMPACT TABLE
-								"<tr class='info' id='info-" +
-								(i + 1) +
-								"'><td colspan=4>" +
-								//THE COMPACT TABLE
-								"<table id='nested-table-" +
-								(i + 1) +
-								"'class='nested mx-2'>" +
-								//EMAIL ROW
-								"<tr><th id='mini-email' class='p-2' scope='col'>Email</th>" +
-								"<td class='mini-email-column px-1'>" +
-								result[i].email +
-								"</td>" +
-								//EDIT ROW
-								"</tr><tr><th id='mini-edit' class='p-2' scope='col'>Edit</th>" +
-								"<td class='mini-edit-column'><a class='text-dark' href='/user/profile/" +
-								result[i].name +
-								"'><i class='fa-solid fa-pen-to-square'></i></a></td>" +
-								//DELETE ROW
-								"</tr><tr><th id='mini-delete' class='p-2' scope='col'>Delete</th>" +
-								"<td class='mini-delete-column'><button id='confirmModal' value='" +
-								result[i].name +
-								"'>" +
-								"<i class='fa-solid fa-trash'></i></button></td>" +
-								"</table></td></tr>";
+							tableDiv.innerHTML += tableHTMLBuilder(result[i], i);
 						}
 						res.header(
 							"Cache-Control",
@@ -200,68 +206,7 @@ router.post("/adminSearch", function (req, res) {
 		} else {
 			let tableDiv = "";
 			for (let i = 0; i < result.length; i++) {
-				tableDiv +=
-					"<tr>" +
-					//HEADER
-					"<th class='number-column text-center' scope=\"row\">" +
-					"<button id='more-info'>" +
-					"<i class='fa-solid fa-circle-plus'>" +
-					"</i></button>" +
-					(i + 1) +
-					"</th>" +
-					//NAME COL
-					"<td class='name-column'>" +
-					result[i].name +
-					//EMAIL COL
-					"</td><td class='email-column'>" +
-					result[i].email +
-					//ADMIN COL
-					"</td><td class='admin-column text-center'>" +
-					(result[i].admin
-						? "<i class='fa-solid fa-check'></i>"
-						: "<i class='fa-solid fa-xmark'></i>") +
-					//PROMOTON COL
-					"</td><td class='promotion-column text-center'>" +
-					(result[i].promotion
-						? "<i class='fa-solid fa-check'></i>"
-						: "<i class='fa-solid fa-xmark'></i>") +
-					//EDIT BTNS COL
-					"</td><td class='edit-column text-center'>" +
-					"<a class='text-dark' href='/user/profile/" +
-					result[i].name +
-					"'><i class='fa-solid fa-pen-to-square'></i></a>" +
-					//DELETE BTNS COL
-					"</td><td class='delete-column text-center'>" +
-					"<button id='confirmModal' value='" +
-					result[i].name +
-					"'>" +
-					"<i class='fa-solid fa-trash'></i></button>" +
-					"</tr>" +
-					//ROW CONTAINING THE COMPACT TABLE
-					"<tr class='info' id='info-" +
-					(i + 1) +
-					"'><td colspan=4>" +
-					//THE COMPACT TABLE
-					"<table id='nested-table-" +
-					(i + 1) +
-					"'class='nested mx-2'>" +
-					//EMAIL ROW
-					"<tr><th id='mini-email' class='p-2' scope='col'>Email</th>" +
-					"<td class='mini-email-column px-1'>" +
-					result[i].email +
-					"</td>" +
-					//EDIT ROW
-					"</tr><tr><th id='mini-edit' class='p-2' scope='col'>Edit</th>" +
-					"<td class='mini-edit-column'><a class='text-dark' href='/user/profile/" +
-					result[i].name +
-					"'><i class='fa-solid fa-pen-to-square'></i></a></td>" +
-					//DELETE ROW
-					"</tr><tr><th id='mini-delete' class='p-2' scope='col'>Delete</th>" +
-					"<td class='mini-delete-column'><button id='confirmModal' value='" +
-					result[i].name +
-					"'>" +
-					"<i class='fa-solid fa-trash'></i></button></td>" +
-					"</table></td></tr>";
+				tableDiv += tableHTMLBuilder(result[i], i);
 			}
 			if (tableDiv == "") {
 				res.send("no results");
@@ -287,68 +232,7 @@ router.post("/adminFilter", function (req, res) {
 		} else {
 			let tableDiv = "";
 			for (let i = 0; i < result.length; i++) {
-				tableDiv +=
-					"<tr>" +
-					//HEADER
-					"<th class='number-column text-center' scope=\"row\">" +
-					"<button id='more-info'>" +
-					"<i class='fa-solid fa-circle-plus'>" +
-					"</i></button>" +
-					(i + 1) +
-					"</th>" +
-					//NAME COL
-					"<td class='name-column'>" +
-					result[i].name +
-					//EMAIL COL
-					"</td><td class='email-column'>" +
-					result[i].email +
-					//ADMIN COL
-					"</td><td class='admin-column text-center'>" +
-					(result[i].admin
-						? "<i class='fa-solid fa-check'></i>"
-						: "<i class='fa-solid fa-xmark'></i>") +
-					//PROMOTON COL
-					"</td><td class='promotion-column text-center'>" +
-					(result[i].promotion
-						? "<i class='fa-solid fa-check'></i>"
-						: "<i class='fa-solid fa-xmark'></i>") +
-					//EDIT BTNS COL
-					"</td><td class='edit-column text-center'>" +
-					"<a class='text-dark' href='/user/profile/" +
-					result[i].name +
-					"'><i class='fa-solid fa-pen-to-square'></i></a>" +
-					//DELETE BTNS COL
-					"</td><td class='delete-column text-center'>" +
-					"<button id='confirmModal' value='" +
-					result[i].name +
-					"'>" +
-					"<i class='fa-solid fa-trash'></i></button>" +
-					"</tr>" +
-					//ROW CONTAINING THE COMPACT TABLE
-					"<tr class='info' id='info-" +
-					(i + 1) +
-					"'><td colspan=4>" +
-					//THE COMPACT TABLE
-					"<table id='nested-table-" +
-					(i + 1) +
-					"'class='nested mx-2'>" +
-					//EMAIL ROW
-					"<tr><th id='mini-email' class='p-2' scope='col'>Email</th>" +
-					"<td class='mini-email-column px-1'>" +
-					result[i].email +
-					"</td>" +
-					//EDIT ROW
-					"</tr><tr><th id='mini-edit' class='p-2' scope='col'>Edit</th>" +
-					"<td class='mini-edit-column'><a class='text-dark' href='/user/profile/" +
-					result[i].name +
-					"'><i class='fa-solid fa-pen-to-square'></i></a></td>" +
-					//DELETE ROW
-					"</tr><tr><th id='mini-delete' class='p-2' scope='col'>Delete</th>" +
-					"<td class='mini-delete-column'><button id='confirmModal' value='" +
-					result[i].name +
-					"'>" +
-					"<i class='fa-solid fa-trash'></i></button></td>" +
-					"</table></td></tr>";
+				tableDiv += tableHTMLBuilder(result[i], i);
 			}
 			if (tableDiv == "") {
 				res.send("no results");
@@ -374,68 +258,7 @@ router.post("/promotionFilter", function (req, res) {
 		} else {
 			let tableDiv = "";
 			for (let i = 0; i < result.length; i++) {
-				tableDiv +=
-					"<tr>" +
-					//HEADER
-					"<th class='number-column text-center' scope=\"row\">" +
-					"<button id='more-info'>" +
-					"<i class='fa-solid fa-circle-plus'>" +
-					"</i></button>" +
-					(i + 1) +
-					"</th>" +
-					//NAME COL
-					"<td class='name-column'>" +
-					result[i].name +
-					//EMAIL COL
-					"</td><td class='email-column'>" +
-					result[i].email +
-					//ADMIN COL
-					"</td><td class='admin-column text-center'>" +
-					(result[i].admin
-						? "<i class='fa-solid fa-check'></i>"
-						: "<i class='fa-solid fa-xmark'></i>") +
-					//PROMOTON COL
-					"</td><td class='promotion-column text-center'>" +
-					(result[i].promotion
-						? "<i class='fa-solid fa-check'></i>"
-						: "<i class='fa-solid fa-xmark'></i>") +
-					//EDIT BTNS COL
-					"</td><td class='edit-column text-center'>" +
-					"<a class='text-dark' href='/user/profile/" +
-					result[i].name +
-					"'><i class='fa-solid fa-pen-to-square'></i></a>" +
-					//DELETE BTNS COL
-					"</td><td class='delete-column text-center'>" +
-					"<button id='confirmModal' value='" +
-					result[i].name +
-					"'>" +
-					"<i class='fa-solid fa-trash'></i></button>" +
-					"</tr>" +
-					//ROW CONTAINING THE COMPACT TABLE
-					"<tr class='info' id='info-" +
-					(i + 1) +
-					"'><td colspan=4>" +
-					//THE COMPACT TABLE
-					"<table id='nested-table-" +
-					(i + 1) +
-					"'class='nested mx-2'>" +
-					//EMAIL ROW
-					"<tr><th id='mini-email' class='p-2' scope='col'>Email</th>" +
-					"<td class='mini-email-column px-1'>" +
-					result[i].email +
-					"</td>" +
-					//EDIT ROW
-					"</tr><tr><th id='mini-edit' class='p-2' scope='col'>Edit</th>" +
-					"<td class='mini-edit-column'><a class='text-dark' href='/user/profile/" +
-					result[i].name +
-					"'><i class='fa-solid fa-pen-to-square'></i></a></td>" +
-					//DELETE ROW
-					"</tr><tr><th id='mini-delete' class='p-2' scope='col'>Delete</th>" +
-					"<td class='mini-delete-column'><button id='confirmModal' value='" +
-					result[i].name +
-					"'>" +
-					"<i class='fa-solid fa-trash'></i></button></td>" +
-					"</table></td></tr>";
+				tableDiv += tableHTMLBuilder(result[i], i);
 			}
 			if (tableDiv == "") {
 				res.send("no results");
