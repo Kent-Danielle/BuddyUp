@@ -1,4 +1,4 @@
-"use strict";
+'use strict';
 
 /**
  * Function for textarea character counter
@@ -38,10 +38,6 @@ async function loadUserData() {
 	document.getElementById("email").setAttribute("value", userInfo.email);
 	document.getElementById("about").innerText = userInfo.about;
 	document.getElementById("password").value = userInfo.password;
-
-	// games information
-
-	// image information
 
 }
 loadUserData();

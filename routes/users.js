@@ -1,4 +1,4 @@
-"use strict";
+'use strict';
 
 var cloudinary = require("cloudinary");
 cloudinary.config({
@@ -106,7 +106,6 @@ router.get("/profile/:name", async function (req, res) {
 		}
 		profileDOM.window.document.getElementById("lg-stories-container").innerHTML += stories;
 		profileDOM.window.document.getElementById("stories-container").innerHTML += stories;
-		// profileDOM.window.document.getElementById('pfp').src = 'data:image/'+result.img.contentType+';base64,'+result.img.data.toString('base64');
 		res.header(
 			"Cache-Control",
 			"no-cache, private, no-store, must-revalidate, max-stale=0, post-check=0, pre-check=0"
@@ -220,7 +219,6 @@ router.get("/admin", function (req, res) {
 								req.session.name;
 							const tableDiv =
 								adminPageDOM.window.document.getElementById("tableBody");
-							//const userTable = createTable(result, tableToInsert);
 							for (let i = 0; i < result.length; i++) {
 								tableDiv.innerHTML += tableHTMLBuilder(result[i], i);
 							}
@@ -357,7 +355,6 @@ router.post("/login", function (req, res) {
 						success: "true",
 						message: "logged in.",
 					});
-					// res.redirect("/user/profile");
 				} else {
 					res.send({
 						success: "false",
@@ -434,9 +431,7 @@ router.post("/createAccount", upload.single("pfp"), async function (req, res) {
 					}
 				);
 				await fs.unlink("./public/images/" + req.file.filename, function (err) {
-					if (err) {
-						console.log("Failed to remove old image");
-					}
+					
 				});
 				url = upload.secure_url;
 			}
@@ -468,7 +463,6 @@ router.post("/createAccount", upload.single("pfp"), async function (req, res) {
 			});
 		}
 	} catch (err) {
-		console.log(err);
 		res.send({
 			success: "false",
 			message: "failed to create account",
@@ -548,9 +542,7 @@ router.post("/edit/submit", upload.single("image"), async function (req, res) {
 					}
 				);
 				await fs.unlink("./public/images/" + req.file.filename, function (err) {
-					if (err) {
-						console.log("Failed to remove old image");
-					}
+
 				});
 				url = upload.secure_url;
 			}
@@ -585,7 +577,8 @@ router.post("/edit/submit", upload.single("image"), async function (req, res) {
 			let msg = "";
 			if (hasSameEmail != null) {
 				msg = "Email already exists!";
-			} else {
+			} 
+			if (hasSameUsername) {
 				msg = "Username already exists!";
 			}
 			res.send({
@@ -602,21 +595,6 @@ router.post("/edit/submit", upload.single("image"), async function (req, res) {
 });
 
 module.exports = router;
-
-// /**
-//  * Function for accessing the admin_promotion page
-//  */
-// router.get("/promotion", function (req, res) {
-// 	if (req.session.loggedIn == true) {
-// 		res.redirect("/user/profile");
-// 	} else {
-// 		let promotion = fs.readFileSync(
-// 			"./public/html/admin_promotion.html",
-// 			"utf-8"
-// 		);
-// 		res.send(promotion);
-// 	}
-// });
 
 router.post(
 	"/adminPromotion",
@@ -704,9 +682,7 @@ router.post(
 				}
 			);
 			await fs.unlink("./public/images/" + req.file.filename, function (err) {
-				if (err) {
-					console.log("Failed to remove old image");
-				}
+
 			});
 			url = upload.secure_url;
 		}
@@ -826,9 +802,7 @@ router.post(
 					await fs.unlink(
 						"./public/images/" + req.file.filename,
 						function (err) {
-							if (err) {
-								console.log("Failed to remove old image");
-							}
+
 						}
 					);
 					url = upload.secure_url;
@@ -906,7 +880,6 @@ router.post(
 			let obj;
 			if (oldUser != null) {
 				obj = oldUser.toObject();
-				// let responseObj = JSON.parse(oldUser);
 				if (reasonObj != null) {
 					obj.reason = reasonObj.reason;
 				} else {
@@ -920,7 +893,6 @@ router.post(
 				});
 			}
 		} catch (e) {
-			console.log(e)
 			res.send({
 				success: false,
 				error: "failed to update account. Error: " + e,
@@ -962,7 +934,10 @@ router.post("/write", uploadPost.single("post-image"), async function (req, res)
 
 			});
 		} catch (error) {
-			console.log(error)
+			res.send({
+				success: "false",
+				message: "failed to upload profile picture; error: " + error
+			});
 		}
 
 		const storytimeline = await new Timeline({
@@ -982,7 +957,6 @@ router.post("/write", uploadPost.single("post-image"), async function (req, res)
 			success: "false",
 			message: "failed to create a post"
 		});
-		console.log(err);
 	}
 });
 

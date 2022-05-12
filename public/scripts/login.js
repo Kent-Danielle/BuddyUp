@@ -1,4 +1,4 @@
-"use strict";
+'use strict';
 
 document.getElementById("submit").addEventListener("click", (e) => {
 	e.preventDefault();

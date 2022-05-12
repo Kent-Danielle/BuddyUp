@@ -1,3 +1,5 @@
+'use strict';
+
 document
 	.getElementById("file-container")
 	.addEventListener("click", function () {

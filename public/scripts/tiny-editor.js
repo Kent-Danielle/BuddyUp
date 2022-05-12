@@ -1,3 +1,5 @@
+'use strict';
+
 tinymce.init({
     selector: '#tinytext',
     menu: {
