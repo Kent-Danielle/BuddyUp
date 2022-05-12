@@ -1,5 +1,11 @@
 'use strict';
 
+var cloudinary = require('cloudinary');
+cloudinary.config({
+	cloud_name: 'buddyup-images',
+	api_key: '673686844465421',
+	api_secret: 'cxk0wwxInP62OzGTo26z2TZSnDU'
+});
 const express = require("express");
 const router = express.Router();
 const User = require("../models/user");
@@ -266,9 +272,6 @@ router.get("/register", function (req, res) {
 });
 
 var multer = require("multer");
-const {
-	table
-} = require("console");
 const user = require("../models/user");
 
 var storage = multer.diskStorage({
@@ -355,23 +358,53 @@ router.get("/write", async function (req, res) {
 	}
 });
 
-router.post("/write", async function (req, res) {
-	const storytimeline = await new Timeline({
-		author: req.session.name,
-		title: req.body.title,
-		post: req.body.content
-	});
+var storagePost = multer.diskStorage({
+	destination: (req, file, cb) => {
+		cb(null, "./public/images/");
+	},
+	filename: (req, file, cb) => {
+		cb(null, Date.now() + path.extname(file.originalname));
+	},
+});
 
-	let write = fs.readFileSync("./public/html/write-a-post.html", "utf-8");
-	let writeDOM = new JSDOM(write);
+var uploadPost = multer({
+	storage: storagePost,
+});
 
+router.post("/write", uploadPost.single("post-image"), async function (req, res) {
 	try {
+		try {
+			let upload = await cloudinary.v2.uploader.upload("./public/images/" + req.file.filename,
+				function (error) {
+
+				})
+			await fs.unlink("./public/images/" + req.file.filename, function (err) {
+
+			});
+		} catch (error) {
+
+		}
+
+		console.log(req.body.content);
+
+		const storytimeline = await new Timeline({
+			author: req.session.name,
+			title: req.body.title,
+			post: req.body.content,
+			img: upload.url
+		});
+
 		await storytimeline.save();
-		res.redirect("/user/profile/self");
+		res.send({
+			success: "true",
+			message: "failed to upload profile picture"
+		});
 	} catch (err) {
-		writeDOM.window.document.getElementById("errorMsg").innerHTML =
-			"Invalid Input!";
-		res.send(writeDOM.serialize());
+		res.send({
+			success: "false",
+			message: "failed to create a post"
+		});
+		console.log(err);
 	}
 });
 

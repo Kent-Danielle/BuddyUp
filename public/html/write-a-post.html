@@ -15,9 +15,7 @@
   <!--------------------->
   <!-- Other libraries -->
   <!--------------------->
-  <script src="https://cdn.tiny.cloud/1/oxrob69gw3t948i0d091103udvuhqwf47lfvvnbqzjrhd23g/tinymce/6/tinymce.min.js"
-    referrerpolicy="origin">
-  </script>
+  <script src="https://cdn.tiny.cloud/1/awp7bj8gxjha4ff2rlvqz1jfazon1egp5odsewbabgi86odk/tinymce/6/tinymce.min.js" referrerpolicy="origin"></script>
 
   <!-- Bootstrap -->
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet"
@@ -49,7 +47,7 @@
       <div id="form-logo" class="mb-5">
         <img id="logo" src="../images/logo.png" alt="" />
       </div>
-      <form id="input-container" class="p-4" method="POST" action="/user/write">
+      <form id="input-container" class="p-4">
 
         <div id="title-box" class="form-group  mb-5">
           <label for="title" class="  col-form-label">Title</label>
@@ -63,11 +61,11 @@
 
         <div id="add-image" class="form-group mb-5">
           <p>Add Image</p>
-          <input type="file" class="form-control-file" id="add-image">
+          <input type="file" name="post-image" class="form-control-file" id="add-image">
         </div>
 
         <div id="buttons" class="d-flex justify-content-center">
-          <input class="btn btn-primary mx-2" type="submit" value="Post">
+          <input id="submit" class="btn btn-primary mx-2" type="submit" value="Post">
           <input class="btn btn-primary mx-2" type="submit" value="Cancel">
         </div>
 
@@ -84,6 +82,7 @@
   <!-- Client-side Javascript -->
   <!---------------------------->
   <script src="../scripts/tiny-editor.js"></script>
+  <script src="../scripts/write-a-post-error.js"></script>
 </body>
 
 </html>

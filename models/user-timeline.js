@@ -15,7 +15,12 @@ const timelineSchema = new mongoose.Schema({
     post: {
         type: String,
         required: true
-    }
+    },
+    img: {
+        type: String,
+        required: false
+    },
+    
 })
 
 module.exports = mongoose.model('BBY-09-users-timeline', timelineSchema);
