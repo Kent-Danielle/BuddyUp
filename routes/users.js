@@ -367,7 +367,10 @@ router.post("/login", function (req, res) {
 			}
 		});
 	} catch (error) {
-		return;
+		res.send({
+			success: "false",
+			message: "login error",
+		});
 	}
 
 });
