@@ -407,7 +407,7 @@ router.post("/createAccount", upload.single("pfp"), async function (req, res) {
 						console.log("Failed to remove old image");
 					}
 				});
-				url = upload.url;
+				url = upload.secure_url;
 			}
 			const user = new User({
 				name: req.body.name,
@@ -517,7 +517,7 @@ router.post("/edit/submit", upload.single("image"), async function (req, res) {
 						console.log("Failed to remove old image");
 					}
 				});
-				url = upload.url;
+				url = upload.secure_url;
 			}
 			if (url != null) {
 				await User.updateOne(
@@ -674,7 +674,7 @@ router.post(
 					console.log("Failed to remove old image");
 				}
 			});
-			url = upload.url;
+			url = upload.secure_url;
 		}
 		const user = new User({
 			name: req.body.name,
@@ -788,7 +788,7 @@ router.post(
 							}
 						}
 					);
-					url = upload.url;
+					url = upload.secure_url;
 				}
 				if (url != null) {
 					await User.updateOne(
