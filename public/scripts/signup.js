@@ -14,9 +14,9 @@ document.getElementById("submit").addEventListener("click", async (e) => {
 	let form = document.getElementById("form-data");
 	let formData = new FormData(form);
 	fetch("/user/createAccount", {
-		method: "POST",
-		body: formData,
-	})
+			method: "POST",
+			body: formData,
+		})
 		.then(function (result) {
 			return result.json();
 		})

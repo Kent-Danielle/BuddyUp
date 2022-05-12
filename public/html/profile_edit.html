@@ -64,17 +64,17 @@
 						<h3>tell us about yourself</h3>
 						<textarea name="about" id="about" maxlength="280" rows="4"></textarea>
 						<p id="textarea_remaining_char">280 characters left</p>
-						<div class="input-group mb-3">
-							<input type="file" name="image" class="form-control" id="inputGroupFile02" />
-							<label class="input-group-text" for="inputGroupFile02"
-								>Upload</label
-							>
+						<h3>profile picture</h3>
+						<div id="file-container" class="input-group mb-3">
+							<span id="file-label">choose file...</span>
+							<input type="file" name="image" id="pfp" />
 						</div>
 						<div id="submit-container">
 							<input type="submit" id="submit" value="update profile" />
 						</div>
 
 						<p id="errorMsg"></p>
+						<p id="loading"></p>
 					</form>
 				</div>
 			</div>

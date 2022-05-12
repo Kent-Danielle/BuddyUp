@@ -49,6 +49,7 @@ loadUserData();
 
 //use the fetch api to update the user's profile
 document.getElementById("submit").addEventListener("click", function (e) {
+	document.getElementById("loading").innerHTML = "loading...";
 	e.preventDefault();
 	let form = document.getElementById("edit-form");
 	let formData = new FormData(form);
@@ -61,10 +62,22 @@ document.getElementById("submit").addEventListener("click", function (e) {
 			return response.json();
 		})
 		.then(function (result) {
+			document.getElementById("loading").innerHTML - "";
 			if (result.success) {
 				window.location.replace("/user/profile/self");
 			} else {
 				document.getElementById("errorMsg").innerText = result.error;
 			}
 		});
+});
+
+document
+	.getElementById("file-container")
+	.addEventListener("click", function () {
+		document.getElementById("pfp").click();
+	});
+
+document.getElementById("pfp").addEventListener("change", function () {
+	document.getElementById("file-label").innerHTML =
+		document.getElementById("pfp").files[0].name;
 });

@@ -7,12 +7,6 @@ cloudinary.config({
 	api_secret: "cxk0wwxInP62OzGTo26z2TZSnDU",
 });
 
-var cloudinary = require('cloudinary');
-cloudinary.config({
-	cloud_name: 'buddyup-images',
-	api_key: '673686844465421',
-	api_secret: 'cxk0wwxInP62OzGTo26z2TZSnDU'
-});
 const express = require("express");
 const router = express.Router();
 const User = require("../models/user");
