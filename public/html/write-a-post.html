@@ -1,89 +1,117 @@
 <!DOCTYPE html>
 <html lang="en">
+	<head>
+		<title>BuddyUp</title>
+		<meta name="buddyup template" content="BuddyUp" />
+		<link rel="icon" type="image/x-icon" href="/images/favicon.ico" />
 
-<head>
-  <title>BuddyUp</title>
-  <meta name="buddyup template" content="BuddyUp" />
-  <link rel="icon" type="image/x-icon" href="/images/favicon.ico" />
+		<!------------------------>
+		<!-- Required meta tags -->
+		<!------------------------>
+		<meta charset="utf-8" />
+		<meta name="viewport" content="width=device-width, initial-scale=1" />
 
-  <!------------------------>
-  <!-- Required meta tags -->
-  <!------------------------>
-  <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
+		<!--------------------->
+		<!-- Other libraries -->
+		<!--------------------->
+		<script
+			src="https://cdn.tiny.cloud/1/oxrob69gw3t948i0d091103udvuhqwf47lfvvnbqzjrhd23g/tinymce/6/tinymce.min.js"
+			referrerpolicy="origin"
+		></script>
 
-  <!--------------------->
-  <!-- Other libraries -->
-  <!--------------------->
-  <script src="https://cdn.tiny.cloud/1/oxrob69gw3t948i0d091103udvuhqwf47lfvvnbqzjrhd23g/tinymce/6/tinymce.min.js"
-    referrerpolicy="origin">
-  </script>
+		<!-- Bootstrap -->
+		<link
+			href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css"
+			rel="stylesheet"
+			integrity="sha384-EVSTQN3/azprG1Anm3QDgpJLIm9Nao0Yz1ztcQTwFspd3yD65VohhpuuCOmLASjC"
+			crossorigin="anonymous"
+		/>
+		<script
+			src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js"
+			integrity="sha384-MrcW6ZMFYlzcLA8Nl+NtUVF0sA7MsXsP1UyJoMp4YLEuNSfAP+JcXn/tWtIaxVXM"
+			crossorigin="anonymous"
+		></script>
+		<!-- Material Icons -->
+		<link
+			href="https://fonts.googleapis.com/icon?family=Material+Icons"
+			rel="stylesheet"
+		/>
+		<!-- Fontawesome -->
+		<script
+			src="https://kit.fontawesome.com/542cfc8e1c.js"
+			crossorigin="anonymous"
+		></script>
+		<!-- Jquery -->
+		<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
 
-  <!-- Bootstrap -->
-  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet"
-    integrity="sha384-EVSTQN3/azprG1Anm3QDgpJLIm9Nao0Yz1ztcQTwFspd3yD65VohhpuuCOmLASjC" crossorigin="anonymous" />
-  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js"
-    integrity="sha384-MrcW6ZMFYlzcLA8Nl+NtUVF0sA7MsXsP1UyJoMp4YLEuNSfAP+JcXn/tWtIaxVXM" crossorigin="anonymous">
-  </script>
-  <!-- Material Icons -->
-  <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet" />
-  <!-- Fontawesome -->
-  <script src="https://kit.fontawesome.com/542cfc8e1c.js" crossorigin="anonymous"></script>
-  <!-- Jquery -->
-  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+		<!------------------------>
+		<!-- styles of your own -->
+		<!------------------------>
+		<link rel="stylesheet" href="../styles/style.css" />
+		<link rel="stylesheet" href="../styles/write-a-post.css" />
+	</head>
 
-  <!------------------------>
-  <!-- styles of your own -->
-  <!------------------------>
-  <link rel="stylesheet" href="../styles/style.css" />
-  <link rel="stylesheet" href="../styles/write-a-post.css" />
-</head>
+	<body>
+		<div id="grid-container">
+			<!-- Header/Navbar goes here -->
+			<div id="navbar"></div>
 
-<body>
-  <div id="grid-container">
-    <!-- Header/Navbar goes here -->
-    <div id="navbar"></div>
+			<!-- Body goes here -->
+			<div id="content" class="p-2">
+				<div id="form-logo" class="mb-5">
+					<img id="logo" src="../images/logo.png" alt="" />
+				</div>
+				<form
+					id="input-container"
+					class="p-4"
+					method="POST"
+					action="/user/write"
+					enctype="multipart/form-data"
+				>
+					<div id="title-box" class="form-group mb-5">
+						<label for="title" class="col-form-label"></label>
+						<input
+							id="title"
+							name="title"
+							class="form-control"
+							type="text"
+							value="this"
+							name="title"
+							placeholder="Enter Title"
+						/>
+					</div>
 
-    <!-- Body goes here -->
-    <div id="content" class="p-2">
-      <div id="form-logo" class="mb-5">
-        <img id="logo" src="../images/logo.png" alt="" />
-      </div>
-      <form id="input-container" class="p-4" method="POST" action="/user/write" enctype="multipart/form-data">
+					<div id="post-box" class="mb-5 form-group">
+						<label for="post">Post</label>
+						<textarea
+							name="content"
+							class="form-control"
+							id="tinytext"
+							rows="9"
+						></textarea>
+					</div>
 
-        <div id="title-box" class="form-group  mb-5">
-          <label for="title" class="  col-form-label">Title</label>
-          <input id="title" name="title" class="form-control" type="text" value="" name="title" placeholder="Enter Title"/>
-        </div>
+					<div id="add-image" class="form-group mb-5">
+						<p>Add Image</p>
+						<input type="file" class="form-control-file" id="add-image" />
+					</div>
 
-        <div id="post-box" class="mb-5 form-group">
-          <label for="post">Post</label>
-          <textarea name="content" class="form-control" id="tinytext" rows="9"></textarea>
-        </div>
+					<div id="buttons" class="d-flex justify-content-center">
+						<input class="btn btn-primary mx-2" type="submit" value="Post" />
+						<input class="btn btn-primary mx-2" type="submit" value="Cancel" />
+					</div>
 
-        <div id="add-image" class="form-group mb-5">
-          <p>Add Image</p>
-          <input type="file" class="form-control-file" id="add-image">
-        </div>
+					<h4 id="errorMsg"></h4>
+				</form>
+			</div>
 
-        <div id="buttons" class="d-flex justify-content-center">
-          <input class="btn btn-primary mx-2" type="submit" value="Post">
-          <input class="btn btn-primary mx-2" type="submit" value="Cancel">
-        </div>
+			<!-- Footer/Tabbars goes here -->
+			<div id="tabbar"></div>
+		</div>
 
-        <h4 id="errorMsg"></h4>
-
-      </form>
-    </div>
-
-    <!-- Footer/Tabbars goes here -->
-    <div id="tabbar"></div>
-  </div>
-
-  <!---------------------------->
-  <!-- Client-side Javascript -->
-  <!---------------------------->
-  <script src="../scripts/tiny-editor.js"></script>
-</body>
-
+		<!---------------------------->
+		<!-- Client-side Javascript -->
+		<!---------------------------->
+		<script src="../scripts/tiny-editor.js"></script>
+	</body>
 </html>
