@@ -60,10 +60,10 @@ mongoose.connect(process.env.DATABASE_URL, {
 }, async err => {
     console.log('connected to database');
     await User.updateMany({
-        img: "/public/images/profile.png"
+        img: "/images/profile.png"
     }, {
         $set: {
-            img: "/images/profile.png"
+            img: "https://res.cloudinary.com/buddyup-images/image/upload/v1652458876/profile_ek8iwp.png"
         }
     });
 });
