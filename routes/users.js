@@ -575,10 +575,9 @@ router.post("/edit/submit", upload.single("image"), async function (req, res) {
 			});
 		} else {
 			let msg = "";
-			if (hasSameEmail != null) {
+			if (hasSameEmail != null && !noEmailChange) {
 				msg = "Email already exists!";
-			}
-			if (hasSameUsername) {
+			} else if (hasSameUsername && !noNameChange) {
 				msg = "Username already exists!";
 			}
 			res.send({

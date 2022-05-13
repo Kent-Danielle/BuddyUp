@@ -65,12 +65,32 @@ input[type="file"] {
 	cursor: pointer;
 }
 
-form input[type="text"]{
-  color: var(--primary-dark);
-  box-sizing: border-box !important;
-  border: none !important;
-  border-bottom: 2px solid var(--accent-light) !important;
-  padding: 0.3rem !important;
-  width: 100% !important;
-  background-color: rgba(255, 255, 255, 0) !important;
+form input[type="text"] {
+	color: var(--primary-dark);
+	box-sizing: border-box !important;
+	border: none !important;
+	border-bottom: 2px solid var(--accent-light) !important;
+	padding: 0.3rem !important;
+	width: 100% !important;
+	background-color: rgba(255, 255, 255, 0) !important;
+}
+
+/*----------------
+ * Mobile layout
+ *----------------
+ */
+@media only screen and (max-width: 844px) {
+	#input-container {
+		width: 95% !important;
+	}
+}
+
+/*----------------
+ * Desktop layout
+ *----------------
+ */
+@media only screen and (min-width: 845px) {
+	#input-container {
+		width: 75% !important;
+	}
 }

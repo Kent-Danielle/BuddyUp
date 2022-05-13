@@ -58,7 +58,7 @@ document.getElementById("submit").addEventListener("click", function (e) {
 			return response.json();
 		})
 		.then(function (result) {
-			document.getElementById("loading").innerHTML - "";
+			document.getElementById("loading").innerHTML = "";
 			if (result.success) {
 				window.location.replace("/user/profile/self");
 			} else {
