@@ -3,7 +3,7 @@
 	<head>
 		<title>BuddyUp</title>
 		<meta name="buddyup template" content="BuddyUp" />
-		<link rel="icon" href="/images/favicon.png" />
+		<link rel="shortcut icon" href="/images/favicon.png" />
 
 		<!------------------------>
 		<!-- Required meta tags -->
@@ -31,39 +31,54 @@
 		<!------------------------>
 		<!-- styles of your own -->
 		<!------------------------>
-		<link rel="stylesheet" href="../styles/login.css" />
+		<link rel="stylesheet" href="../styles/admin_promotion.css" />
 		<link rel="stylesheet" href="../styles/styles.css" />
 	</head>
 	<body>
 		<div id="grid-container">
 			<div id="content">
 				<div id="form-container">
+					<a class="back-button" onclick="history.back()">
+						<i class="fa fa-angle-left fs-1 text-secondary"></i
+					></a>
 					<div id="form-logo">
 						<img id="logo" src="../images/logo.png" alt="" />
 					</div>
-					<form id="userForm">
-						<h2>Welcome, gamer!</h2>
+					<form
+						action="/user/adminPromotion"
+						method="POST"
+						enctype="multipart/form-data"
+					>
+						<h2>Are you ready to be an admin?</h2>
+						<h3>username</h3>
+						<input id="name" type="text" value="" name="name" />
 						<h3>email</h3>
 						<input name="email" type="text" value="" />
-						<h3>password</h3>
-						<input name="password" type="password" value="" />
+						<h3>tell us why you want to be an admin</h3>
+						<textarea
+							name="reason"
+							id="reason"
+							maxlength="280"
+							rows="4"
+						></textarea>
+						<p id="textarea_remaining_char">280 characters left</p>
 						<div id="submit-container">
-							<input id="submit" type="submit" value="login" />
+							<input type="submit" value="request for promotion" />
 						</div>
 						<p>Need an account? <a href="/user/register">Start here!</a></p>
-						<br />
-						<hr />
-						<br />
-						<p><a href="/user/promotion">Be promoted as an admin here!</a></p>
-						<h4 id="errorMsg"></h4>
+						<p id="errorMsg"></p>
 					</form>
 				</div>
+			</div>
+
+			<div id="img-container">
+				<img alt="" id="header-img" />
 			</div>
 		</div>
 		<!---------------------------->
 		<!-- Client-side Javascript -->
 		<!---------------------------->
 		<script src="../scripts/skeleton.js"></script>
-		<script src="../scripts/login.js"></script>
+		<script src="../scripts/landing.js"></script>
 	</body>
 </html>

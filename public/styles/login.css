@@ -119,6 +119,7 @@ input[type="submit"] {
   color: var(--accent-light);
 }
 form > p {
+  text-align: center;
   margin: 0;
 }
 form a {

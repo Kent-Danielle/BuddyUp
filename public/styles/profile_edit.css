@@ -16,13 +16,11 @@
  */
 body {
 	background: rgb(63, 200, 251);
-	background: linear-gradient(
-		50deg,
-		rgba(63, 200, 251, 1) 0%,
-		rgba(252, 70, 215, 1) 50%,
-		rgba(252, 225, 70, 1) 100%
-	);
-	animation: gradient 30s ease infinite;
+	background: linear-gradient(50deg,
+			rgba(63, 200, 251, 1) 0%,
+			rgba(252, 70, 215, 1) 50%,
+			rgba(252, 225, 70, 1) 100%);
+	animation: gradient 180s ease infinite;
 	background-size: 300% 300%;
 }
 
@@ -30,18 +28,30 @@ body {
 	0% {
 		background-position: bottom left;
 	}
+
 	25% {
 		background-position: top left;
 	}
+
 	50% {
 		background-position: top right;
 	}
+
 	75% {
 		background-position: bottom right;
 	}
+
 	100% {
 		background-position: bottom left;
 	}
+}
+
+.back-button {
+	position: absolute;
+	top: 3%;
+	left: 3%;
+	font-size: 2rem;
+	color: var(--primary-dark);
 }
 
 h3 {
@@ -73,49 +83,42 @@ h3 {
 	border: 1px solid rgba(255, 255, 255, 0.18);
 }
 
-#form-logo {
-	display: flex;
-	justify-content: center;
-	height: 5rem;
-	margin-top: 1rem;
-}
-
 form {
 	margin-top: 1rem;
 	padding: 1.3rem;
 }
 
 form>h2 {
-  margin: 0 0 0.1rem;
+	margin: 0 0 0.1rem;
 }
 
 form>h3 {
-  margin: 0.7rem 0 0.1rem;
-  font-variant: small-caps;
+	margin: 0.7rem 0 0.1rem;
+	font-variant: small-caps;
 }
 
 input[type="file"] {
-  display: none;
+	display: none;
 }
 
-#file-container{
-  width: 100%;
-  resize: none;
-  background-color: rgba(255, 255, 255, 0);
-  border: 2px solid var(--accent-light);
-  border-radius: 0.5rem;
-  padding: 0.3rem;
-  cursor: pointer;
+#file-container {
+	width: 100%;
+	resize: none;
+	background-color: rgba(255, 255, 255, 0);
+	border: 2px solid var(--accent-light);
+	border-radius: 0.5rem;
+	padding: 0.3rem;
+	cursor: pointer;
 }
 
 form>input[type="text"],
 form>input[type="password"] {
-  box-sizing: border-box;
-  border: none;
-  border-bottom: 2px solid var(--accent-light);
-  padding: 0.3rem;
-  width: 100%;
-  background-color: rgba(255, 255, 255, 0);
+	box-sizing: border-box;
+	border: none;
+	border-bottom: 2px solid var(--accent-light);
+	padding: 0.3rem;
+	width: 100%;
+	background-color: rgba(255, 255, 255, 0);
 }
 
 textarea {
@@ -125,7 +128,8 @@ textarea {
 	border: 2px solid var(--accent-light);
 	border-radius: 0.5rem;
 }
-form > #submit-container {
+
+form>#submit-container {
 	display: flex;
 	justify-content: center;
 	margin: 1rem 0;
@@ -147,18 +151,17 @@ input[type="submit"] {
 #errorMsg {
 	text-align: center;
 }
-form > p {
+
+#loading {
 	text-align: center;
+}
+
+form>p {
 	margin: 0;
 }
 
 form a {
 	color: var(--secondary-light);
-}
-#textarea_remaining_char {
-  text-align: start;
-	font-size: 0.8rem;
-	color: var(--primary-dark);
 }
 
 /*----------------
@@ -171,6 +174,9 @@ form a {
 		grid-template-rows: 1fr;
 		grid-template-columns: 100%;
 	}
+	#form-container {
+		width: 95% !important;
+	}
 }
 
 /*----------------
@@ -182,5 +188,8 @@ form a {
 		grid-template-areas: "main";
 		grid-template-rows: 1fr;
 		grid-template-columns: 100%;
+	}
+	#form-container {
+		width: 75% !important;
 	}
 }
