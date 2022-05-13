@@ -138,6 +138,8 @@ requestFilterButton.addEventListener("change", (event) => {
 				table.innerHTML = result;
 				createListener();
 				createEditListener();
+				createAddListener();
+				createDeleteListener();
 			});
 	}
 });
