@@ -207,6 +207,7 @@ function createDeleteListener() {
  */
 createEditListener();
 function createEditListener() {
+	let isAdminLabel = document.getElementById("isAdminLabel");
 	let nameField = document.getElementById("nameField");
 	let emailField = document.getElementById("emailField");
 	let passwordField = document.getElementById("passwordField");
@@ -242,6 +243,9 @@ function createEditListener() {
 						passwordField.value = result.password;
 						bioField.value = result.about;
 						isAdmin.checked = result.admin;
+
+						isAdminLabel.innerText = isAdmin.checked ? "Demote to user" : "Promote to admin";
+
 						if(result.reason != null && result.reason != '' && result.reason != undefined && result.admin == false){
 							document.getElementById("reasonTitle").innerHTML = "reason for admin request";
 							reasonField.innerHTML = result.reason;
@@ -261,6 +265,11 @@ function createEditListener() {
 		editModal.style.setProperty("display", "none", "important");
 	});
 }
+
+// changes the text for the promote an admin button based on wheither they have been demoted or promoted
+document.getElementById("isAdmin").addEventListener("click", function(e) {
+	isAdminLabel.innerText = isAdmin.checked ? "Demote to user" : "Promote to admin";
+});
 
 // use the fetch api to update the user's profile
 document
