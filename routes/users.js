@@ -570,6 +570,7 @@ router.post("/edit/submit", upload.single("image"), async function (req, res) {
 					},
 				});
 			}
+			req.session.email = req.body.email;
 			res.send({
 				success: true,
 			});
