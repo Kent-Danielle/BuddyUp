@@ -28,8 +28,10 @@ searchButton.addEventListener("click", (event) => {
 		.then(function (result) {
 			let table = document.getElementById("tableBody");
 			table.innerHTML = result;
-			createEditListener();
 			createListener();
+			createEditListener();
+			createAddListener();
+			createDeleteListener();
 		});
 });
 
@@ -39,27 +41,53 @@ searchButton.addEventListener("click", (event) => {
 adminFilterButton.addEventListener("change", (event) => {
 	if (adminFilterButton.checked) {
 		requestFilterButton.checked = false;
-	}
-	let data = {
-		input: adminFilterButton.checked,
-	};
-	let result = fetch("/user/adminFilter", {
-		method: "POST",
-		headers: {
-			Accept: "application/json",
-			"Content-Type": "application/json",
-		},
-		body: JSON.stringify(data),
-	})
-		.then(function (response) {
-			return response.text();
+		let data = {
+			input: adminFilterButton.checked,
+		};
+		let result = fetch("/user/adminFilter", {
+			method: "POST",
+			headers: {
+				Accept: "application/json",
+				"Content-Type": "application/json",
+			},
+			body: JSON.stringify(data),
 		})
-		.then(function (result) {
-			let table = document.getElementById("tableBody");
-			table.innerHTML = result;
-			createEditListener();
-			createListener();
-		});
+			.then(function (response) {
+				return response.text();
+			})
+			.then(function (result) {
+				let table = document.getElementById("tableBody");
+				table.innerHTML = result;
+				createListener();
+				createEditListener();
+				createAddListener();
+				createDeleteListener();
+			});
+	} else {
+		let data = {
+			input: "",
+		};
+		let result = fetch("/user/adminSearch", {
+			method: "POST",
+			headers: {
+				Accept: "application/json",
+				"Content-Type": "application/json",
+			},
+			body: JSON.stringify(data),
+		})
+			.then(function (response) {
+				return response.text();
+			})
+			.then(function (result) {
+				let table = document.getElementById("tableBody");
+				table.innerHTML = result;
+				createListener();
+				createEditListener();
+				createAddListener();
+				createDeleteListener();
+			});
+	}
+	
 });
 
 /**
@@ -87,6 +115,8 @@ requestFilterButton.addEventListener("change", (event) => {
 				table.innerHTML = result;
 				createListener();
 				createEditListener();
+				createAddListener();
+				createDeleteListener();
 			});
 	} else {
 		let data = {
