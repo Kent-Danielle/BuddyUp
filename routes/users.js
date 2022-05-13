@@ -393,6 +393,7 @@ router.get("/register", function (req, res) {
 });
 
 var multer = require("multer");
+const { findOne } = require("../models/user");
 
 var storage = multer.diskStorage({
 	destination: (req, file, cb) => {
@@ -807,14 +808,21 @@ router.post(
 					);
 					url = upload.secure_url;
 				}
-				let adminValue = oldUser.admin;
+
+				let adminValue;
 				if (req.body.admin == "on") {
 					adminValue = true;
+					await AdminRequest.deleteOne({email: oldUser.email});
 				} else {
 					if(oldUser.email != req.session.email){
 						adminValue = false;
 					}
 				}
+
+				//check if the user has an admin request
+				let userRequest = await AdminRequest.findOne({email: oldUser.email});
+
+
 				if (url != null) {
 					await User.updateOne({
 						email: oldUser.email
@@ -825,6 +833,7 @@ router.post(
 							about: req.body.about,
 							email: req.body.email,
 							admin: adminValue,
+							promotion: (userRequest != null) ? true : false,
 							password: req.body.password,
 						},
 					});
@@ -837,6 +846,7 @@ router.post(
 							about: req.body.about,
 							email: req.body.email,
 							admin: adminValue,
+							promotion: (userRequest != null) ? true : false,
 							password: req.body.password,
 						},
 					});

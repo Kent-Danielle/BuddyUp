@@ -207,6 +207,7 @@ function createDeleteListener() {
  */
 createEditListener();
 function createEditListener() {
+	const loggedInName = document.getElementById("name").innerText;
 	let isAdminLabel = document.getElementById("isAdminLabel");
 	let nameField = document.getElementById("nameField");
 	let emailField = document.getElementById("emailField");
@@ -245,6 +246,13 @@ function createEditListener() {
 						isAdmin.checked = result.admin;
 
 						isAdminLabel.innerText = isAdmin.checked ? "Demote to user" : "Promote to admin";
+
+						if (editModalBtn[i].value == loggedInName) {
+							isAdmin.disabled = true;
+							isAdminLabel.innerText = "You can't demote yourself"
+						} else {
+							isAdmin.disabled = false;
+						}
 
 						if(result.reason != null && result.reason != '' && result.reason != undefined && result.admin == false){
 							document.getElementById("reasonTitle").innerHTML = "reason for admin request";
