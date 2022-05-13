@@ -431,7 +431,7 @@ router.post("/createAccount", upload.single("pfp"), async function (req, res) {
 					}
 				);
 				await fs.unlink("./public/images/" + req.file.filename, function (err) {
-					
+
 				});
 				url = upload.secure_url;
 			}
@@ -577,7 +577,7 @@ router.post("/edit/submit", upload.single("image"), async function (req, res) {
 			let msg = "";
 			if (hasSameEmail != null) {
 				msg = "Email already exists!";
-			} 
+			}
 			if (hasSameUsername) {
 				msg = "Username already exists!";
 			}
@@ -807,11 +807,13 @@ router.post(
 					);
 					url = upload.secure_url;
 				}
-				let adminValue;
+				let adminValue = oldUser.admin;
 				if (req.body.admin == "on") {
 					adminValue = true;
 				} else {
-					adminValue = false;
+					if(oldUser.email != req.session.email){
+						adminValue = false;
+					}
 				}
 				if (url != null) {
 					await User.updateOne({
