@@ -950,6 +950,7 @@ router.post("/write", uploadPost.single("post-image"), async function (req, res)
 				success: "false",
 				message: "failed to upload profile picture; error: " + error
 			});
+			return;
 		}
 
 		const storytimeline = await new Timeline({
