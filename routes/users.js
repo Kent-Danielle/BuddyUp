@@ -417,7 +417,7 @@ router.post("/createAccount", upload.single("pfp"), async function (req, res) {
 			name: req.body.name,
 		});
 		if (hasSameEmail == null && hasSameUsername == null) {
-			let url = "/images/profile.png";
+			let url = "https://res.cloudinary.com/buddyup-images/image/upload/v1652458876/profile_ek8iwp.png";
 			if (req.file != undefined) {
 				let upload = await cloudinary.v2.uploader.upload(
 					"./public/images/" + req.file.filename,
@@ -668,7 +668,7 @@ router.post(
 	"/createAccountAdmin",
 	upload.single("pfp"),
 	async function (req, res) {
-		let url = "/images/profile.png";
+		let url = "https://res.cloudinary.com/buddyup-images/image/upload/v1652458876/profile_ek8iwp.png";
 		if (req.file != undefined) {
 			let upload = await cloudinary.v2.uploader.upload(
 				"./public/images/" + req.file.filename,
