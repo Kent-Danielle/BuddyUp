@@ -20,6 +20,13 @@ body {
     background-size: 300% 300%;
 }
 
+#error-msg {
+    text-align: center;
+    color: rgb(255, 0, 0);
+    font-size: 150%;
+    
+}
+
 @keyframes gradient {
 	0% {
 		background-position: bottom left;

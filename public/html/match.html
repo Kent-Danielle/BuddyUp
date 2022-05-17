@@ -74,54 +74,82 @@
     // used for the id of each filter
     let count = 0;
 
+    // display the error message noting that you cannot add any more games for a few seconds
+    let errorMessageTimer = null;
+
     const maxGames = 10;
     const enterKey = 13;
     const gameInput = document.getElementById("game-text");
 
-    // current game
-    let gameFilter = null;
-
     // list of games entered 
     let gameFilters = [];
+
+    // helper function to create a game filter span field to be displayed on the DOM
+    function createGameSpan(gameFilter) {
+      let gameSpan = document.createElement("span");
+      gameSpan.classList.add("filter");
+      gameSpan.classList.add("p-2")
+      gameSpan.classList.add("m-2")
+      gameSpan.classList.add("d-inline-block");
+      count++;
+      gameSpan.id = "gamefilter" + count;
+      gameSpan.innerText = gameFilter;
+      return gameSpan;
+    }
+
+    // helper function to display a message saying that the max amount of game filters has been reached
+    function displayMaxGameFiltersMessage() {
+      document.getElementById("error-msg").innerText = "Can only have a max of 10 games";
+        errorMessageTimer = setTimeout(() => {
+        document.getElementById("error-msg").innerText = "";
+      }, 2000);
+    }
+
+    // helper function to create a delete button for a game filter
+    function createGameFilterDeleteButton(gameSpan, gameFilter) {
+      let deleteButton = document.createElement("button");
+      deleteButton.value = gameFilter;
+      deleteButton.innerHTML = "<i class=\"fa-solid fa-x\"></i>";
+      deleteButton.addEventListener("click", function (e) {
+        let name = this.value;
+        let index = gameFilters.indexOf(name.toLowerCase());
+        if (index != -1) {
+          gameFilters.splice(index, 1);
+        }
+        gameSpan.remove();
+        count--;
+        document.getElementById("error-msg").innerText = "";
+      });
+      return deleteButton;
+    }
 
     // adds a game
     gameInput.addEventListener('keypress', function (e) {
       var key = e.which || e.keyCode;
-      if (key == enterKey) {
-        gameFilter = gameInput.value;
-        gameFilters.push(gameFilter);
-        gameInput.value = "";
 
-        // only allow a max of 10 game filters
-        if (count >= maxGames) {
-          document.getElementById("error-msg").innerText = "Can only have a max of 10 games";
+      // if we press enter and don't have an empty string for our filter then try and add it
+      if (key == enterKey && gameInput.value !== "") {
+
+        // if we don't already have this game filter, then proceed
+        if (gameFilters.indexOf(gameInput.value.toLowerCase()) != -1) {
           return;
         }
 
+        // only allow a max of 10 game filters
+        if (count >= maxGames) {
+          displayMaxGameFiltersMessage();
+          return;
+        }
+
+        let gameFilter = gameInput.value;
+        gameFilters.push(gameFilter.toLowerCase());
+        gameInput.value = "";
+
         // add the game filter to be displayed
-        let gameSpan = document.createElement("span");
-        gameSpan.classList.add("filter");
-        gameSpan.classList.add("p-2")
-        gameSpan.classList.add("m-2")
-        gameSpan.classList.add("d-inline-block");
-        count++;
-        gameSpan.id = "gamefilter" + count;
-        gameSpan.innerText = gameFilter;
+        let gameSpan = createGameSpan(gameFilter);
 
         // add a delete button to the game filter
-        let deleteButton = document.createElement("button");
-        deleteButton.value = gameFilter;
-        deleteButton.innerHTML = "<i class=\"fa-solid fa-x\"></i>";
-        deleteButton.addEventListener("click", function (e) {
-          let name = this.value;
-          let index = gameFilters.indexOf(name);
-          if (index != -1) {
-            gameFilters.splice(index, 1);
-          }
-          gameSpan.remove();
-          count--;
-          document.getElementById("error-msg").innerText = "";
-        });
+        let deleteButton = createGameFilterDeleteButton(gameSpan, gameFilter);
         gameSpan.appendChild(deleteButton);
 
         // add the game filter to the DOM
@@ -131,11 +159,19 @@
 
     // submit the data to the server and find a match
     document.getElementById("submit").addEventListener("click", function () {
+      e.preventDefault;
+
+      let data = {};
       if (gameFilters.length == 0) {
-        console.log("no game filters!");
+        data.hasGameFilters = false;
+      } else {
+        data.hasGameFilters = true;
+        data.gameFilters = gameFilters;
       }
-      gameFilters.forEach(game => console.log(game));
+
+      console.log(data);
     });
+
   </script>
 </body>
 
