@@ -50,16 +50,6 @@ body {
 	position: relative;
 }
 
-.delete-post-button {
-	color: var(--accent-light);
-	background: none;
-	border: none;
-	padding: 0;
-	position: absolute;
-	top: 0;
-	right: 25px;
-}
-
 #logout {
 	position: absolute;
 	top: 0.1rem;
@@ -87,10 +77,19 @@ body {
 
 .edit-post-button {
 	position: absolute;
-	right: 0;
-	top: 0;
+	right: 1rem;
+	top: 1rem;
 }
 
+.delete-post-button {
+	color: var(--accent-light);
+	background: none;
+	border: none;
+	padding: 0;
+	position: absolute;
+	top: 1rem;
+	right: 3rem;
+}
 
 #pfp {
 	clip-path: circle();
@@ -142,10 +141,11 @@ body {
  *----------------
  */
 @media only screen and (max-width: 844px) {
+
 	/* #lg-stories-container {
 		display: none !important;
 	} */
-	#lg-stories-container{
+	#lg-stories-container {
 		width: 100%;
 	}
 }
@@ -155,14 +155,16 @@ body {
  *----------------
  */
 @media only screen and (min-width: 845px) {
+
 	/* section#stories {
 		display: none !important;
 	} */
-	#profile-container{
+	#profile-container {
 		position: fixed;
 		width: 33%;
 	}
-	#lg-stories-container{
+
+	#lg-stories-container {
 		overflow: auto;
 		width: 67%;
 	}
