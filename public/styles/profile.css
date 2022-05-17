@@ -135,21 +135,14 @@ body {
 	position: relative;
 }
 
-/* #profile-container{
-	position: fixed;
-}
-#lg-stories-container{
-	float: right;
-	overflow: auto;
-} */
 /*----------------
  * Mobile layout
  *----------------
  */
 @media only screen and (max-width: 844px) {
-	#lg-stories-container {
+	/* #lg-stories-container {
 		display: none !important;
-	}
+	} */
 }
 
 /*----------------
@@ -157,7 +150,15 @@ body {
  *----------------
  */
 @media only screen and (min-width: 845px) {
-	section#stories {
+	/* section#stories {
 		display: none !important;
+	} */
+	#profile-container{
+		position: fixed;
+		width: 33%;
+	}
+	#lg-stories-container{
+		overflow: auto;
+		width: 67%;
 	}
 }

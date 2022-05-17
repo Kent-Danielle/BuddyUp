@@ -98,7 +98,7 @@ router.get("/profile/:name", async function (req, res) {
 			minute: 'numeric'
 		};
 		let stories = '';
-		for (let i = 0; i < allPosts.length; i++) {
+		for (let i = allPosts.length-1; i > 0; i--) {
 			stories += '<div class="story rounded-3 py-1 px-3 my-3">' +
 				'<h4 id="story-title" class="mt-2 mb-0">' +
 				allPosts[i].title +
@@ -125,14 +125,19 @@ router.get("/profile/:name", async function (req, res) {
 					stories += '"><img src=' + allPosts[i].img[j] + ' alt="" class="card-img d-block w-100"/></div>';
 				}
 			}
-			stories += '  </div><button class="carousel-control-prev" type="button" data-bs-target="#imageGroup' +
+			if(allPosts[i].img.length > 1){
+				stories += '</div><button class="carousel-control-prev" type="button" data-bs-target="#imageGroup' +
 				i +
 				'" data-bs-slide="prev"><span class="carousel-control-prev-icon" aria-hidden="true"></span><span class="visually-hidden">Previous</span> </button><button class="carousel-control-next" type="button" data-bs-target="#imageGroup' +
 				i +
-				'" data-bs-slide="next"><span class="carousel-control-next-icon" aria-hidden="true"></span><span class="visually-hidden">Next</span></button></div></div></div></div></div></div></div>';
+				'" data-bs-slide="next"><span class="carousel-control-next-icon" aria-hidden="true"></span><span class="visually-hidden">Next</span></button></div>';
+			} else {
+				stories += '</div>';
+			}
+			stories += '</div></div></div></div></div></div></div>';
 		}
 		profileDOM.window.document.getElementById("lg-stories-container").innerHTML += stories;
-		profileDOM.window.document.getElementById("stories-container").innerHTML += stories;
+		//profileDOM.window.document.getElementById("stories-container").innerHTML += stories;
 		res.header(
 			"Cache-Control",
 			"no-cache, private, no-store, must-revalidate, max-stale=0, post-check=0, pre-check=0"

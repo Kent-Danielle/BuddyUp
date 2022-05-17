@@ -31,22 +31,6 @@ function createListener() {
             });
         });
     }
-    // for(let i = 0; i < editBtn.length; i++){
-    //     editBtn[i].addEventListener("click", async (event) => {
-    //         event.preventDefault();
-    //         let data = {
-    //             id: editBtn[i].value,
-    //         }
-    //         await fetch("/user/editPost", {
-    //             method: "GET",
-    //             headers: {
-    //                 Accept: "application/json",
-    //                 "Content-Type": "application/json",
-    //             },
-    //             body: JSON.stringify(data)
-    //         });
-    //     })
-    // }
 
     cancelBtn.addEventListener("click", (event) => {
         confirmModal.style.setProperty("display", "none", "important");
