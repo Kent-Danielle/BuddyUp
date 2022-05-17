@@ -47,12 +47,36 @@
 		<link rel="stylesheet" href="/styles/chat.css" />
 	</head>
 	<body>
-		<div id="container" class="container-fluid w-100 p-2 p-lg-3 ">
+		<div id="container" class="container-fluid w-100 p-2 p-lg-3">
 			<div id="buttons-container" class="d-inline-block w-100">
-				<button id="exit-chatroom" class="btn-red rounded-3 px-3 py-1 float-start">Exit</button>
-				<button id="find-next" class="btn-blue rounded-3 px-3 py-1 float-end">Find Next</button>
+				<button
+					id="exit-chatroom"
+					class="btn-red rounded-3 px-3 py-1 float-start"
+				>
+					Exit
+				</button>
+				<button id="find-next" class="btn-blue rounded-3 px-3 py-1 float-end">
+					Find Next
+				</button>
 			</div>
-			<div id="message-container" class="rounded-3 p-2"></div>
+			<div id="message-container" class="rounded-3 p-2">
+				<div id="match-filters-container" class="p-3 p-m-1 mt-4 mx-2 rounded-3">
+					<div id="match-filter">
+						<h3 id="match-filter-cta">
+							Find other people that plays the same game as you.
+						</h3>
+						<input
+							type="text"
+							id="game-text"
+							class="rounded-pill mb-3 px-3 py-1"
+							placeholder="Enter Name of Game"
+						/>
+					</div>
+					<div id="error-msg"></div>
+					<div id="gameFiltersContainer" class="rounded-3 p-2 mb-3"></div>
+					<button id="submit" class="btn-blue rounded-3 px-3 py-1">Find Match</button>
+				</div>
+			</div>
 			<form id="message-area" class="d-block mt-3">
 				<input
 					type="text"
