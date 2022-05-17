@@ -20,6 +20,28 @@ body {
     background-size: 300% 300%;
 }
 
+@keyframes gradient {
+	0% {
+		background-position: bottom left;
+	}
+
+	25% {
+		background-position: top left;
+	}
+
+	50% {
+		background-position: top right;
+	}
+
+	75% {
+		background-position: bottom right;
+	}
+
+	100% {
+		background-position: bottom left;
+	}
+}
+
 input[type="text"] {
     text-align: center;
     background: rgba(255, 255, 255, 0.2);
