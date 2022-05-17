@@ -42,7 +42,6 @@ router.get("/profile/:name", async function (req, res) {
 			currentUser = await User.findOne({
 				email: req.session.email,
 			});
-
 			isAdmin = await User.findOne({
 				email: req.session.email,
 				admin: true,
@@ -90,19 +89,44 @@ router.get("/profile/:name", async function (req, res) {
 		} catch (error) {
 			return;
 		}
-
+		let dateOptions = {
+			weekday: 'long',
+			year: 'numeric',
+			month: 'long',
+			day: 'numeric',
+			hour: 'numeric',
+			minute: 'numeric'
+		};
 		let stories = '';
 		for (let i = 0; i < allPosts.length; i++) {
-			stories += '<div id="story" class="rounded-3 py-1 px-3 my-3">' +
+			stories += '<div class="story rounded-3 py-1 px-3 my-3">' +
 				'<h4 id="story-title" class="mt-2 mb-0">' +
 				allPosts[i].title +
-				'</h4><p id="story-body" class="mb-3">' +
+				'</h4>' +
+				'<a class="rounded-3 p-0 edit-post-button" href="/user/edit" role="button"><i ' +
+				'class="fa-solid fa-pen-to-square"></i></a>' +
+				'<button class="delete-post-button" value=""><i class="fa-solid fa-trash"></i></button>' +
+				'<p id="story-date" class="mb-0">' +
+				allPosts[i]._id.getTimestamp().toLocaleString('en-us', dateOptions) +
+				'</p><p id="story-body" class="mb-3">' +
 				allPosts[i].post +
-				'</p><div id="story-img-container" class="mb-3"><div class="row"><div class="col-12">';
+				'</p><div id="story-img-container" class="mb-3"><div class="row"><div class="col-12"><div class="card"><div class="card-img"><div id="imageGroup' +
+				i +
+				'" class="carousel slide" data-bs-ride="carousel" data-bs-interval="false"><div class="carousel-inner">';
 			if (allPosts[i].img != null) {
-				stories += '<div class="card"><div class="card-img"><img src=' + allPosts[i].img + ' alt="" id="story-img" class="card-img"/></div></div>';
+				for (let j = 0; j < allPosts[i].img.length; j++) {
+					stories += '<div class="carousel-item'
+					if (j == 0) {
+						stories += ' active';
+					}
+					stories += '"><img src=' + allPosts[i].img[j] + ' alt="" class="card-img d-block w-100"/></div>';
+				}
 			}
-			stories += '</div></div></div></div>';
+			stories += '  </div><button class="carousel-control-prev" type="button" data-bs-target="#imageGroup' +
+				i +
+				'" data-bs-slide="prev"><span class="carousel-control-prev-icon" aria-hidden="true"></span><span class="visually-hidden">Previous</span> </button><button class="carousel-control-next" type="button" data-bs-target="#imageGroup' +
+				i +
+				'" data-bs-slide="next"><span class="carousel-control-next-icon" aria-hidden="true"></span><span class="visually-hidden">Next</span></button></div></div></div></div></div></div></div>';
 		}
 		profileDOM.window.document.getElementById("lg-stories-container").innerHTML += stories;
 		profileDOM.window.document.getElementById("stories-container").innerHTML += stories;
@@ -393,7 +417,9 @@ router.get("/register", function (req, res) {
 });
 
 var multer = require("multer");
-const { findOne } = require("../models/user");
+const {
+	findOne
+} = require("../models/user");
 
 var storage = multer.diskStorage({
 	destination: (req, file, cb) => {
@@ -547,6 +573,17 @@ router.post("/edit/submit", upload.single("image"), async function (req, res) {
 				});
 				url = upload.secure_url;
 			}
+			try {
+				await Timeline.updateMany({
+					author: req.session.name
+				}, {
+					$set: {
+						author: req.body.name
+					},
+				});
+			} catch (error) {
+				//add log here
+			}
 			if (url != null) {
 				await User.updateOne({
 					email: req.session.email
@@ -572,6 +609,7 @@ router.post("/edit/submit", upload.single("image"), async function (req, res) {
 				});
 			}
 			req.session.email = req.body.email;
+			req.session.name = req.body.name;
 			res.send({
 				success: true,
 			});
@@ -812,15 +850,29 @@ router.post(
 				let adminValue;
 				if (req.body.admin == "on") {
 					adminValue = true;
-					await AdminRequest.deleteOne({email: oldUser.email});
+					await AdminRequest.deleteOne({
+						email: oldUser.email
+					});
 				} else {
-					if(oldUser.email != req.session.email){
+					if (oldUser.email != req.session.email) {
 						adminValue = false;
 					}
 				}
-
+				try {
+					await Timeline.updateMany({
+						author: oldUser.name
+					}, {
+						$set: {
+							author: req.body.name
+						},
+					});
+				} catch (error) {
+					//add log here
+				}
 				//check if the user has an admin request
-				let userRequest = await AdminRequest.findOne({email: oldUser.email});
+				let userRequest = await AdminRequest.findOne({
+					email: oldUser.email
+				});
 
 
 				if (url != null) {
@@ -926,7 +978,7 @@ var storagePost = multer.diskStorage({
 		cb(null, "./public/images/");
 	},
 	filename: (req, file, cb) => {
-		cb(null, Date.now() + path.extname(file.originalname));
+		cb(null, Date.now() + Math.floor(Math.random() * 999) + path.extname(file.originalname));
 	},
 });
 
@@ -934,18 +986,24 @@ var uploadPost = multer({
 	storage: storagePost,
 });
 
-router.post("/write", uploadPost.single("post-image"), async function (req, res) {
-	let upload = null;
+router.post("/write", uploadPost.array("post-image"), async function (req, res) {
+	let upload = [];
 	try {
 		try {
-			upload = await cloudinary.v2.uploader.upload("./public/images/" + req.file.filename,
-				function (error) {
+			for (let i = 0; i < req.files.length; i++) {
+				if (i < 4) {
+					let image = await cloudinary.v2.uploader.upload("./public/images/" + req.files[i].filename,
+						function (error) {
 
-				})
-			await fs.unlink("./public/images/" + req.file.filename, function (err) {
+						});
+					upload[i] = image.secure_url;
+				}
+				await fs.unlink("./public/images/" + req.files[i].filename, function (err) {
 
-			});
+				});
+			}
 		} catch (error) {
+			console.log(error);
 			res.send({
 				success: "false",
 				message: "failed to upload profile picture; error: " + error
@@ -957,7 +1015,7 @@ router.post("/write", uploadPost.single("post-image"), async function (req, res)
 			author: req.session.name,
 			title: req.body.title,
 			post: req.body.content,
-			img: upload.url
+			img: upload
 		});
 
 		await storytimeline.save();

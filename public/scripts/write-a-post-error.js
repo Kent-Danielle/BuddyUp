@@ -1,4 +1,4 @@
-'use strict'
+'use strict';
 
 document.getElementById("submit").addEventListener("click", async (e) => {
 	e.preventDefault();
@@ -21,7 +21,7 @@ document.getElementById("submit").addEventListener("click", async (e) => {
 				window.location.replace("/user/profile");
 			} else {
 				document.getElementById("errorMsg").innerHTML = result.message;
-				document.getElementById("loadinMsg").innerHTML = "";
+				document.getElementById("loadingMsg").innerHTML = "";
 			}
 		});
 });
@@ -38,6 +38,8 @@ document
 	});
 
 document.getElementById("image").addEventListener("change", function () {
+	let count = document.getElementById("image").files.length;
+	count = (count <= 4) ? count : 4;
 	document.getElementById("file-label").innerHTML =
-		document.getElementById("image").files[0].name;
+		count + " files";
 });

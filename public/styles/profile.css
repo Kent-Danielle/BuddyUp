@@ -9,34 +9,38 @@
 	--primary-dark: #262322;
 	--neutral-color: #797979;
 }
+
 /*----------------
  * Element styling 
  *----------------
  */
 body {
 	background: rgb(63, 200, 251);
-	background: linear-gradient(
-		50deg,
-		rgba(63, 200, 251, 0.8) 0%,
-		rgba(252, 70, 215, 0.8) 50%,
-		rgba(252, 225, 70, 0.8) 100%
-	);
+	background: linear-gradient(50deg,
+			rgba(63, 200, 251, 0.8) 0%,
+			rgba(252, 70, 215, 0.8) 50%,
+			rgba(252, 225, 70, 0.8) 100%);
 	animation: gradient 180s ease infinite;
 	background-size: 300% 300%;
 }
+
 @keyframes gradient {
 	0% {
 		background-position: bottom left;
 	}
+
 	25% {
 		background-position: top left;
 	}
+
 	50% {
 		background-position: top right;
 	}
+
 	75% {
 		background-position: bottom right;
 	}
+
 	100% {
 		background-position: bottom left;
 	}
@@ -44,6 +48,16 @@ body {
 
 #top-profile {
 	position: relative;
+}
+
+.delete-post-button {
+	color: var(--accent-light);
+	background: none;
+	border: none;
+	padding: 0;
+	position: absolute;
+	top: 0;
+	right: 25px;
 }
 
 #logout {
@@ -67,8 +81,14 @@ body {
 
 #edit-profile-button {
 	position: absolute;
-  bottom: 0;
+	bottom: 0;
 	right: 0;
+}
+
+.edit-post-button {
+	position: absolute;
+	right: 0;
+	top: 0;
 }
 
 #pfp {
@@ -76,6 +96,7 @@ body {
 	object-fit: cover;
 	width: 100%;
 }
+
 #bottom-profile {
 	background: rgba(255, 255, 255, 0.2);
 	box-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.37);
@@ -84,6 +105,7 @@ body {
 	border-radius: 10px;
 	border: 1px solid rgba(255, 255, 255, 0.18);
 }
+
 #game {
 	color: white;
 	background: rgba(22, 100, 214, 0.71);
@@ -93,6 +115,7 @@ body {
 	-webkit-backdrop-filter: blur(5px);
 	border: 1px solid rgba(22, 100, 214, 0.3);
 }
+
 .write-btn {
 	background: rgba(255, 255, 255, 0.2);
 	box-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.17);
@@ -101,14 +124,17 @@ body {
 	border-radius: 10px;
 	border: 1px solid rgba(255, 255, 255, 0.18);
 }
-#story {
+
+.story {
 	background: rgba(255, 255, 255, 0.2);
 	box-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.17);
 	backdrop-filter: blur(3px);
 	-webkit-backdrop-filter: blur(3px);
 	border-radius: 10px;
 	border: 1px solid rgba(255, 255, 255, 0.18);
+	position: relative;
 }
+
 /*----------------
  * Mobile layout
  *----------------
