@@ -148,9 +148,7 @@ input[type="submit"] {
 	font-variant: small-caps;
 }
 
-#errorMsg {
-	text-align: center;
-}
+
 
 #loading {
 	text-align: center;

@@ -98,7 +98,7 @@ router.get("/profile/:name", async function (req, res) {
 			minute: 'numeric'
 		};
 		let stories = '';
-		for (let i = allPosts.length-1; i > 0; i--) {
+		for (let i = allPosts.length - 1; i >= 0; i--) {
 			stories += '<div class="story rounded-3 py-1 px-3 my-3">' +
 				'<h4 id="story-title" class="mt-2 mb-0">' +
 				allPosts[i].title +
@@ -113,10 +113,11 @@ router.get("/profile/:name", async function (req, res) {
 				allPosts[i]._id.getTimestamp().toLocaleString('en-us', dateOptions) +
 				'</p><p id="story-body" class="mb-3">' +
 				allPosts[i].post +
-				'</p><div id="story-img-container" class="mb-3"><div class="row"><div class="col-12"><div class="card"><div class="card-img"><div id="imageGroup' +
-				i +
-				'" class="carousel slide" data-bs-ride="carousel" data-bs-interval="false"><div class="carousel-inner">';
-			if (allPosts[i].img != null) {
+				'</p>';
+			if (allPosts[i].img[0] != null && allPosts[i].img[0] != undefined) {
+				stories += '<div id="story-img-container" class="mb-3"><div class="row"><div class="col-12"><div class="card"><div class="card-img"><div id="imageGroup' +
+					i +
+					'" class="carousel slide" data-bs-ride="carousel" data-bs-interval="false"><div class="carousel-inner">';
 				for (let j = 0; j < allPosts[i].img.length; j++) {
 					stories += '<div class="carousel-item'
 					if (j == 0) {
@@ -124,17 +125,18 @@ router.get("/profile/:name", async function (req, res) {
 					}
 					stories += '"><img src=' + allPosts[i].img[j] + ' alt="" class="card-img d-block w-100"/></div>';
 				}
+				if (allPosts[i].img.length > 1) {
+					stories += '</div><button class="carousel-control-prev" type="button" data-bs-target="#imageGroup' +
+						i +
+						'" data-bs-slide="prev"><span class="carousel-control-prev-icon" aria-hidden="true"></span><span class="visually-hidden">Previous</span> </button><button class="carousel-control-next" type="button" data-bs-target="#imageGroup' +
+						i +
+						'" data-bs-slide="next"><span class="carousel-control-next-icon" aria-hidden="true"></span><span class="visually-hidden">Next</span></button></div>';
+				} else {
+					stories += '</div>';
+				}
+				stories += '</div></div></div></div></div></div>';
 			}
-			if(allPosts[i].img.length > 1){
-				stories += '</div><button class="carousel-control-prev" type="button" data-bs-target="#imageGroup' +
-				i +
-				'" data-bs-slide="prev"><span class="carousel-control-prev-icon" aria-hidden="true"></span><span class="visually-hidden">Previous</span> </button><button class="carousel-control-next" type="button" data-bs-target="#imageGroup' +
-				i +
-				'" data-bs-slide="next"><span class="carousel-control-next-icon" aria-hidden="true"></span><span class="visually-hidden">Next</span></button></div>';
-			} else {
-				stories += '</div>';
-			}
-			stories += '</div></div></div></div></div></div></div>';
+			stories += '</div>';
 		}
 		profileDOM.window.document.getElementById("lg-stories-container").innerHTML += stories;
 		//profileDOM.window.document.getElementById("stories-container").innerHTML += stories;
@@ -489,6 +491,30 @@ router.post("/createAccount", upload.single("pfp"), async function (req, res) {
 				});
 				url = upload.secure_url;
 			}
+			if (req.body.name.length > 100) {
+				res.send({
+					success: "false",
+					message: "name must be less then 100 characters",
+					type: "name",
+				});
+				return;
+			}
+			if (req.body.email.length > 100) {
+				res.send({
+					success: "false",
+					message: "email must be less then 100 characters",
+					type: "email",
+				});
+				return;
+			}
+			if (req.body.about.length > 280) {
+				res.send({
+					success: "false",
+					message: "bio is too long",
+					type: "about",
+				});
+				return;
+			}
 			const user = new User({
 				name: req.body.name,
 				email: req.body.email,
@@ -505,16 +531,19 @@ router.post("/createAccount", upload.single("pfp"), async function (req, res) {
 				message: "created account",
 			});
 		} else {
-			let msg = "";
 			if (hasSameEmail != null) {
-				msg = "Email already exists!";
+				res.send({
+					success: "false",
+					message: "email already taken",
+					type: "email",
+				});
 			} else {
-				msg = "Username already exists!";
+				res.send({
+					success: "false",
+					message: "username already taken",
+					type: "name",
+				});
 			}
-			res.send({
-				success: "false",
-				message: msg,
-			});
 		}
 	} catch (err) {
 		res.send({
@@ -581,6 +610,30 @@ router.post("/edit/submit", upload.single("image"), async function (req, res) {
 			(hasSameEmail == null || noEmailChange) &&
 			(hasSameUsername == null || noNameChange)
 		) {
+			if (req.body.name.length > 100) {
+				res.send({
+					success: false,
+					message: "name must be less then 100 characters",
+					type: "name",
+				});
+				return;
+			}
+			if (req.body.email.length > 100) {
+				res.send({
+					success: false,
+					message: "email must be less then 100 characters",
+					type: "email",
+				});
+				return;
+			}
+			if (req.body.about.length > 280) {
+				res.send({
+					success: false,
+					message: "bio is too long",
+					type: "about",
+				});
+				return;
+			}
 			let url;
 			if (req.file != undefined) {
 				let upload = await cloudinary.v2.uploader.upload(
@@ -600,6 +653,7 @@ router.post("/edit/submit", upload.single("image"), async function (req, res) {
 				});
 				url = upload.secure_url;
 			}
+
 			try {
 				await Timeline.updateMany({
 					author: req.session.name
@@ -611,6 +665,7 @@ router.post("/edit/submit", upload.single("image"), async function (req, res) {
 			} catch (error) {
 				//add log here
 			}
+
 			if (url != null) {
 				await User.updateOne({
 					email: req.session.email
@@ -641,21 +696,24 @@ router.post("/edit/submit", upload.single("image"), async function (req, res) {
 				success: true,
 			});
 		} else {
-			let msg = "";
 			if (hasSameEmail != null && !noEmailChange) {
-				msg = "Email already exists!";
+				res.send({
+					success: false,
+					error: "email already taken",
+					type: "email",
+				});
 			} else if (hasSameUsername && !noNameChange) {
-				msg = "Username already exists!";
+				res.send({
+					success: false,
+					error: "username already taken",
+					type: "name",
+				});
 			}
-			res.send({
-				success: false,
-				error: msg,
-			});
 		}
 	} catch (e) {
 		res.send({
-			success: false,
-			error: "failed to update account. Error: " + e,
+			success: "false",
+			message: "failed to update account. Error: " + e,
 		});
 	}
 });
@@ -764,6 +822,30 @@ router.post(
 		} else {
 			adminValue = false;
 		}
+		if (req.body.name.length > 100) {
+			res.send({
+				success: false,
+				error: "name must be less then 100 characters",
+				type: "name",
+			});
+			return;
+		}
+		if (req.body.email.length > 100) {
+			res.send({
+				success: false,
+				error: "email must be less then 100 characters",
+				type: "email",
+			});
+			return;
+		}
+		if (req.body.about.length > 280) {
+			res.send({
+				success: false,
+				error: "bio is too long",
+				type: "about",
+			});
+			return;
+		}
 		const user = new User({
 			name: req.body.name,
 			email: req.body.email,
@@ -788,16 +870,19 @@ router.post(
 					success: true,
 				});
 			} else {
-				let msg = "";
 				if (hasSameEmail != null) {
-					msg = "Email already exists!";
+					res.send({
+						success: false,
+						error: "email already taken",
+						type: "email",
+					});
 				} else {
-					msg = "Username already exists!";
+					res.send({
+						success: false,
+						error: "username already taken",
+						type: "name",
+					});
 				}
-				res.send({
-					success: false,
-					error: msg,
-				});
 			}
 		} catch (err) {
 			res.send({
@@ -926,7 +1011,30 @@ router.post(
 					email: oldUser.email
 				});
 
-
+				if (req.body.name.length > 100) {
+					res.send({
+						success: false,
+						error: "name must be less then 100 characters",
+						type: "name",
+					});
+					return;
+				}
+				if (req.body.email.length > 100) {
+					res.send({
+						success: false,
+						error: "email must be less then 100 characters",
+						type: "email",
+					});
+					return;
+				}
+				if (req.body.about.length > 280) {
+					res.send({
+						success: false,
+						error: "bio is too long",
+						type: "about",
+					});
+					return;
+				}
 				if (url != null) {
 					await User.updateOne({
 						email: oldUser.email
@@ -959,16 +1067,19 @@ router.post(
 					success: true,
 				});
 			} else {
-				let msg = "";
 				if (hasSameEmail != null) {
-					msg = "Email already exists!";
+					res.send({
+						success: false,
+						error: "email already taken",
+						type: "email",
+					});
 				} else {
-					msg = "Username already exists!";
+					res.send({
+						success: false,
+						error: "name already taken",
+						type: "name",
+					});
 				}
-				res.send({
-					success: false,
-					error: msg,
-				});
 			}
 		} catch (e) {
 			res.send({
@@ -1046,6 +1157,14 @@ var uploadPost = multer({
 
 router.post("/write", uploadPost.array("post-image"), async function (req, res) {
 	let upload = [];
+	if (req.body.title.length > 200) {
+		res.send({
+			success: "false",
+			message: "title is too long",
+			type: "title",
+		});
+		return;
+	}
 	try {
 		try {
 			for (let i = 0; i < req.files.length; i++) {
@@ -1140,6 +1259,14 @@ router.post("/editPost", uploadPost.array("post-image"), async function (req, re
 	let post = await Timeline.findOne({
 		_id: req.body.id
 	});
+	if (req.body.title.length > 200) {
+		res.send({
+			success: "false",
+			message: "title is too long",
+			type: "title",
+		});
+		return;
+	}
 	let upload = post.img;
 	if (post.author == req.session.name) {
 		try {

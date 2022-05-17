@@ -91,6 +91,7 @@ body {
 	top: 0;
 }
 
+
 #pfp {
 	clip-path: circle();
 	object-fit: cover;
@@ -123,6 +124,7 @@ body {
 	-webkit-backdrop-filter: blur(3px);
 	border-radius: 10px;
 	border: 1px solid rgba(255, 255, 255, 0.18);
+	width: 100%;
 }
 
 .story {
@@ -143,6 +145,9 @@ body {
 	/* #lg-stories-container {
 		display: none !important;
 	} */
+	#lg-stories-container{
+		width: 100%;
+	}
 }
 
 /*----------------

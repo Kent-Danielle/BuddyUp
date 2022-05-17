@@ -21,6 +21,9 @@ document.getElementById("submit").addEventListener("click", async (e) => {
 				window.location.replace("/user/profile");
 			} else {
 				document.getElementById("errorMsg").innerHTML = result.message;
+				if(result.type != null && result.type != undefined){
+					document.getElementById("title").style.backgroundColor = 'var(--accent-light)';
+				}
 				document.getElementById("loadingMsg").innerHTML = "";
 			}
 		});

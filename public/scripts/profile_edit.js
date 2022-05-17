@@ -62,7 +62,10 @@ document.getElementById("submit").addEventListener("click", function (e) {
 			if (result.success) {
 				window.location.replace("/user/profile/self");
 			} else {
-				document.getElementById("errorMsg").innerText = result.error;
+				let inputs = document.querySelectorAll(".inputFields");
+				inputs.forEach((input) => input.style.backgroundColor = "rgba(255, 255, 255, 0)");
+				document.getElementById("errorMsg").innerText = result.message;
+				document.getElementById(result.type).style.backgroundColor = 'var(--accent-light)';
 			}
 		});
 });
