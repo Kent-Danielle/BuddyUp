@@ -105,7 +105,9 @@ router.get("/profile/:name", async function (req, res) {
 				'</h4>' +
 				'<a class="rounded-3 p-0 edit-post-button" href="/user/edit" role="button"><i ' +
 				'class="fa-solid fa-pen-to-square"></i></a>' +
-				'<button class="delete-post-button" value=""><i class="fa-solid fa-trash"></i></button>' +
+				'<button class="delete-post-button" value="'+
+				allPosts[i]._id.valueOf() +
+				'"><i class="fa-solid fa-trash"></i></button>' +
 				'<p id="story-date" class="mb-0">' +
 				allPosts[i]._id.getTimestamp().toLocaleString('en-us', dateOptions) +
 				'</p><p id="story-body" class="mb-3">' +
@@ -1028,6 +1030,18 @@ router.post("/write", uploadPost.array("post-image"), async function (req, res) 
 			success: "false",
 			message: "failed to create a post"
 		});
+	}
+});
+
+router.post("/deletePost/", async function (req, res) {
+	if (!req.session.loggedIn) {
+		res.redirect("/user/login");
+	} else {
+		let post = await Timeline.findOne({_id: req.body.id});
+		if(post.author == req.session.name){
+			await Timeline.deleteOne({_id: req.body.id});
+			res.send("Success");
+		}
 	}
 });
 
