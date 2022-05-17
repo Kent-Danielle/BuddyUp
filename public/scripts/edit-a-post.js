@@ -24,6 +24,9 @@ document.getElementById("submit").addEventListener("click", async (e) => {
 				window.location.replace("/user/profile");
 			} else {
 				document.getElementById("errorMsg").innerHTML = result.message;
+				if(result.type != null && result.type != undefined){
+					document.getElementById("title").style.backgroundColor = 'var(--accent-light)';
+				}
 				document.getElementById("loadingMsg").innerHTML = "";
 			}
 		});
@@ -63,6 +66,5 @@ window.onload = function (){
 	}).then((result) => {
 		document.getElementById("title").setAttribute("value", result.title);
 		tinymce.get("tinytext").setContent(result.post);
-		console.log(result);
 	});
 }
