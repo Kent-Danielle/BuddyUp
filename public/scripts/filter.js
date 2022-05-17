@@ -1,6 +1,6 @@
 // used for the id of each filter
 let count = 0;
-	
+
 // display the error message noting that you cannot add any more games for a few seconds
 let errorMessageTimer = null;
 
@@ -24,7 +24,7 @@ function createGameSpan(gameFilter) {
 // helper function to display a message saying that the max amount of game filters has been reached
 function displayMaxGameFiltersMessage() {
     document.getElementById("error-msg").innerText = "You can only have a max of 10 games";
-        errorMessageTimer = setTimeout(() => {
+    errorMessageTimer = setTimeout(() => {
         document.getElementById("error-msg").innerText = "";
     }, 2000);
 }
@@ -92,6 +92,21 @@ document.getElementById("submit").addEventListener("click", function (e) {
         data.hasGameFilters = true;
         data.gameFilters = gameFilters;
     }
+
+    let result = fetch("/match/findmatch", {
+            method: "POST",
+            headers: {
+                Accept: "application/json",
+                "Content-Type": "application/json",
+            },
+            body: JSON.stringify(data),
+        })
+        .then(function (response) {
+            return response.text();
+        })
+        .then(function (result) {
+            console.log(result);
+        });
 
     console.log(data);
 });

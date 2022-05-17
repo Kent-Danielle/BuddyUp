@@ -5,6 +5,7 @@ const router = express.Router();
 const User = require("../models/user");
 const AdminRequest = require("../models/admin-request");
 const Timeline = require("../models/user-timeline");
+const Rooms = require("../models/chat-room.js");
 const path = require("path");
 const fs = require("fs");
 const {
@@ -28,6 +29,19 @@ router.get("/", function (req, res) {
 		res.redirect("/user/profile");
 	}
 });
+
+router.post("/findmatch", async function (req, res) {
+	console.log(req.body);
+	const chatRoom = new Rooms ({
+		user1: req.session.name,
+		user2: null,
+		filter: req.body.gameFilters
+	});
+
+	await chatRoom.save();
+
+	res.send("Success");
+})
 
 
 module.exports = router;

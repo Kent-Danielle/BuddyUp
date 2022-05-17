@@ -10,7 +10,7 @@ const chatroomSchema = new mongoose.Schema({
     },
     user2: {
         type: String,
-        required: true
+        required: false
     },
     filters: {
         type: Array,
