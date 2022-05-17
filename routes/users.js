@@ -103,9 +103,10 @@ router.get("/profile/:name", async function (req, res) {
 				'<h4 id="story-title" class="mt-2 mb-0">' +
 				allPosts[i].title +
 				'</h4>' +
-				'<a class="rounded-3 p-0 edit-post-button" href="/user/edit" role="button"><i ' +
-				'class="fa-solid fa-pen-to-square"></i></a>' +
-				'<button class="delete-post-button" value="'+
+				'<a class="rounded-3 p-0 edit-post-button" href="/user/editPost/' +
+				allPosts[i]._id.valueOf() +
+				'"><i class="fa-solid fa-pen-to-square"></i></a>' +
+				'<button class="delete-post-button" value="' +
 				allPosts[i]._id.valueOf() +
 				'"><i class="fa-solid fa-trash"></i></button>' +
 				'<p id="story-date" class="mb-0">' +
@@ -268,14 +269,20 @@ router.get("/admin", function (req, res) {
 /**
  * Function for searching in the dashboard
  */
-router.post("/adminSearch", function (req, res) {
+router.post("/adminSearch", async function (req, res) {
+	if (await User.findOne({
+			email: req.session.email,
+			admin: true,
+		}) == null) {
+		return;
+	}
 	res.setHeader("Content-Type", "application/json");
 	let searchOptions = {};
 	if (req.body.input != null || req.body.input != "") {
 		searchOptions.name = new RegExp(req.body.input, "i");
 	}
 	try {
-		User.find(searchOptions, function (err, result) {
+		await User.find(searchOptions, function (err, result) {
 			if (err) {
 				res.send("Error finding users!");
 			} else {
@@ -298,14 +305,20 @@ router.post("/adminSearch", function (req, res) {
 /**
  * Function for filtering admins in the dashboard
  */
-router.post("/adminFilter", function (req, res) {
+router.post("/adminFilter", async function (req, res) {
+	if (await User.findOne({
+			email: req.session.email,
+			admin: true,
+		}) == null) {
+		return;
+	}
 	res.setHeader("Content-Type", "application/json");
 	let searchOptions = {};
 	if (req.body.input != null) {
 		searchOptions.admin = req.body.input;
 	}
 	try {
-		User.find(searchOptions, function (err, result) {
+		await User.find(searchOptions, function (err, result) {
 			if (err) {
 				res.send("Error finding users!");
 			} else {
@@ -329,14 +342,20 @@ router.post("/adminFilter", function (req, res) {
 /**
  * Function for filtering admin candidates in the dashboard
  */
-router.post("/promotionFilter", function (req, res) {
+router.post("/promotionFilter", async function (req, res) {
+	if (await User.findOne({
+			email: req.session.email,
+			admin: true,
+		}) == null) {
+		return;
+	}
 	res.setHeader("Content-Type", "application/json");
 	let searchOptions = {};
 	if (req.body.input != null) {
 		searchOptions.promotion = req.body.input;
 	}
 	try {
-		User.find(searchOptions, function (err, result) {
+		await User.find(searchOptions, function (err, result) {
 			if (err) {
 				res.send("Error finding users!");
 			} else {
@@ -354,6 +373,7 @@ router.post("/promotionFilter", function (req, res) {
 	} catch (error) {
 		return;
 	}
+
 });
 
 router.post("/banUser", function (req, res) {
@@ -639,8 +659,8 @@ module.exports = router;
 
 router.post(
 	"/adminPromotion",
-	upload.single("image"),
 	async function (req, res) {
+
 		const adminReq = new AdminRequest({
 			name: req.body.name,
 			email: req.body.email,
@@ -708,6 +728,12 @@ router.post(
 	"/createAccountAdmin",
 	upload.single("pfp"),
 	async function (req, res) {
+		if (await User.findOne({
+				email: req.session.email,
+				admin: true,
+			}) == null) {
+			return;
+		}
 		let url = "https://res.cloudinary.com/buddyup-images/image/upload/v1652458876/profile_ek8iwp.png";
 		if (req.file != undefined) {
 			let upload = await cloudinary.v2.uploader.upload(
@@ -781,8 +807,21 @@ router.post(
  * Function for deleting a new user from the admin dashboard
  */
 router.get("/delete/:name", async function (req, res) {
+	if (await User.findOne({
+			email: req.session.email,
+			admin: true,
+		}) == null) {
+		return;
+	}
 	if (!req.session.loggedIn || req.session.name == req.params["name"]) {
 		res.redirect("/user/login");
+		return;
+	}
+	if (User.findOne({
+			email: req.session.email,
+			admin: true,
+		}) == null) {
+		return;
 	}
 	try {
 		await User.deleteOne({
@@ -805,6 +844,12 @@ router.post(
 	"/editAccountAdmin",
 	upload.single("pfp"),
 	async function (req, res) {
+		if (await User.findOne({
+				email: req.session.email,
+				admin: true,
+			}) == null) {
+			return;
+		}
 		try {
 			let oldUser = await User.findOne({
 				name: req.body.oldName,
@@ -933,6 +978,12 @@ router.post(
 	"/loadEditModal",
 	upload.single("image"),
 	async function (req, res) {
+		if (await User.findOne({
+				email: req.session.email,
+				admin: true,
+			}) == null) {
+			return;
+		}
 		try {
 			let oldUser = await User.findOne({
 				name: req.body.oldName,
@@ -1033,16 +1084,109 @@ router.post("/write", uploadPost.array("post-image"), async function (req, res) 
 	}
 });
 
-router.post("/deletePost/", async function (req, res) {
+router.post("/deletePost", async function (req, res) {
 	if (!req.session.loggedIn) {
 		res.redirect("/user/login");
 	} else {
-		let post = await Timeline.findOne({_id: req.body.id});
-		if(post.author == req.session.name){
-			await Timeline.deleteOne({_id: req.body.id});
+		let post = await Timeline.findOne({
+			_id: req.body.id
+		});
+		if (post.author == req.session.name) {
+			await Timeline.deleteOne({
+				_id: req.body.id
+			});
 			res.send("Success");
 		}
 	}
+});
+
+router.get("/editPost/:id", async function (req, res) {
+	var postID = req.params["id"];
+	if (!req.session.loggedIn) {
+		res.redirect("/user/login");
+	} else {
+		let post = await Timeline.findOne({
+			_id: postID
+		});
+		if (post.author == req.session.name) {
+			let edit = fs.readFileSync("./public/html/edit-a-post.html", "utf-8");
+			let editDOM = new JSDOM(edit);
+			editDOM.window.document.getElementById("postID").innerHTML = post._id.valueOf();
+			res.send(editDOM.serialize());
+		}
+	}
+});
+
+router.post("/getPost", async function (req, res) {
+	if (!req.session.loggedIn) {
+		res.redirect("/user/login");
+	} else {
+		let post = await Timeline.findOne({
+			_id: req.body.id
+		});
+		if (post.author == req.session.name) {
+			res.send(post);
+		}
+	}
+});
+
+
+router.post("/editPost", uploadPost.array("post-image"), async function (req, res) {
+	let post = await Timeline.findOne({
+		_id: req.body.id
+	});
+	let upload = post.img;
+	if (post.author == req.session.name) {
+		try {
+			try {
+				for (let i = 0; i < req.files.length; i++) {
+					if (i < 4) {
+						let image = await cloudinary.v2.uploader.upload("./public/images/" + req.files[i].filename,
+							function (error) {
+
+							});
+						upload[i] = image.secure_url;
+					}
+					await fs.unlink("./public/images/" + req.files[i].filename, function (err) {
+
+					});
+				}
+			} catch (error) {
+				console.log(error);
+				res.send({
+					success: "false",
+					message: "failed to upload profile picture; error: " + error
+				});
+				return;
+			}
+
+			await Timeline.updateMany({
+				_id: req.body.id
+			}, {
+				$set: {
+					title: req.body.title,
+					post: req.body.content,
+					img: upload
+				},
+			});
+
+			res.send({
+				success: "true",
+				message: "failed to upload profile picture"
+			});
+		} catch (err) {
+			res.send({
+				success: "false",
+				message: "failed to create a post"
+			});
+		}
+	} else {
+		res.send({
+			success: "false",
+			message: "failed to create a post (bad id)"
+		});
+	}
+
 });
 
 module.exports = router;

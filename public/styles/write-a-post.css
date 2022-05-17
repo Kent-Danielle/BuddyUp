@@ -42,6 +42,11 @@ body {
 	text-align: center;
 	color: var(--accent-dark);
 }
+#postID {
+	font-size: xx-small;
+	color: var(--neutral-color);
+	font-style: italic;
+}
 
 #input-container {
 	background: rgba(255, 255, 255, 0.2) !important;

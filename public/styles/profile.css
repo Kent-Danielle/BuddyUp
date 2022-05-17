@@ -135,6 +135,13 @@ body {
 	position: relative;
 }
 
+/* #profile-container{
+	position: fixed;
+}
+#lg-stories-container{
+	float: right;
+	overflow: auto;
+} */
 /*----------------
  * Mobile layout
  *----------------

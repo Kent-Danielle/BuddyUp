@@ -7,12 +7,15 @@ document.getElementById("submit").addEventListener("click", async (e) => {
 	let formData = new FormData(form);
 	formData.set(
 		"content",
-		tinymce.get("tinytext").getContent({ format: "raw" })
+		tinymce.get("tinytext").getContent({
+			format: "raw"
+		})
 	);
-	fetch("/user/write", {
-		method: "POST",
-		body: formData,
-	})
+	formData.set("id", document.getElementById("postID").innerHTML);
+	fetch("/user/editPost", {
+			method: "POST",
+			body: formData,
+		})
 		.then(function (result) {
 			return result.json();
 		})
@@ -44,6 +47,22 @@ document.getElementById("image").addEventListener("change", function () {
 		count + " files";
 });
 
-// document.getElementById("submitEdit").addEventListener("click", async (e) => {
-
-// });
+window.onload = function (){
+	let data = {
+		id: document.getElementById("postID").innerHTML
+	}
+	fetch("/user/getPost", {
+		method: "POST",
+		headers: {
+			Accept: "application/json",
+			"Content-Type": "application/json",
+		},
+		body: JSON.stringify(data),
+	}).then((result) => {
+		return result.json();
+	}).then((result) => {
+		document.getElementById("title").setAttribute("value", result.title);
+		tinymce.get("tinytext").setContent(result.post);
+		console.log(result);
+	});
+}
