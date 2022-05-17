@@ -1,0 +1,100 @@
+/*----------------
+ * Color palette
+ *----------------
+ */
+:root {
+	--primary-light: #ffffff;
+	--secondary-light: #1664d6;
+	--accent-light: #dd375b;
+	--primary-dark: #262322;
+	--neutral-color: #797979;
+}
+/*----------------
+ * Element styling 
+ *----------------
+ */
+body {
+	background: rgb(63, 200, 251);
+	background: linear-gradient(
+		50deg,
+		rgba(63, 200, 251, 0.8) 0%,
+		rgba(252, 70, 215, 0.8) 50%,
+		rgba(252, 225, 70, 0.8) 100%
+	);
+	animation: gradient 180s ease infinite;
+	background-size: 300% 300%;
+}
+@keyframes gradient {
+	0% {
+		background-position: bottom left;
+	}
+	25% {
+		background-position: top left;
+	}
+	50% {
+		background-position: top right;
+	}
+	75% {
+		background-position: bottom right;
+	}
+	100% {
+		background-position: bottom left;
+	}
+}
+
+#container {
+	height: 100vh !important;
+}
+
+#buttons-container {
+	height: 5%
+}
+
+#message-container {
+	background: rgba(255, 255, 255, 0.4);
+	box-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.37);
+	backdrop-filter: blur(3px);
+	-webkit-backdrop-filter: blur(3px);
+	border: 1px solid rgba(255, 255, 255, 0.18);
+	height: 87%;
+}
+
+#message-area {
+	height: 8%;
+}
+#message-field {
+	background: rgba(255, 255, 255, 0.4);
+	box-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.37);
+	backdrop-filter: blur(3px);
+	-webkit-backdrop-filter: blur(3px);
+	border: 1px solid rgba(255, 255, 255, 0.18);
+	width: calc(100% - (((1rem * 0.25) * 2) + 2rem));
+	height: 2.3rem;
+}
+
+#send-button {
+	width: 2rem;
+	background: none;
+	border: none;
+	font-size: 1.4rem;
+}
+
+/*----------------
+ * Mobile layout
+ *----------------
+ */
+@media only screen and (max-width: 844px) {
+	#lg-stories-container {
+		display: none !important;
+	}
+}
+
+/*----------------
+ * Desktop layout
+ *----------------
+ */
+@media only screen and (min-width: 845px) {
+	section#stories {
+		display: none !important;
+	}
+}
