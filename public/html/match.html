@@ -50,9 +50,12 @@
 
       <div id="match-filter" class="container d-flex justify-content-center">
         <input type="text" id="game-text" class="rounded-pill mb-3" placeholder="Enter Game Name">
-        <span id="search">
-
+        <span id="search"></span>
       </div>
+
+      <div id="error-msg"></div>
+
+
       <div class="d-flex justify-content-center">
         <div id="gameFiltersContainer" class="py-5 w-75">
 
@@ -71,6 +74,7 @@
     // used for the id of each filter
     let count = 0;
 
+    const maxGames = 10;
     const enterKey = 13;
     const gameInput = document.getElementById("game-text");
 
@@ -87,6 +91,12 @@
         gameFilter = gameInput.value;
         gameFilters.push(gameFilter);
         gameInput.value = "";
+
+        // only allow a max of 10 game filters
+        if (count >= maxGames) {
+          document.getElementById("error-msg").innerText = "Can only have a max of 10 games";
+          return;
+        }
 
         // add the game filter to be displayed
         let gameSpan = document.createElement("span");
@@ -109,6 +119,8 @@
             gameFilters.splice(index, 1);
           }
           gameSpan.remove();
+          count--;
+          document.getElementById("error-msg").innerText = "";
         });
         gameSpan.appendChild(deleteButton);
 
