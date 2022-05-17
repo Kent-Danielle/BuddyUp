@@ -1,120 +1,130 @@
 <!DOCTYPE html>
 <html lang="en">
-  <head>
-    <title>BuddyUp</title>
-    <meta name="buddyup template" content="BuddyUp" />
-    <link rel="icon" type="image/x-icon" href="/images/favicon.ico" />
 
-    <!------------------------>
-    <!-- Required meta tags -->
-    <!------------------------>
-    <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1" />
+<head>
+  <title>BuddyUp</title>
+  <meta name="buddyup template" content="BuddyUp" />
+  <link rel="icon" type="image/x-icon" href="/images/favicon.ico" />
 
-    <!--------------------->
-    <!-- Other libraries -->
-    <!--------------------->
+  <!------------------------>
+  <!-- Required meta tags -->
+  <!------------------------>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
 
-    <!-- Bootstrap -->
-    <link
-      href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css"
-      rel="stylesheet"
-      integrity="sha384-EVSTQN3/azprG1Anm3QDgpJLIm9Nao0Yz1ztcQTwFspd3yD65VohhpuuCOmLASjC"
-      crossorigin="anonymous"
-    />
-    <script
-      src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js"
-      integrity="sha384-MrcW6ZMFYlzcLA8Nl+NtUVF0sA7MsXsP1UyJoMp4YLEuNSfAP+JcXn/tWtIaxVXM"
-      crossorigin="anonymous"
-    ></script>
-    <!-- Material Icons -->
-    <link
-      href="https://fonts.googleapis.com/icon?family=Material+Icons"
-      rel="stylesheet"
-    />
-    <!-- Fontawesome -->
-    <script src="https://kit.fontawesome.com/8bb76a9e5f.js" crossorigin="anonymous"></script>
-    <!-- Jquery -->
-    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+  <!--------------------->
+  <!-- Other libraries -->
+  <!--------------------->
 
-    <!------------------------>
-    <!-- styles of your own -->
-    <!------------------------>
-    <link rel="stylesheet" href="./styles/style.css" />
-  </head>
-  <body>
-    <div id="grid-container">
+  <!-- Bootstrap -->
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet"
+    integrity="sha384-EVSTQN3/azprG1Anm3QDgpJLIm9Nao0Yz1ztcQTwFspd3yD65VohhpuuCOmLASjC" crossorigin="anonymous" />
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js"
+    integrity="sha384-MrcW6ZMFYlzcLA8Nl+NtUVF0sA7MsXsP1UyJoMp4YLEuNSfAP+JcXn/tWtIaxVXM" crossorigin="anonymous">
+  </script>
+  <!-- Material Icons -->
+  <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet" />
+  <!-- Fontawesome -->
+  <script src="https://kit.fontawesome.com/8bb76a9e5f.js" crossorigin="anonymous"></script>
+  <!-- Jquery -->
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
 
-      <!-- Body goes here -->
+  <!------------------------>
+  <!-- styles of your own -->
+  <!------------------------>
+  <link rel="stylesheet" href="../styles/style.css" />
+  <link rel="stylesheet" href="../styles/match.css" />
+</head>
 
-      <div id="match-filter">
-        <input type="text" id="game-text" placeholder="add a game filter">
+<body>
+  <div id="container">
+
+    <!-- Body goes here -->
+    <div id="content">
+      <div id="form-logo" class="mb-5">
+        <img id="logo" src="../images/logo.png" alt="" />
+      </div>
+      <div id="title" class="d-flex justify-content-center">
+        <h3>ADD FILTER</h3>
       </div>
 
-      <div id="gameFiltersContainer"></div>
+      <div id="match-filter" class="container d-flex justify-content-center">
+        <input type="text" id="game-text" class="rounded-pill mb-3" placeholder="Enter Game Name">
+        <span id="search">
 
-      <button id="submit" class="btn btn-primary">Find Match</button>
+      </div>
+      <div class="d-flex justify-content-center">
+        <div id="gameFiltersContainer" class="py-5 w-75">
 
+        </div>
+      </div>
     </div>
+  </div>
+  <div class="d-flex justify-content-center mt-3">
+    <button id="submit" class="btn btn-primary">Find Match</button>
+  </div>
 
-    <!---------------------------->
-    <!-- Client-side Javascript -->
-    <!---------------------------->
-    <script>
-      // used for the id of each filter
-      let count = 0; 
+  <!---------------------------->
+  <!-- Client-side Javascript -->
+  <!---------------------------->
+  <script>
+    // used for the id of each filter
+    let count = 0;
 
-      const enterKey = 13;
-      const gameInput = document.getElementById("game-text");
+    const enterKey = 13;
+    const gameInput = document.getElementById("game-text");
 
-      // current game
-      let gameFilter = null;
+    // current game
+    let gameFilter = null;
 
-      // list of games entered 
-      let gameFilters = [];
+    // list of games entered 
+    let gameFilters = [];
 
-      // adds a game
-      gameInput.addEventListener('keypress', function (e) {
-        var key = e.which || e.keyCode;
-        if (key == enterKey) {
-          gameFilter = gameInput.value;
-          gameFilters.push(gameFilter);
-          gameInput.value = "";
-  
-          // add the game filter to be displayed
-          let gameSpan = document.createElement("span");
-          gameSpan.classList.add("d-inline-block");
-          count++;
-          gameSpan.id = "gamefilter" + count;
-          gameSpan.innerText = gameFilter;
+    // adds a game
+    gameInput.addEventListener('keypress', function (e) {
+      var key = e.which || e.keyCode;
+      if (key == enterKey) {
+        gameFilter = gameInput.value;
+        gameFilters.push(gameFilter);
+        gameInput.value = "";
 
-          // add a delete button to the game filter
-          let deleteButton = document.createElement("button");
-          deleteButton.value = gameFilter;
-          deleteButton.innerHTML = "<i class=\"fa-solid fa-x\"></i>";
-          deleteButton.addEventListener("click", function(e) {
-            let name = this.value;
-            let index = gameFilters.indexOf(name);
-            if (index != -1) {
-              gameFilters.splice(index, 1);
-            }
-            gameSpan.remove();
-          });
-          gameSpan.appendChild(deleteButton);
+        // add the game filter to be displayed
+        let gameSpan = document.createElement("span");
+        gameSpan.classList.add("filter");
+        gameSpan.classList.add("p-2")
+        gameSpan.classList.add("m-2")
+        gameSpan.classList.add("d-inline-block");
+        count++;
+        gameSpan.id = "gamefilter" + count;
+        gameSpan.innerText = gameFilter;
 
-          // add the game filter to the DOM
-          document.getElementById("gameFiltersContainer").appendChild(gameSpan);
-        }
-      });
+        // add a delete button to the game filter
+        let deleteButton = document.createElement("button");
+        deleteButton.value = gameFilter;
+        deleteButton.innerHTML = "<i class=\"fa-solid fa-x\"></i>";
+        deleteButton.addEventListener("click", function (e) {
+          let name = this.value;
+          let index = gameFilters.indexOf(name);
+          if (index != -1) {
+            gameFilters.splice(index, 1);
+          }
+          gameSpan.remove();
+        });
+        gameSpan.appendChild(deleteButton);
 
-      // submit the data to the server and find a match
-      document.getElementById("submit").addEventListener("click", function() {
-        if (gameFilters.length == 0) {
-          console.log("no game filters!");
-        }
-        gameFilters.forEach(game => console.log(game));
-      });
+        // add the game filter to the DOM
+        document.getElementById("gameFiltersContainer").appendChild(gameSpan);
+      }
+    });
 
-    </script>
-  </body>
+    // submit the data to the server and find a match
+    document.getElementById("submit").addEventListener("click", function () {
+      if (gameFilters.length == 0) {
+        console.log("no game filters!");
+      }
+      gameFilters.forEach(game => console.log(game));
+    });
+  </script>
+</body>
+
 </html>

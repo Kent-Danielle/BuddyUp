@@ -1,0 +1,62 @@
+:root {
+    --primary-light: #ffffff;
+    --secondary-light: #1664d6;
+    --accent-light: #dd375b;
+    --primary-dark: #262322;
+    --neutral-color: #797979;
+}
+
+/*----------------
+   * Element styling 
+   *----------------
+   */
+body {
+    background: rgb(63, 200, 251);
+    background: linear-gradient(50deg,
+            rgba(63, 200, 251, 0.8) 0%,
+            rgba(252, 70, 215, 0.8) 50%,
+            rgba(252, 225, 70, 0.8) 100%);
+    animation: gradient 3s ease infinite;
+    background-size: 300% 300%;
+}
+
+input[type="text"] {
+    text-align: center;
+    background: rgba(255, 255, 255, 0.2);
+    box-shadow: 0 3px 15px 0 rgba(31, 38, 135, 0.37);
+    backdrop-filter: blur(3px);
+    -webkit-backdrop-filter: blur(3px);
+    border-radius: 10px;
+    border: 1px solid rgba(255, 255, 255, 0.18);
+}
+
+#form-logo {
+    display: flex;
+    justify-content: center;
+    height: 5rem;
+    margin-top: 1rem;
+}
+
+#gameFiltersContainer {
+    text-align: center;
+    background: rgba(255, 255, 255, 0.2);
+    box-shadow: 0 3px 15px 0 rgba(31, 38, 135, 0.37);
+    backdrop-filter: blur(3px);
+    -webkit-backdrop-filter: blur(3px);
+    border-radius: 10px;
+    border: 1px solid rgba(255, 255, 255, 0.18);
+}
+
+.filter {
+    background-color: #1664d6;
+    border-radius: 30px;
+}
+
+.filter button {
+    background: none;
+    border: none;
+}
+
+#submit {
+    background-color: #1664d6;
+}
