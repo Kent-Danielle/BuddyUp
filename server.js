@@ -45,6 +45,7 @@ app.use(session({
 
 const indexRouter = require('./routes/index');
 const userRouter = require('./routes/users');
+const matchRouter = require('./routes/match');
 
 // // RUN SERVER
 let port = 8000;
@@ -76,3 +77,4 @@ db.on('error', error => {
 
 app.use('/', indexRouter);
 app.use('/user', userRouter);
+app.use('/match', matchRouter);

@@ -1,0 +1,178 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <title>BuddyUp</title>
+  <meta name="buddyup template" content="BuddyUp" />
+  <link rel="icon" type="image/x-icon" href="/images/favicon.ico" />
+
+  <!------------------------>
+  <!-- Required meta tags -->
+  <!------------------------>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <!--------------------->
+  <!-- Other libraries -->
+  <!--------------------->
+
+  <!-- Bootstrap -->
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet"
+    integrity="sha384-EVSTQN3/azprG1Anm3QDgpJLIm9Nao0Yz1ztcQTwFspd3yD65VohhpuuCOmLASjC" crossorigin="anonymous" />
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js"
+    integrity="sha384-MrcW6ZMFYlzcLA8Nl+NtUVF0sA7MsXsP1UyJoMp4YLEuNSfAP+JcXn/tWtIaxVXM" crossorigin="anonymous">
+  </script>
+  <!-- Material Icons -->
+  <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet" />
+  <!-- Fontawesome -->
+  <script src="https://kit.fontawesome.com/8bb76a9e5f.js" crossorigin="anonymous"></script>
+  <!-- Jquery -->
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+
+  <!------------------------>
+  <!-- styles of your own -->
+  <!------------------------>
+  <link rel="stylesheet" href="../styles/styles.css" />
+  <link rel="stylesheet" href="../styles/match.css" />
+</head>
+
+<body>
+  <div id="container">
+
+    <!-- Body goes here -->
+    <div id="content">
+      <div id="form-logo" class="mb-5">
+        <img id="logo" src="../images/logo.png" alt="" />
+      </div>
+      <div id="title" class="d-flex justify-content-center">
+        <h3>ADD FILTER</h3>
+      </div>
+
+      <div id="match-filter" class="container d-flex justify-content-center">
+        <input type="text" id="game-text" class="rounded-pill mb-3" placeholder="Enter Game Name">
+        <span id="search"></span>
+      </div>
+
+      <div id="error-msg"></div>
+
+
+      <div class="d-flex justify-content-center">
+        <div id="gameFiltersContainer" class="py-5 w-75">
+
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="d-flex justify-content-center mt-3">
+    <button id="submit" class="btn btn-primary">Find Match</button>
+  </div>
+
+  <!---------------------------->
+  <!-- Client-side Javascript -->
+  <!---------------------------->
+  <script>
+    // used for the id of each filter
+    let count = 0;
+
+    // display the error message noting that you cannot add any more games for a few seconds
+    let errorMessageTimer = null;
+
+    const maxGames = 10;
+    const enterKey = 13;
+    const gameInput = document.getElementById("game-text");
+
+    // list of games entered 
+    let gameFilters = [];
+
+    // helper function to create a game filter span field to be displayed on the DOM
+    function createGameSpan(gameFilter) {
+      let gameSpan = document.createElement("span");
+      gameSpan.classList.add("filter");
+      gameSpan.classList.add("p-2")
+      gameSpan.classList.add("m-2")
+      gameSpan.classList.add("d-inline-block");
+      count++;
+      gameSpan.id = "gamefilter" + count;
+      gameSpan.innerText = gameFilter;
+      return gameSpan;
+    }
+
+    // helper function to display a message saying that the max amount of game filters has been reached
+    function displayMaxGameFiltersMessage() {
+      document.getElementById("error-msg").innerText = "Can only have a max of 10 games";
+        errorMessageTimer = setTimeout(() => {
+        document.getElementById("error-msg").innerText = "";
+      }, 2000);
+    }
+
+    // helper function to create a delete button for a game filter
+    function createGameFilterDeleteButton(gameSpan, gameFilter) {
+      let deleteButton = document.createElement("button");
+      deleteButton.value = gameFilter;
+      deleteButton.innerHTML = "<i class=\"fa-solid fa-x\"></i>";
+      deleteButton.addEventListener("click", function (e) {
+        let name = this.value;
+        let index = gameFilters.indexOf(name.toLowerCase());
+        if (index != -1) {
+          gameFilters.splice(index, 1);
+        }
+        gameSpan.remove();
+        count--;
+        document.getElementById("error-msg").innerText = "";
+      });
+      return deleteButton;
+    }
+
+    // adds a game
+    gameInput.addEventListener('keypress', function (e) {
+      var key = e.which || e.keyCode;
+
+      // if we press enter and don't have an empty string for our filter then try and add it
+      if (key == enterKey && gameInput.value !== "") {
+
+        // if we don't already have this game filter, then proceed
+        if (gameFilters.indexOf(gameInput.value.toLowerCase()) != -1) {
+          return;
+        }
+
+        // only allow a max of 10 game filters
+        if (count >= maxGames) {
+          displayMaxGameFiltersMessage();
+          return;
+        }
+
+        let gameFilter = gameInput.value;
+        gameFilters.push(gameFilter.toLowerCase());
+        gameInput.value = "";
+
+        // add the game filter to be displayed
+        let gameSpan = createGameSpan(gameFilter);
+
+        // add a delete button to the game filter
+        let deleteButton = createGameFilterDeleteButton(gameSpan, gameFilter);
+        gameSpan.appendChild(deleteButton);
+
+        // add the game filter to the DOM
+        document.getElementById("gameFiltersContainer").appendChild(gameSpan);
+      }
+    });
+
+    // submit the data to the server and find a match
+    document.getElementById("submit").addEventListener("click", function (e) {
+      e.preventDefault;
+
+      let data = {};
+      if (gameFilters.length == 0) {
+        data.hasGameFilters = false;
+      } else {
+        data.hasGameFilters = true;
+        data.gameFilters = gameFilters;
+      }
+
+      console.log(data);
+    });
+
+  </script>
+</body>
+
+</html>
