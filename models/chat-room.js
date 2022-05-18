@@ -1,22 +1,16 @@
-'use strict';
+"use strict";
 
-const mongoose = require('mongoose');
+const mongoose = require("mongoose");
 
 const chatroomSchema = new mongoose.Schema({
+	user1: {
+		type: String,
+		required: true,
+	},
+	user2: {
+		type: String,
+		required: false,
+	},
+});
 
-    user1: {
-        type: String,
-        required: true
-    },
-    user2: {
-        type: String,
-        required: false
-    },
-    filters: {
-        type: Array,
-        required: true
-    }
-    
-})
-
-module.exports = mongoose.model('chat-room', chatroomSchema);
+module.exports = mongoose.model("chat-room", chatroomSchema);

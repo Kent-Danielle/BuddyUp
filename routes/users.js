@@ -12,6 +12,7 @@ const router = express.Router();
 const User = require("../models/user");
 const AdminRequest = require("../models/admin-request");
 const Timeline = require("../models/user-timeline");
+const ChatUser = require("../models/chat-user.js");
 const path = require("path");
 const fs = require("fs");
 const {
@@ -69,6 +70,8 @@ router.get("/profile/:name", async function (req, res) {
 				return;
 			}
 		}
+
+		await ChatUser.deleteMany({name: req.session.name});
 
 		if (currentUser.about == null) {
 			currentUser.about = "";

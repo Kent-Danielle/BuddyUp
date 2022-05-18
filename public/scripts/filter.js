@@ -91,9 +91,8 @@ document.getElementById("submit").addEventListener("click", function (e) {
     } else {
         data.hasGameFilters = true;
         data.gameFilters = gameFilters;
-    }
 
-    let result = fetch("/match/findmatch", {
+        let result = fetch("/match/findmatch", {
             method: "POST",
             headers: {
                 Accept: "application/json",
@@ -105,8 +104,7 @@ document.getElementById("submit").addEventListener("click", function (e) {
             return response.text();
         })
         .then(function (result) {
-            console.log(result);
+            document.getElementById("message-container").innerHTML = result;
         });
-
-    console.log(data);
+    }
 });
