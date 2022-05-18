@@ -121,13 +121,83 @@ body {
 	border: none;
 }
 
+/* modal */
+/* The Modal (background) */
+.modal {
+	display: none !important; 
+	position: fixed; /* Stay in place */
+	z-index: 1; /* Sit on top */
+	left: 0;
+	top: 0;
+	width: 100%; /* Full width */
+	height: 100%; /* Full height */
+	overflow: auto; /* Enable scroll if needed */
+	background-color: rgba(0, 0, 0, 0.5); /* Black w/ opacity */
+}
+
+/* Modal Content/Box */
+.modal-content {
+	background: rgba(255, 255, 255, 0.66);
+	box-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.37);
+	backdrop-filter: blur(3px);
+	-webkit-backdrop-filter: blur(3px);
+	border-radius: 10px;
+	border: 1px solid rgba(255, 255, 255, 0.18);
+	height: 95% !important;
+	overflow-y: hidden;
+}
+
+/* profile */
+#profile-container {
+	overflow-y: scroll;
+}
+
+#pfp-container {
+	position: relative;
+	width: 20%;
+}
+
+#pfp {
+	clip-path: circle();
+	object-fit: cover;
+	width: 100%;
+}
+
+#game {
+	color: white;
+	background: rgba(22, 100, 214, 0.71);
+	border-radius: 16px;
+	box-shadow: 0 4px 30px rgba(0, 0, 0, 0.1);
+	backdrop-filter: blur(2px);
+	-webkit-backdrop-filter: blur(5px);
+	border: 1px solid rgba(22, 100, 214, 0.3);
+}
+#story {
+	background: rgba(255, 255, 255, 0.2);
+	box-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.17);
+	backdrop-filter: blur(3px);
+	-webkit-backdrop-filter: blur(3px);
+	border-radius: 10px;
+	border: 1px solid rgba(255, 255, 255, 0.18);
+}
+
+.story {
+	background: rgba(255, 255, 255, 0.2);
+	box-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.17);
+	backdrop-filter: blur(3px);
+	-webkit-backdrop-filter: blur(3px);
+	border-radius: 10px;
+	border: 1px solid rgba(255, 255, 255, 0.18);
+	position: relative;
+}
+
 /*----------------
  * Mobile layout
  *----------------
  */
 @media only screen and (max-width: 844px) {
-	#lg-stories-container {
-		display: none !important;
+	.modal-content {
+		width: 95% !important;
 	}
 }
 
@@ -136,7 +206,7 @@ body {
  *----------------
  */
 @media only screen and (min-width: 845px) {
-	section#stories {
-		display: none !important;
+	.modal-content {
+		width: 844px;
 	}
 }

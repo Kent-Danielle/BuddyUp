@@ -49,12 +49,13 @@
 	<body>
 		<div id="container" class="container-fluid w-100 p-2 p-lg-3">
 			<div id="buttons-container" class="d-inline-block w-100">
-				<button
+				<a
 					id="exit-chatroom"
-					class="btn-red rounded-3 px-3 py-1 float-start"
+					class="btn-red rounded-3 px-3 py-1 float-start text-decoration-none"
+					href="/user/profile"
 				>
 					Exit
-				</button>
+				</a>
 				<button id="find-next" class="btn-blue rounded-3 px-3 py-1 float-end">
 					Find Next
 				</button>
@@ -74,7 +75,9 @@
 					</div>
 					<div id="error-msg"></div>
 					<div id="gameFiltersContainer" class="rounded-3 p-2 mb-3"></div>
-					<button id="submit" class="btn-blue rounded-3 px-3 py-1">Find Match</button>
+					<button id="submit" class="btn-blue rounded-3 px-3 py-1">
+						Find Match
+					</button>
 				</div>
 			</div>
 			<form id="message-area" class="d-block mt-3">
@@ -91,6 +94,50 @@
 					<i class="fa-solid fa-paper-plane"></i>
 				</button>
 			</form>
+		</div>
+
+		<!-- The ProfileModal -->
+		<div id="profile-modal" class="modal d-flex justify-content-center">
+			<!-- Modal content -->
+			<div class="modal-content p-3 py-4 h-auto align-self-center position-relative">
+				<div id="profile-container" class="pt-3">
+					<div id="top-profile" class="">
+						<div id="pfp-container" class="mb-3">
+							<img src="/images/profile.png" alt="" id="pfp" />
+						</div>
+						<div id="info-container">
+							<h2 id="username">Username</h2>
+							<p id="bio-text">
+								Lorem ipsum dolor sit amet consectetur adipisicing elit. Error
+								blanditiis, quibusdam modi aliquid delectus et beatae asperiores
+								recusandae optio nisi temporibus velit, eum enim ea. Rerum
+								nostrum ullam impedit vitae.
+							</p>
+						</div>
+					</div>
+					<div id="bottom-profile" class="rounded-3 py-2 mb-3">
+						<section id="games">
+							<h3>Games</h3>
+							<div id="games-container">
+								<p
+									id="game"
+									class="d-inline-block btn-primary px-2 py-1 rounded-3"
+								>
+									Coming Soon
+								</p>
+							</div>
+						</section>
+						<section id="stories">
+							<h3>Stories</h3>
+							<div id="stories-container"></div>
+						</section>
+					</div>
+				</div>
+				<div class="d-flex justify-content-center pb-4 pt-2 position-absolute bottom-0 start-50 end-50">
+					<button id="reject-match" class="btn-red rounded-3 mx-3 px-4 py-1">Reject</button>
+					<button id="accept-match" class="btn-blue rounded-3 mx-3 px-4 py-1">Accept</button>
+				</div>
+			</div>
 		</div>
 
 		<!---------------------------->

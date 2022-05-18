@@ -15,6 +15,10 @@ const chatuserSchema = new mongoose.Schema({
     matched: {
         type: Boolean,
         required: false
+    },
+    last_match: {
+        type: String,
+        required: false
     }
     
 })
