@@ -1239,6 +1239,7 @@ router.get("/editPost/:id", async function (req, res) {
 			let edit = fs.readFileSync("./public/html/edit-a-post.html", "utf-8");
 			let editDOM = new JSDOM(edit);
 			editDOM.window.document.getElementById("postID").innerHTML = post._id.valueOf();
+			editDOM.window.document.getElementById("postID").style.display = "none";
 			res.send(editDOM.serialize());
 		}
 	}
