@@ -1,3 +1,4 @@
+'use strict';
 //const modalText = document.getElementById("modalText");
 //const loggedInName = document.getElementById("name").innerText;
 function createListener() {
