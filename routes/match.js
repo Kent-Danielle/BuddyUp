@@ -1,6 +1,10 @@
 "use strict";
 
+
 const express = require("express");
+const app = express();
+const server = require('http').Server(app);
+const io = require('socket.io')(server);
 const router = express.Router();
 const User = require("../models/user");
 const AdminRequest = require("../models/admin-request");

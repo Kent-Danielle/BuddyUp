@@ -110,6 +110,7 @@ document.getElementById("submit").addEventListener("click", function (e) {
 				return response.text();
 			})
 			.then(function (result) {
+				document.getElementById("message-filter-container").style.setProperty("display", "none");
 				document
 					.getElementById("profile-modal")
 					.style.setProperty("display", "flex", "important");
