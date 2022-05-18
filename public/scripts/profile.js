@@ -13,7 +13,7 @@ function createListener() {
             confirmBtn.style.setProperty("display", "inline-block", "important");
             confirmModal.style.setProperty("display", "flex", "important");
 
-            confirmBtn.addEventListener("click", async (event2) =>{
+            confirmBtn.addEventListener("click", async (event2) => {
                 event2.preventDefault();
                 let data = {
                     id: deleteBtn[i].value,
@@ -25,7 +25,7 @@ function createListener() {
                         "Content-Type": "application/json",
                     },
                     body: JSON.stringify(data)
-                }).then(function(){
+                }).then(function () {
                     window.location.reload();
                 });
             });
@@ -37,3 +37,19 @@ function createListener() {
     });
 }
 createListener();
+if (document.getElementById("bio-text").innerHTML == 'jeb_') {
+    let sound = new Audio('https://www.sndup.net/smzs/d');
+    sound.play();
+    // document.body.style.setProperty('background', 'rgb(0, 255, 0)')
+    document.body.style.background = 'linear-gradient(50deg, rgba(100, 100, 255) 0%, rgb(255, 100, 100) 50%, rgba(100, 255, 100) 100%)';
+    document.body.style.animation = 'gradient 0.5s ease infinite';
+    document.body.style.backgroundSize = '300% 300%';
+}
+let keys = '';
+document.addEventListener("keydown", (e) => {
+    keys += e.key;
+    if(keys.substring(keys.length-9, keys.length) == "herobrine"){
+        document.getElementById("pfp").src ='https://res.cloudinary.com/buddyup-images/image/upload/v1652833585/latest-2212249643_wqmxgc.jpg';
+    }
+})
+//herobrine
