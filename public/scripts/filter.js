@@ -87,10 +87,19 @@ gameInput.addEventListener("keypress", function (e) {
 	}
 });
 
+let currentUser = localStorage.getItem("loggedInName");
+
 // submit the data to the server and find a match
 const submitFilter = document.getElementById("submit");
 submitFilter.addEventListener("click", function (e) {
 	e.preventDefault;
+
+	document
+		.getElementById("match-filters-container")
+		.style.setProperty("display", "none", "important");
+	document
+		.getElementById("loader")
+		.style.setProperty("display", "block", "important");
 
 	let data = {};
 	if (gameFilters.length == 0) {
@@ -104,22 +113,35 @@ submitFilter.addEventListener("click", function (e) {
 
 		socket.emit("find-match", filters, async function (result) {
 			document
-				.getElementById("match-filters-container")
+				.getElementById("loader")
 				.style.setProperty("display", "none", "important");
-			document
-				.getElementById("profile-modal")
-				.style.setProperty("display", "flex", "important");
-			document.getElementById("profile-container").innerHTML = result.profile;
-			console.log(result.roomID);
-			localStorage.setItem("roomID", result.roomID);
-
-			//update their status to match
-			socket.emit("update-status", currentUser, true);
+			if (result.status == "Success") {
+				document
+					.getElementById("match-filters-container")
+					.style.setProperty("display", "none", "important");
+				document
+					.getElementById("profile-modal")
+					.style.setProperty("display", "flex", "important");
+				document.getElementById("profile-container").innerHTML = result.profile;
+				console.log(result.roomID);
+				localStorage.setItem("roomID", result.roomID);
+				//update their status to match
+				socket.emit("update-status", currentUser, true);
+			} else {
+				document
+					.getElementById("match-filters-container")
+					.style.setProperty("display", "block", "important");
+				document
+					.getElementById("profile-modal")
+					.style.setProperty("display", "none", "important");
+				document.getElementById("send-button").disabled = true;
+				document.getElementById("message-field").disabled = true;
+				document.getElementById("status-msg").innerText = result.status;
+				socket.emit("update-status", currentUser, false);
+			}
 		});
 	}
 });
-
-let currentUser = localStorage.getItem("loggedInName");
 
 /**
  * Accept the match
@@ -129,12 +151,17 @@ document
 	.addEventListener("click", async function (e) {
 		let roomID = localStorage.getItem("roomID");
 
-		socket.emit("accept-match", roomID);
+
+
+		socket.emit("accept-match", currentUser,roomID);
 		document
 			.getElementById("profile-modal")
 			.style.setProperty("display", "none", "important");
 		document.getElementById("send-button").disabled = false;
 		document.getElementById("message-field").disabled = false;
+		document
+			.getElementById("exit-chatroom")
+			.style.setProperty("display", "block", "important");
 	});
 
 /**
@@ -143,41 +170,73 @@ document
 document
 	.getElementById("reject-match")
 	.addEventListener("click", async function (e) {
-		let data = localStorage.getItem("loggedInName");
 		let room = localStorage.getItem("roomID");
-		socket.emit("reject-match", data, room);
+
+		await socket.emit("reject-match", currentUser, room);
+
+		await socket.emit("update-status", currentUser, false);
+		let data = {};
+		data.gameFilters = gameFilters;
+		data.currentUser = currentUser;
+
+		let filters = JSON.stringify(data);
+		socket.emit("find-match", filters, async function (result) {
+			if (result.status == "Success") {
+				document
+					.getElementById("match-filters-container")
+					.style.setProperty("display", "none", "important");
+				document
+					.getElementById("profile-modal")
+					.style.setProperty("display", "flex", "important");
+				document.getElementById("profile-container").innerHTML = result.profile;
+				localStorage.setItem("roomID", result.roomID);
+
+				//update their status to match
+				socket.emit("update-status", currentUser, true);
+			} else {
+				document
+					.getElementById("match-filters-container")
+					.style.setProperty("display", "block", "important");
+				document
+					.getElementById("profile-modal")
+					.style.setProperty("display", "none", "important");
+				document.getElementById("send-button").disabled = true;
+				document.getElementById("message-field").disabled = true;
+				document.getElementById("status-msg").innerText = result.status;
+				socket.emit("update-status", currentUser, false);
+			}
+		});
 	});
 
 /**
  * Listen for rejection
  */
 socket.on("rejected", function () {
-	document.getElementById("profile-container").innerHTML = "got rejected";
+	document
+		.getElementById("match-filters-container")
+		.style.setProperty("display", "block", "important");
+	document
+		.getElementById("profile-modal")
+		.style.setProperty("display", "none", "important");
+	document.getElementById("send-button").disabled = true;
+	document.getElementById("message-field").disabled = true;
 	socket.emit("update-status", currentUser, false);
 });
 
 /**
- * Find another
+ * Click on the exit-matching modal
  */
-socket.on("find-another", async function () {
-	let data = {};
-	data.gameFilters = gameFilters;
-	data.currentUser = currentUser;
-
-	let filters = JSON.stringify(data);
-
-	socket.emit("find-match", filters, async function (result) {
-		document
-			.getElementById("match-filters-container")
-			.style.setProperty("display", "none", "important");
-		document
-			.getElementById("profile-modal")
-			.style.setProperty("display", "flex", "important");
-		document.getElementById("profile-container").innerHTML = result.profile;
-		console.log(result.roomID);
-		localStorage.setItem("roomID", result.roomID);
-
-		//update their status to match
-		socket.emit("update-status", currentUser, true);
-	});
+const exitMatchingBtn = document.getElementById("stop-matching-button");
+exitMatchingBtn.addEventListener("click", async (e) => {
+	let room = localStorage.getItem("roomID");
+	await socket.emit("reject-match", currentUser, room);
+	await socket.emit("update-status", currentUser, false);
+	document
+		.getElementById("match-filters-container")
+		.style.setProperty("display", "block", "important");
+	document
+		.getElementById("profile-modal")
+		.style.setProperty("display", "none", "important");
+	document.getElementById("send-button").disabled = true;
+	document.getElementById("message-field").disabled = true;
 });

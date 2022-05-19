@@ -47,7 +47,11 @@ body {
 }
 
 #buttons-container {
-	height: 5%
+	height: 5%;
+}
+
+#exit-chatroom {
+	display: none;
 }
 
 #message-container {
@@ -81,6 +85,12 @@ body {
 	font-size: 1.4rem;
 }
 
+#stop-matching-button {
+	padding: 0;
+	border: none;
+	background: none;
+}
+
 /* filter container */
 #match-filters-container {
 	background: rgba(255, 255, 255, 0.1);
@@ -98,7 +108,7 @@ body {
 	border: 1px solid rgba(255, 255, 255, 0.18);
 }
 
-#gameFiltersContainer{
+#gameFiltersContainer {
 	background: rgba(255, 255, 255, 0.2);
 	box-shadow: 0 2px 10px 0 rgba(31, 38, 135, 0.37);
 	backdrop-filter: blur(3px);
@@ -107,7 +117,7 @@ body {
 	min-height: 2rem;
 }
 
-.filter{
+.filter {
 	color: white;
 	background: rgba(22, 100, 214, 0.71);
 	box-shadow: 0 4px 30px rgba(0, 0, 0, 0.1);
@@ -125,7 +135,7 @@ body {
 /* modal */
 /* The Modal (background) */
 .modal {
-	display: none !important; 
+	display: none !important;
 	position: fixed; /* Stay in place */
 	z-index: 1; /* Sit on top */
 	left: 0;
@@ -150,6 +160,7 @@ body {
 
 /* profile */
 #profile-container {
+	height: 85%;
 	overflow-y: scroll;
 }
 
@@ -208,6 +219,22 @@ body {
 	-webkit-backdrop-filter: blur(3px);
 	border-radius: 1rem;
 	border: 1px solid rgba(255, 255, 255, 0.18);
+}
+
+/* loader */
+#loader {
+	display: none !important;
+  border: 16px solid #f3f3f3; /* Light grey */
+  border-top: 16px solid #3498db; /* Blue */
+  border-radius: 50%;
+  width: 120px;
+  height: 120px;
+  animation: spin 2s linear infinite;
+}
+
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
 }
 
 /*----------------

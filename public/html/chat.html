@@ -50,17 +50,24 @@
 		<div id="container" class="container-fluid w-100 p-2 p-lg-3">
 			<div id="buttons-container" class="d-inline-block w-100">
 				<a
-					id="exit-chatroom"
+					id="exit-chatpage"
 					class="btn-red rounded-3 px-3 py-1 float-start text-decoration-none"
 					href="/user/profile"
 				>
 					Exit
 				</a>
-				<button id="find-next" class="btn-blue rounded-3 px-3 py-1 float-end">
+				<button
+					id="exit-chatroom"
+					class="btn-blue rounded-3 px-3 py-1 float-end"
+				>
 					Find Next
 				</button>
 			</div>
-			<div id="message-container" class="rounded-3 p-2">
+			<div id="message-container" class="rounded-3 p-2 position-relative">
+				<div
+					id="loader"
+					class="loader position-absolute top-50 start-50 end-50"
+				></div>
 				<div id="match-filters-container" class="p-3 p-m-1 mt-4 mx-2 rounded-3">
 					<div id="match-filter">
 						<h3 id="match-filter-cta">
@@ -74,6 +81,7 @@
 						/>
 					</div>
 					<div id="error-msg"></div>
+					<p class="m-0 p-0" id="status-msg"></p>
 					<div id="gameFiltersContainer" class="rounded-3 p-2 mb-3"></div>
 					<button id="submit" class="btn-blue rounded-3 px-3 py-1">
 						Find Match
@@ -104,19 +112,22 @@
 			<div
 				class="modal-content p-3 py-4 h-auto align-self-center position-relative"
 			>
-				<div id="profile-container" class="pt-3">
+				<div class="w-100">
+					<button
+						id="stop-matching-button"
+						class="d-inline-block text-center fs-2"
+					>
+						<i class="fa-solid fa-xmark"></i>
+					</button>
+				</div>
+				<div id="profile-container" class="">
 					<div id="top-profile" class="">
 						<div id="pfp-container" class="mb-3">
 							<img src="/images/profile.png" alt="" id="pfp" />
 						</div>
 						<div id="info-container">
 							<h2 id="username">Username</h2>
-							<p id="bio-text">
-								Lorem ipsum dolor sit amet consectetur adipisicing elit. Error
-								blanditiis, quibusdam modi aliquid delectus et beatae asperiores
-								recusandae optio nisi temporibus velit, eum enim ea. Rerum
-								nostrum ullam impedit vitae.
-							</p>
+							<p id="bio-text"></p>
 						</div>
 					</div>
 					<div id="bottom-profile" class="rounded-3 py-2 mb-3">
