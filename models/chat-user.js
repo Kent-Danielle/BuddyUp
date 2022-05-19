@@ -19,8 +19,12 @@ const chatuserSchema = new mongoose.Schema({
     last_match: {
         type: String,
         required: false
+    },
+    room: {
+        type: String,
+        required: false
     }
     
 })
 
-module.exports = mongoose.model('chat-user', chatuserSchema);
+module.exports = mongoose.model('kent-chat-user', chatuserSchema);

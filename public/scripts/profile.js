@@ -54,3 +54,8 @@ document.addEventListener("keydown", (e) => {
     }
 })
 //herobrine
+
+/**
+ * Store name in local storage
+ */
+ localStorage.setItem("loggedInName", document.getElementById("username").innerText);

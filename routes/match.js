@@ -1,20 +1,32 @@
 "use strict";
 
-
+//express
 const express = require("express");
 const app = express();
-const server = require('http').Server(app);
-const io = require('socket.io')(server);
+
+//socket.io
+const io = require("socket.io")(3000, {
+	cors: {
+		origin: ["http://localhost:8000"],
+	},
+});
+
+//router
 const router = express.Router();
+
+//models
 const User = require("../models/user");
 const AdminRequest = require("../models/admin-request");
 const Timeline = require("../models/user-timeline");
 const ChatRoom = require("../models/chat-room.js");
 const ChatUser = require("../models/chat-user.js");
+
+//fs and jsdom
 const path = require("path");
 const fs = require("fs");
 const { JSDOM } = require("jsdom");
 const { setInterval } = require("timers/promises");
+const chatUser = require("../models/chat-user.js");
 
 /**
  * GET route for sending the chat html page
@@ -26,10 +38,11 @@ router.get("/", async function (req, res) {
 		"no-cache, private, no-store, must-revalidate, max-stale=0, post-check=0, pre-check=0"
 	);
 	if (req.session.loggedIn) {
-		const chatUser1 = new ChatUser({
-			name: req.session.name,
-		});
-		await chatUser1.save();
+		const chatUser1 = await ChatUser.updateOne(
+			{ name: req.session.name },
+			{ name: req.session.name },
+			{ upsert: true }
+		);
 		// if user is not logged in, go to the login page
 		let login = fs.readFileSync("./public/html/chat.html", "utf-8");
 		res.send(login);
@@ -39,125 +52,19 @@ router.get("/", async function (req, res) {
 });
 
 /**
- * Function for finding match after filter
+ * Function for building the profile html
  */
-router.post("/findMatch", async function (req, res) {
-	await ChatUser.updateOne(
-		{
-			name: req.session.name,
-		},
-		{
-			$set: {
-				matched: false,
-				filters: req.body.gameFilters,
-				last_matched: null,
-			},
-		}
-	);
-
-	const chatUser1 = await ChatUser.findOne({ name: req.session.name });
-
-	let chatUser2 = null;
-
-	let i = 0;
-	while (chatUser2 == null && i < 20) {
-		chatUser2 = await ChatUser.findOne({
-			name: { $not: { $in: [chatUser1.name, chatUser1.last_matched] } },
-			matched: false,
-			filters: { $elemMatch: { $in: chatUser1.filters } },
-		});
-		await sleep(500);
-		i++
-	}
-	//if u havent find a match, find anyone cuz u desperate
-	if (chatUser2 == null) {
-		i = 0;
-		while (chatUser2 == null && i < 20) {
-			chatUser2 = await ChatUser.findOne({
-				name: { $not: { $in: [chatUser1.name, chatUser1.last_matched] } },
-				matched: false,
-			});
-			await sleep(500);
-			i++
-		}
-	}
-
-	if (chatUser2 != null) {
-		let chatUser2Profile = await displayMatchedUserProfile(chatUser2);
-		await res.send(chatUser2Profile);
-	} else {
-		res.send("stfu");
-	}
-
-	setTimeout(async function () {
-		await ChatUser.updateMany(
-			{ $or: [{ name: chatUser1.name }, { name: chatUser2.name }] },
-			{ $set: { matched: true, last_matched: chatUser2.name } }
-		);
-	}, 1000);
-});
-
-
-
-/**
- * Function for finding another match after rejecting
- */
-router.post("/findAnotherMatch", async function (req, res) {
-	let chatUser1 = await ChatUser.findOne({ name: req.session.name });
-
-	await ChatUser.updateMany(
-		{ $or: [{ name: chatUser1.name }, { name: chatUser1.last_matched }] },
-		{ $set: { matched: false } }
-	);
-
-	let chatUser2 = null;
-
-	let i = 0;
-	while (chatUser2 == null && i < 20) {
-		chatUser2 = await ChatUser.findOne({
-			name: { $not: { $in: [chatUser1.name, chatUser1.last_matched] } },
-			matched: false,
-			filters: { $elemMatch: { $in: chatUser1.filters } },
-		});
-		await sleep(500);
-		i++
-	}
-	//if u havent find a match, find anyone cuz u desperate
-	if (chatUser2 == null) {
-		i = 0;
-		while (chatUser2 == null && i < 20) {
-			chatUser2 = await ChatUser.findOne({
-				name: { $not: { $in: [chatUser1.name, chatUser1.last_matched] } },
-				matched: false,
-			});
-			await sleep(500);
-			i++
-		}
-	}
-
-	if (chatUser2 != null) {
-		let chatUser2Profile = await displayMatchedUserProfile(chatUser2);
-		await res.send(chatUser2Profile);
-	} else {
-		res.send("stfu");
-	}
-
-	setTimeout(async function () {
-		await ChatUser.updateMany(
-			{ $or: [{ name: chatUser1.name }, { name: chatUser2.name }] },
-			{ $set: { matched: true, last_matched: chatUser2.name } }
-		);
-	}, 1000);
-});
-
-module.exports = router;
-
 async function displayMatchedUserProfile(user2) {
 	let user = await User.findOne({ name: user2.name });
 
-	let allPosts = await Timeline.find({
-		author: user.name,
-	});
+	let allPosts;
+	try {
+		allPosts = await Timeline.find({
+			author: user.name,
+		});
+	} catch (error) {
+		return;
+	}
 	let dateOptions = {
 		weekday: "long",
 		year: "numeric",
@@ -178,17 +85,32 @@ async function displayMatchedUserProfile(user2) {
 			'</p><p id="story-body" class="mb-3">' +
 			allPosts[i].post +
 			"</p>";
-		if (allPosts[i].img != null && allPosts[i].img != undefined) {
+		if (allPosts[i].img[0] != null && allPosts[i].img[0] != undefined) {
 			stories +=
 				'<div id="story-img-container" class="mb-3"><div class="row"><div class="col-12"><div class="card"><div class="card-img"><div id="imageGroup' +
 				i +
-				'" class="carousel slide" data-bs-ride="carousel" data-bs-interval="false"><div class="carousel-inner">' +
-				'<div class="carousel-item active' +
-				'"><img src=' +
-				allPosts[i].img +
-				' alt="" class="card-img d-block w-100"/></div>' +
-				"</div>" +
-				"</div></div></div></div></div></div>";
+				'" class="carousel slide" data-bs-ride="carousel" data-bs-interval="false"><div class="carousel-inner">';
+			for (let j = 0; j < allPosts[i].img.length; j++) {
+				stories += '<div class="carousel-item';
+				if (j == 0) {
+					stories += " active";
+				}
+				stories +=
+					'"><img src=' +
+					allPosts[i].img[j] +
+					' alt="" class="card-img d-block w-100"/></div>';
+			}
+			if (allPosts[i].img.length > 1) {
+				stories +=
+					'</div><button class="carousel-control-prev" type="button" data-bs-target="#imageGroup' +
+					i +
+					'" data-bs-slide="prev"><span class="carousel-control-prev-icon" aria-hidden="true"></span><span class="visually-hidden">Previous</span> </button><button class="carousel-control-next" type="button" data-bs-target="#imageGroup' +
+					i +
+					'" data-bs-slide="next"><span class="carousel-control-next-icon" aria-hidden="true"></span><span class="visually-hidden">Next</span></button></div>';
+			} else {
+				stories += "</div>";
+			}
+			stories += "</div></div></div></div></div></div>";
 		}
 		stories += "</div>";
 	}
@@ -226,6 +148,123 @@ async function displayMatchedUserProfile(user2) {
 	return html;
 }
 
+/**
+ * Function for socket.io
+ */
+io.on("connection", (socket) => {
+	socket.on("accept-match", function (room) {
+		socket.join(room);
+	});
+
+	socket.on("reject-match", async function (name, room) {
+		socket.to(room).emit("rejected");
+		socket.leave(room);
+
+		await ChatUser.updateOne(
+			{ name: name },
+			{
+				$set: {
+					matched: false,
+				},
+			}
+		);
+
+		socket.emit("find-another");
+	});
+
+	/**
+	 * Function for finding match
+	 */
+	socket.on("find-match", async function (data, cb) {
+		let d = JSON.parse(data);
+		let filters = d.gameFilters;
+		let currentUser = d.currentUser;
+
+		await ChatUser.updateOne(
+			{
+				name: currentUser,
+			},
+			{
+				$set: {
+					matched: false,
+					filters: filters,
+					last_matched: null,
+				},
+			}
+		);
+
+		let chatUser1 = await ChatUser.findOne({ name: currentUser });
+
+		let chatUser2 = null;
+		let i = 0;
+		while (chatUser2 == null && i < 50) {
+			chatUser2 = await ChatUser.findOne({
+				name: { $not: { $in: [chatUser1.name, chatUser1.last_matched] } },
+				matched: false,
+				filters: { $elemMatch: { $in: chatUser1.filters } },
+			});
+			await sleep(200);
+			i++;
+		}
+		//if u havent find a match, find anyone cuz u desperate
+		if (chatUser2 == null) {
+			i = 0;
+			while (chatUser2 == null && i < 50) {
+				chatUser2 = await ChatUser.findOne({
+					name: { $not: { $in: [chatUser1.name, chatUser1.last_matched] } },
+					matched: false,
+				});
+				await sleep(200);
+				i++;
+			}
+		}
+
+		//After finding send the results back to client
+		if (chatUser2 != null) {
+			await ChatUser.updateMany(
+				{
+					$or: [{ name: chatUser1.name }, { name: chatUser2.name }],
+					room: { $exists: false },
+				},
+				{
+					$set: {
+						room: chatUser1._id,
+						last_matched: chatUser2.name,
+					},
+				}
+			);
+
+			chatUser1 = await ChatUser.findOne({ name: chatUser1.name });
+
+			socket.join(chatUser1.room);
+			let chatUser2Profile = await displayMatchedUserProfile(chatUser2);
+			cb({
+				roomID: chatUser1.room,
+				profile: chatUser2Profile,
+			});
+		} else {
+			cb("No users found :C");
+		}
+	});
+
+	socket.on("update-status", async (name, match) => {
+		await ChatUser.updateOne(
+			{ name: name },
+			{
+				$set: {
+					matched: match,
+				},
+			}
+		);
+	});
+
+	socket.on("send-message", (message, room) => {
+		socket.to(room).emit("receive-message", message);
+	});
+});
+
 function sleep(ms) {
-	return new Promise(resolve => setTimeout(resolve, ms));
+	return new Promise((resolve) => setTimeout(resolve, ms));
 }
+
+module.exports = router;

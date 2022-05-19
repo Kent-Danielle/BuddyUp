@@ -1,4 +1,4 @@
-'use strict';
+"use strict";
 
 var cloudinary = require("cloudinary");
 cloudinary.config({
@@ -15,9 +15,7 @@ const Timeline = require("../models/user-timeline");
 const ChatUser = require("../models/chat-user.js");
 const path = require("path");
 const fs = require("fs");
-const {
-	JSDOM
-} = require("jsdom");
+const { JSDOM } = require("jsdom");
 
 //get all users
 router.get("/", function (req, res) {
@@ -70,7 +68,7 @@ router.get("/profile/:name", async function (req, res) {
 			}
 		}
 
-		await ChatUser.deleteMany({name: req.session.name});
+		await ChatUser.deleteMany({ name: req.session.name });
 
 		if (currentUser.about == null) {
 			currentUser.about = "";
@@ -82,30 +80,33 @@ router.get("/profile/:name", async function (req, res) {
 			currentUser.name;
 		profileDOM.window.document.getElementById("bio-text").innerHTML =
 			currentUser.about;
+		profileDOM.window.document.getElementById("game").innerHTML =
+		"<a href=\"/match/\">Coming soon</a>";
 		profileDOM.window.document.getElementById("pfp").src = currentUser.img;
 
 		let allPosts;
 		try {
 			allPosts = await Timeline.find({
-				author: currentUser.name
+				author: currentUser.name,
 			});
 		} catch (error) {
 			return;
 		}
 		let dateOptions = {
-			weekday: 'long',
-			year: 'numeric',
-			month: 'long',
-			day: 'numeric',
-			hour: 'numeric',
-			minute: 'numeric'
+			weekday: "long",
+			year: "numeric",
+			month: "long",
+			day: "numeric",
+			hour: "numeric",
+			minute: "numeric",
 		};
-		let stories = '';
+		let stories = "";
 		for (let i = allPosts.length - 1; i >= 0; i--) {
-			stories += '<div class="story rounded-3 py-1 px-3 my-3">' +
+			stories +=
+				'<div class="story rounded-3 py-1 px-3 my-3">' +
 				'<h4 id="story-title" class="mt-2 mb-0">' +
 				allPosts[i].title +
-				'</h4>' +
+				"</h4>" +
 				'<a class="rounded-3 p-0 edit-post-button" href="/user/editPost/' +
 				allPosts[i]._id.valueOf() +
 				'"><i class="fa-solid fa-pen-to-square"></i></a>' +
@@ -113,35 +114,42 @@ router.get("/profile/:name", async function (req, res) {
 				allPosts[i]._id.valueOf() +
 				'"><i class="fa-solid fa-trash"></i></button>' +
 				'<p id="story-date" class="mb-0">' +
-				allPosts[i]._id.getTimestamp().toLocaleString('en-us', dateOptions) +
+				allPosts[i]._id.getTimestamp().toLocaleString("en-us", dateOptions) +
 				'</p><p id="story-body" class="mb-3">' +
 				allPosts[i].post +
-				'</p>';
+				"</p>";
 			if (allPosts[i].img[0] != null && allPosts[i].img[0] != undefined) {
-				stories += '<div id="story-img-container" class="mb-3"><div class="row"><div class="col-12"><div class="card"><div class="card-img"><div id="imageGroup' +
+				stories +=
+					'<div id="story-img-container" class="mb-3"><div class="row"><div class="col-12"><div class="card"><div class="card-img"><div id="imageGroup' +
 					i +
 					'" class="carousel slide" data-bs-ride="carousel" data-bs-interval="false"><div class="carousel-inner">';
 				for (let j = 0; j < allPosts[i].img.length; j++) {
-					stories += '<div class="carousel-item'
+					stories += '<div class="carousel-item';
 					if (j == 0) {
-						stories += ' active';
+						stories += " active";
 					}
-					stories += '"><img src=' + allPosts[i].img[j] + ' alt="" class="card-img d-block w-100"/></div>';
+					stories +=
+						'"><img src=' +
+						allPosts[i].img[j] +
+						' alt="" class="card-img d-block w-100"/></div>';
 				}
 				if (allPosts[i].img.length > 1) {
-					stories += '</div><button class="carousel-control-prev" type="button" data-bs-target="#imageGroup' +
+					stories +=
+						'</div><button class="carousel-control-prev" type="button" data-bs-target="#imageGroup' +
 						i +
 						'" data-bs-slide="prev"><span class="carousel-control-prev-icon" aria-hidden="true"></span><span class="visually-hidden">Previous</span> </button><button class="carousel-control-next" type="button" data-bs-target="#imageGroup' +
 						i +
 						'" data-bs-slide="next"><span class="carousel-control-next-icon" aria-hidden="true"></span><span class="visually-hidden">Next</span></button></div>';
 				} else {
-					stories += '</div>';
+					stories += "</div>";
 				}
-				stories += '</div></div></div></div></div></div>';
+				stories += "</div></div></div></div></div></div>";
 			}
-			stories += '</div>';
+			stories += "</div>";
 		}
-		profileDOM.window.document.getElementById("lg-stories-container").innerHTML += stories;
+		profileDOM.window.document.getElementById(
+			"lg-stories-container"
+		).innerHTML += stories;
 		//profileDOM.window.document.getElementById("stories-container").innerHTML += stories;
 		res.header(
 			"Cache-Control",
@@ -185,14 +193,14 @@ function tableHTMLBuilder(result, i) {
 		result.email +
 		//ADMIN COL
 		"</td><td class='admin-column text-center'>" +
-		(result.admin ?
-			"<i class='fa-solid fa-check'></i>" :
-			"<i class='fa-solid fa-xmark'></i>") +
+		(result.admin
+			? "<i class='fa-solid fa-check'></i>"
+			: "<i class='fa-solid fa-xmark'></i>") +
 		//PROMOTON COL
 		"</td><td class='promotion-column text-center'>" +
-		(result.promotion ?
-			"<i class='fa-solid fa-check'></i>" :
-			"<i class='fa-solid fa-xmark'></i>") +
+		(result.promotion
+			? "<i class='fa-solid fa-check'></i>"
+			: "<i class='fa-solid fa-xmark'></i>") +
 		//EDIT BTNS COL
 		"</td><td class='edit-column text-center'>" +
 		"<button id='editModalButton' value='" +
@@ -280,10 +288,12 @@ router.get("/admin", function (req, res) {
  * Function for searching in the dashboard
  */
 router.post("/adminSearch", async function (req, res) {
-	if (await User.findOne({
+	if (
+		(await User.findOne({
 			email: req.session.email,
 			admin: true,
-		}) == null) {
+		})) == null
+	) {
 		return;
 	}
 	res.setHeader("Content-Type", "application/json");
@@ -316,10 +326,12 @@ router.post("/adminSearch", async function (req, res) {
  * Function for filtering admins in the dashboard
  */
 router.post("/adminFilter", async function (req, res) {
-	if (await User.findOne({
+	if (
+		(await User.findOne({
 			email: req.session.email,
 			admin: true,
-		}) == null) {
+		})) == null
+	) {
 		return;
 	}
 	res.setHeader("Content-Type", "application/json");
@@ -346,17 +358,18 @@ router.post("/adminFilter", async function (req, res) {
 	} catch (error) {
 		return;
 	}
-
 });
 
 /**
  * Function for filtering admin candidates in the dashboard
  */
 router.post("/promotionFilter", async function (req, res) {
-	if (await User.findOne({
+	if (
+		(await User.findOne({
 			email: req.session.email,
 			admin: true,
-		}) == null) {
+		})) == null
+	) {
 		return;
 	}
 	res.setHeader("Content-Type", "application/json");
@@ -383,7 +396,6 @@ router.post("/promotionFilter", async function (req, res) {
 	} catch (error) {
 		return;
 	}
-
 });
 
 router.post("/banUser", function (req, res) {
@@ -425,7 +437,6 @@ router.post("/login", function (req, res) {
 			message: "login error",
 		});
 	}
-
 });
 
 //get all users
@@ -449,9 +460,7 @@ router.get("/register", function (req, res) {
 });
 
 var multer = require("multer");
-const {
-	findOne
-} = require("../models/user");
+const { findOne } = require("../models/user");
 
 var storage = multer.diskStorage({
 	destination: (req, file, cb) => {
@@ -475,7 +484,8 @@ router.post("/createAccount", upload.single("pfp"), async function (req, res) {
 			name: req.body.name,
 		});
 		if (hasSameEmail == null && hasSameUsername == null) {
-			let url = "https://res.cloudinary.com/buddyup-images/image/upload/v1652458876/profile_ek8iwp.png";
+			let url =
+				"https://res.cloudinary.com/buddyup-images/image/upload/v1652458876/profile_ek8iwp.png";
 			if (req.file != undefined) {
 				let upload = await cloudinary.v2.uploader.upload(
 					"./public/images/" + req.file.filename,
@@ -489,9 +499,10 @@ router.post("/createAccount", upload.single("pfp"), async function (req, res) {
 						}
 					}
 				);
-				await fs.unlink("./public/images/" + req.file.filename, function (err) {
-
-				});
+				await fs.unlink(
+					"./public/images/" + req.file.filename,
+					function (err) {}
+				);
 				url = upload.secure_url;
 			}
 			if (req.body.name.length > 100) {
@@ -651,47 +662,57 @@ router.post("/edit/submit", upload.single("image"), async function (req, res) {
 						}
 					}
 				);
-				await fs.unlink("./public/images/" + req.file.filename, function (err) {
-
-				});
+				await fs.unlink(
+					"./public/images/" + req.file.filename,
+					function (err) {}
+				);
 				url = upload.secure_url;
 			}
 
 			try {
-				await Timeline.updateMany({
-					author: req.session.name
-				}, {
-					$set: {
-						author: req.body.name
+				await Timeline.updateMany(
+					{
+						author: req.session.name,
 					},
-				});
+					{
+						$set: {
+							author: req.body.name,
+						},
+					}
+				);
 			} catch (error) {
 				//add log here
 			}
 
 			if (url != null) {
-				await User.updateOne({
-					email: req.session.email
-				}, {
-					$set: {
-						img: url,
-						name: req.body.name,
-						about: req.body.about,
-						email: req.body.email,
-						password: req.body.password,
+				await User.updateOne(
+					{
+						email: req.session.email,
 					},
-				});
+					{
+						$set: {
+							img: url,
+							name: req.body.name,
+							about: req.body.about,
+							email: req.body.email,
+							password: req.body.password,
+						},
+					}
+				);
 			} else {
-				await User.updateOne({
-					email: req.session.email
-				}, {
-					$set: {
-						name: req.body.name,
-						about: req.body.about,
-						email: req.body.email,
-						password: req.body.password,
+				await User.updateOne(
+					{
+						email: req.session.email,
 					},
-				});
+					{
+						$set: {
+							name: req.body.name,
+							about: req.body.about,
+							email: req.body.email,
+							password: req.body.password,
+						},
+					}
+				);
 			}
 			req.session.email = req.body.email;
 			req.session.name = req.body.name;
@@ -723,54 +744,53 @@ router.post("/edit/submit", upload.single("image"), async function (req, res) {
 
 module.exports = router;
 
-router.post(
-	"/adminPromotion",
-	async function (req, res) {
+router.post("/adminPromotion", async function (req, res) {
+	const adminReq = new AdminRequest({
+		name: req.body.name,
+		email: req.body.email,
+		reason: req.body.reason,
+	});
 
-		const adminReq = new AdminRequest({
-			name: req.body.name,
+	let login = fs.readFileSync("./public/html/admin_promotion.html", "utf-8");
+	let adminPromotionDOM = new JSDOM(login);
+
+	try {
+		let hasSameEmail = await User.findOne({
 			email: req.body.email,
-			reason: req.body.reason,
 		});
-
-		let login = fs.readFileSync("./public/html/admin_promotion.html", "utf-8");
-		let adminPromotionDOM = new JSDOM(login);
-
-		try {
-			let hasSameEmail = await User.findOne({
-				email: req.body.email,
-			});
-			let hasSameUsername = await User.findOne({
-				name: req.body.name
-			});
-			if (hasSameEmail == null && hasSameUsername == null) {
-				let msg = "";
-				if (hasSameEmail == null) {
-					msg = "Email does not exists!";
-				} else {
-					msg = "Username does not exists!";
-				}
-				adminPromotionDOM.window.document.getElementById("errorMsg").innerHTML =
-					msg;
-				res.send(adminPromotionDOM.serialize());
+		let hasSameUsername = await User.findOne({
+			name: req.body.name,
+		});
+		if (hasSameEmail == null && hasSameUsername == null) {
+			let msg = "";
+			if (hasSameEmail == null) {
+				msg = "Email does not exists!";
 			} else {
-				const newAdminReq = await adminReq.save();
-				await User.updateOne({
-					email: req.body.email,
-				}, {
-					$set: {
-						promotion: true
-					},
-				});
-				res.redirect("/user/login");
+				msg = "Username does not exists!";
 			}
-		} catch (err) {
 			adminPromotionDOM.window.document.getElementById("errorMsg").innerHTML =
-				"Failed to make a request";
+				msg;
 			res.send(adminPromotionDOM.serialize());
+		} else {
+			const newAdminReq = await adminReq.save();
+			await User.updateOne(
+				{
+					email: req.body.email,
+				},
+				{
+					$set: {
+						promotion: true,
+					},
+				}
+			);
+			res.redirect("/user/login");
 		}
+	} catch (err) {
+		adminPromotionDOM.window.document.getElementById("errorMsg").innerHTML =
+			"Failed to make a request";
+		res.send(adminPromotionDOM.serialize());
 	}
-);
+});
 
 /**
  * Function for accessing the admin_promotion page
@@ -794,13 +814,16 @@ router.post(
 	"/createAccountAdmin",
 	upload.single("pfp"),
 	async function (req, res) {
-		if (await User.findOne({
+		if (
+			(await User.findOne({
 				email: req.session.email,
 				admin: true,
-			}) == null) {
+			})) == null
+		) {
 			return;
 		}
-		let url = "https://res.cloudinary.com/buddyup-images/image/upload/v1652458876/profile_ek8iwp.png";
+		let url =
+			"https://res.cloudinary.com/buddyup-images/image/upload/v1652458876/profile_ek8iwp.png";
 		if (req.file != undefined) {
 			let upload = await cloudinary.v2.uploader.upload(
 				"./public/images/" + req.file.filename,
@@ -814,9 +837,10 @@ router.post(
 					}
 				}
 			);
-			await fs.unlink("./public/images/" + req.file.filename, function (err) {
-
-			});
+			await fs.unlink(
+				"./public/images/" + req.file.filename,
+				function (err) {}
+			);
 			url = upload.secure_url;
 		}
 		let adminValue;
@@ -865,7 +889,7 @@ router.post(
 				email: req.body.email,
 			});
 			let hasSameUsername = await User.findOne({
-				name: req.body.name
+				name: req.body.name,
 			});
 			if (hasSameEmail == null && hasSameUsername == null) {
 				const newUser = await user.save();
@@ -900,25 +924,29 @@ router.post(
  * Function for deleting a new user from the admin dashboard
  */
 router.get("/delete/:name", async function (req, res) {
-	if (await User.findOne({
+	if (
+		(await User.findOne({
 			email: req.session.email,
 			admin: true,
-		}) == null) {
+		})) == null
+	) {
 		return;
 	}
 	if (!req.session.loggedIn || req.session.name == req.params["name"]) {
 		res.redirect("/user/login");
 		return;
 	}
-	if (User.findOne({
+	if (
+		User.findOne({
 			email: req.session.email,
 			admin: true,
-		}) == null) {
+		}) == null
+	) {
 		return;
 	}
 	try {
 		await User.deleteOne({
-			name: req.params["name"]
+			name: req.params["name"],
 		});
 	} catch (error) {
 		return;
@@ -937,10 +965,12 @@ router.post(
 	"/editAccountAdmin",
 	upload.single("pfp"),
 	async function (req, res) {
-		if (await User.findOne({
+		if (
+			(await User.findOne({
 				email: req.session.email,
 				admin: true,
-			}) == null) {
+			})) == null
+		) {
 			return;
 		}
 		try {
@@ -980,9 +1010,7 @@ router.post(
 					);
 					await fs.unlink(
 						"./public/images/" + req.file.filename,
-						function (err) {
-
-						}
+						function (err) {}
 					);
 					url = upload.secure_url;
 				}
@@ -991,7 +1019,7 @@ router.post(
 				if (req.body.admin == "on") {
 					adminValue = true;
 					await AdminRequest.deleteOne({
-						email: oldUser.email
+						email: oldUser.email,
 					});
 				} else {
 					if (oldUser.email != req.session.email) {
@@ -999,19 +1027,22 @@ router.post(
 					}
 				}
 				try {
-					await Timeline.updateMany({
-						author: oldUser.name
-					}, {
-						$set: {
-							author: req.body.name
+					await Timeline.updateMany(
+						{
+							author: oldUser.name,
 						},
-					});
+						{
+							$set: {
+								author: req.body.name,
+							},
+						}
+					);
 				} catch (error) {
 					//add log here
 				}
 				//check if the user has an admin request
 				let userRequest = await AdminRequest.findOne({
-					email: oldUser.email
+					email: oldUser.email,
 				});
 
 				if (req.body.name.length > 100) {
@@ -1039,32 +1070,38 @@ router.post(
 					return;
 				}
 				if (url != null) {
-					await User.updateOne({
-						email: oldUser.email
-					}, {
-						$set: {
-							img: url,
-							name: req.body.name,
-							about: req.body.about,
-							email: req.body.email,
-							admin: adminValue,
-							promotion: (userRequest != null) ? true : false,
-							password: req.body.password,
+					await User.updateOne(
+						{
+							email: oldUser.email,
 						},
-					});
+						{
+							$set: {
+								img: url,
+								name: req.body.name,
+								about: req.body.about,
+								email: req.body.email,
+								admin: adminValue,
+								promotion: userRequest != null ? true : false,
+								password: req.body.password,
+							},
+						}
+					);
 				} else {
-					await User.updateOne({
-						email: oldUser.email
-					}, {
-						$set: {
-							name: req.body.name,
-							about: req.body.about,
-							email: req.body.email,
-							admin: adminValue,
-							promotion: (userRequest != null) ? true : false,
-							password: req.body.password,
+					await User.updateOne(
+						{
+							email: oldUser.email,
 						},
-					});
+						{
+							$set: {
+								name: req.body.name,
+								about: req.body.about,
+								email: req.body.email,
+								admin: adminValue,
+								promotion: userRequest != null ? true : false,
+								password: req.body.password,
+							},
+						}
+					);
 				}
 				res.send({
 					success: true,
@@ -1097,10 +1134,12 @@ router.post(
 	"/loadEditModal",
 	upload.single("image"),
 	async function (req, res) {
-		if (await User.findOne({
+		if (
+			(await User.findOne({
 				email: req.session.email,
 				admin: true,
-			}) == null) {
+			})) == null
+		) {
 			return;
 		}
 		try {
@@ -1119,7 +1158,7 @@ router.post(
 				if (reasonObj != null) {
 					obj.reason = reasonObj.reason;
 				} else {
-					obj.reason = '';
+					obj.reason = "";
 				}
 				res.send(obj);
 			} else {
@@ -1150,7 +1189,12 @@ var storagePost = multer.diskStorage({
 		cb(null, "./public/images/");
 	},
 	filename: (req, file, cb) => {
-		cb(null, Date.now() + Math.floor(Math.random() * 999) + path.extname(file.originalname));
+		cb(
+			null,
+			Date.now() +
+				Math.floor(Math.random() * 999) +
+				path.extname(file.originalname)
+		);
 	},
 });
 
@@ -1158,69 +1202,74 @@ var uploadPost = multer({
 	storage: storagePost,
 });
 
-router.post("/write", uploadPost.array("post-image"), async function (req, res) {
-	let upload = [];
-	if (req.body.title.length > 200) {
-		res.send({
-			success: "false",
-			message: "title is too long",
-			type: "title",
-		});
-		return;
-	}
-	try {
-		try {
-			for (let i = 0; i < req.files.length; i++) {
-				if (i < 4) {
-					let image = await cloudinary.v2.uploader.upload("./public/images/" + req.files[i].filename,
-						function (error) {
-
-						});
-					upload[i] = image.secure_url;
-				}
-				await fs.unlink("./public/images/" + req.files[i].filename, function (err) {
-
-				});
-			}
-		} catch (error) {
-			console.log(error);
+router.post(
+	"/write",
+	uploadPost.array("post-image"),
+	async function (req, res) {
+		let upload = [];
+		if (req.body.title.length > 200) {
 			res.send({
 				success: "false",
-				message: "failed to upload profile picture; error: " + error
+				message: "title is too long",
+				type: "title",
 			});
 			return;
 		}
+		try {
+			try {
+				for (let i = 0; i < req.files.length; i++) {
+					if (i < 4) {
+						let image = await cloudinary.v2.uploader.upload(
+							"./public/images/" + req.files[i].filename,
+							function (error) {}
+						);
+						upload[i] = image.secure_url;
+					}
+					await fs.unlink(
+						"./public/images/" + req.files[i].filename,
+						function (err) {}
+					);
+				}
+			} catch (error) {
+				console.log(error);
+				res.send({
+					success: "false",
+					message: "failed to upload profile picture; error: " + error,
+				});
+				return;
+			}
 
-		const storytimeline = await new Timeline({
-			author: req.session.name,
-			title: req.body.title,
-			post: req.body.content,
-			img: upload
-		});
+			const storytimeline = await new Timeline({
+				author: req.session.name,
+				title: req.body.title,
+				post: req.body.content,
+				img: upload,
+			});
 
-		await storytimeline.save();
-		res.send({
-			success: "true",
-			message: "failed to upload profile picture"
-		});
-	} catch (err) {
-		res.send({
-			success: "false",
-			message: "failed to create a post"
-		});
+			await storytimeline.save();
+			res.send({
+				success: "true",
+				message: "failed to upload profile picture",
+			});
+		} catch (err) {
+			res.send({
+				success: "false",
+				message: "failed to create a post",
+			});
+		}
 	}
-});
+);
 
 router.post("/deletePost", async function (req, res) {
 	if (!req.session.loggedIn) {
 		res.redirect("/user/login");
 	} else {
 		let post = await Timeline.findOne({
-			_id: req.body.id
+			_id: req.body.id,
 		});
 		if (post.author == req.session.name) {
 			await Timeline.deleteOne({
-				_id: req.body.id
+				_id: req.body.id,
 			});
 			res.send("Success");
 		}
@@ -1233,12 +1282,13 @@ router.get("/editPost/:id", async function (req, res) {
 		res.redirect("/user/login");
 	} else {
 		let post = await Timeline.findOne({
-			_id: postID
+			_id: postID,
 		});
 		if (post.author == req.session.name) {
 			let edit = fs.readFileSync("./public/html/edit-a-post.html", "utf-8");
 			let editDOM = new JSDOM(edit);
-			editDOM.window.document.getElementById("postID").innerHTML = post._id.valueOf();
+			editDOM.window.document.getElementById("postID").innerHTML =
+				post._id.valueOf();
 			editDOM.window.document.getElementById("postID").style.display = "none";
 			res.send(editDOM.serialize());
 		}
@@ -1250,7 +1300,7 @@ router.post("/getPost", async function (req, res) {
 		res.redirect("/user/login");
 	} else {
 		let post = await Timeline.findOne({
-			_id: req.body.id
+			_id: req.body.id,
 		});
 		if (post.author == req.session.name) {
 			res.send(post);
@@ -1258,71 +1308,77 @@ router.post("/getPost", async function (req, res) {
 	}
 });
 
-
-router.post("/editPost", uploadPost.array("post-image"), async function (req, res) {
-	let post = await Timeline.findOne({
-		_id: req.body.id
-	});
-	if (req.body.title.length > 200) {
-		res.send({
-			success: "false",
-			message: "title is too long",
-			type: "title",
+router.post(
+	"/editPost",
+	uploadPost.array("post-image"),
+	async function (req, res) {
+		let post = await Timeline.findOne({
+			_id: req.body.id,
 		});
-		return;
-	}
-	let upload = post.img;
-	if (post.author == req.session.name) {
-		try {
-			try {
-				for (let i = 0; i < req.files.length; i++) {
-					if (i < 4) {
-						let image = await cloudinary.v2.uploader.upload("./public/images/" + req.files[i].filename,
-							function (error) {
-
-							});
-						upload[i] = image.secure_url;
-					}
-					await fs.unlink("./public/images/" + req.files[i].filename, function (err) {
-
-					});
-				}
-			} catch (error) {
-				console.log(error);
-				res.send({
-					success: "false",
-					message: "failed to upload profile picture; error: " + error
-				});
-				return;
-			}
-
-			await Timeline.updateMany({
-				_id: req.body.id
-			}, {
-				$set: {
-					title: req.body.title,
-					post: req.body.content,
-					img: upload
-				},
-			});
-
-			res.send({
-				success: "true",
-				message: "failed to upload profile picture"
-			});
-		} catch (err) {
+		if (req.body.title.length > 200) {
 			res.send({
 				success: "false",
-				message: "failed to create a post"
+				message: "title is too long",
+				type: "title",
+			});
+			return;
+		}
+		let upload = post.img;
+		if (post.author == req.session.name) {
+			try {
+				try {
+					for (let i = 0; i < req.files.length; i++) {
+						if (i < 4) {
+							let image = await cloudinary.v2.uploader.upload(
+								"./public/images/" + req.files[i].filename,
+								function (error) {}
+							);
+							upload[i] = image.secure_url;
+						}
+						await fs.unlink(
+							"./public/images/" + req.files[i].filename,
+							function (err) {}
+						);
+					}
+				} catch (error) {
+					console.log(error);
+					res.send({
+						success: "false",
+						message: "failed to upload profile picture; error: " + error,
+					});
+					return;
+				}
+
+				await Timeline.updateMany(
+					{
+						_id: req.body.id,
+					},
+					{
+						$set: {
+							title: req.body.title,
+							post: req.body.content,
+							img: upload,
+						},
+					}
+				);
+
+				res.send({
+					success: "true",
+					message: "failed to upload profile picture",
+				});
+			} catch (err) {
+				res.send({
+					success: "false",
+					message: "failed to create a post",
+				});
+			}
+		} else {
+			res.send({
+				success: "false",
+				message: "failed to create a post (bad id)",
 			});
 		}
-	} else {
-		res.send({
-			success: "false",
-			message: "failed to create a post (bad id)"
-		});
 	}
-
-});
+);
 
 module.exports = router;

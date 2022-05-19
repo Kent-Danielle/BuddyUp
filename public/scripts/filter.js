@@ -88,7 +88,8 @@ gameInput.addEventListener("keypress", function (e) {
 });
 
 // submit the data to the server and find a match
-document.getElementById("submit").addEventListener("click", function (e) {
+const submitFilter = document.getElementById("submit");
+submitFilter.addEventListener("click", function (e) {
 	e.preventDefault;
 
 	let data = {};
@@ -97,44 +98,86 @@ document.getElementById("submit").addEventListener("click", function (e) {
 	} else {
 		data.hasGameFilters = true;
 		data.gameFilters = gameFilters;
+		data.currentUser = currentUser;
 
-		let result = fetch("/match/findMatch", {
-			method: "POST",
-			headers: {
-				Accept: "application/json",
-				"Content-Type": "application/json",
-			},
-			body: JSON.stringify(data),
-		})
-			.then(function (response) {
-				return response.text();
-			})
-			.then(function (result) {
-				document.getElementById("message-filter-container").style.setProperty("display", "none");
-				document
-					.getElementById("profile-modal")
-					.style.setProperty("display", "flex", "important");
-				document.getElementById("profile-container").innerHTML = result;
-			});
-	}
-});
+		let filters = JSON.stringify(data);
 
-document.getElementById("reject-match").addEventListener("click", function (e) {
-
-	let result = fetch("/match/findAnotherMatch", {
-		method: "POST",
-		headers: {
-			Accept: "application/json",
-			"Content-Type": "application/json",
-		},
-	})
-		.then(function (response) {
-			return response.text();
-		})
-		.then(function (result) {
+		socket.emit("find-match", filters, async function (result) {
+			document
+				.getElementById("match-filters-container")
+				.style.setProperty("display", "none", "important");
 			document
 				.getElementById("profile-modal")
 				.style.setProperty("display", "flex", "important");
-			document.getElementById("profile-container").innerHTML = result;
+			document.getElementById("profile-container").innerHTML = result.profile;
+			console.log(result.roomID);
+			localStorage.setItem("roomID", result.roomID);
+
+			//update their status to match
+			socket.emit("update-status", currentUser, true);
 		});
+	}
+});
+
+let currentUser = localStorage.getItem("loggedInName");
+
+/**
+ * Accept the match
+ */
+document
+	.getElementById("accept-match")
+	.addEventListener("click", async function (e) {
+		let roomID = localStorage.getItem("roomID");
+
+		socket.emit("accept-match", roomID);
+		document
+			.getElementById("profile-modal")
+			.style.setProperty("display", "none", "important");
+		document.getElementById("send-button").disabled = false;
+		document.getElementById("message-field").disabled = false;
+	});
+
+/**
+ * Reject the match
+ */
+document
+	.getElementById("reject-match")
+	.addEventListener("click", async function (e) {
+		let data = localStorage.getItem("loggedInName");
+		let room = localStorage.getItem("roomID");
+		socket.emit("reject-match", data, room);
+	});
+
+/**
+ * Listen for rejection
+ */
+socket.on("rejected", function () {
+	document.getElementById("profile-container").innerHTML = "got rejected";
+	socket.emit("update-status", currentUser, false);
+});
+
+/**
+ * Find another
+ */
+socket.on("find-another", async function () {
+	let data = {};
+	data.gameFilters = gameFilters;
+	data.currentUser = currentUser;
+
+	let filters = JSON.stringify(data);
+
+	socket.emit("find-match", filters, async function (result) {
+		document
+			.getElementById("match-filters-container")
+			.style.setProperty("display", "none", "important");
+		document
+			.getElementById("profile-modal")
+			.style.setProperty("display", "flex", "important");
+		document.getElementById("profile-container").innerHTML = result.profile;
+		console.log(result.roomID);
+		localStorage.setItem("roomID", result.roomID);
+
+		//update their status to match
+		socket.emit("update-status", currentUser, true);
+	});
 });
