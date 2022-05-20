@@ -14,8 +14,8 @@ async function loadGames() {
 
 	const gamesContainer = document.getElementById("games-container");
 
-	console.log(data);
-	console.log(data.games);
+	// console.log(data);
+	// console.log(data.games);
 	if (data != null && data.games != null) {
 		if (data.games.length > 0) {
 			gamesContainer.innerHTML = "";
