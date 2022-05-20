@@ -60,7 +60,7 @@ body {
 	backdrop-filter: blur(3px);
 	-webkit-backdrop-filter: blur(3px);
 	border: 1px solid rgba(255, 255, 255, 0.18);
-	height: 87%;
+	height: 85%;
 	overflow-y: scroll;
 }
 
@@ -82,7 +82,7 @@ body {
 	backdrop-filter: blur(3px);
 	-webkit-backdrop-filter: blur(3px);
 	border: 1px solid rgba(255, 255, 255, 0.18);
-	width: calc(100% - (((1rem * 0.25) * 2) + 2rem));
+	width: calc(100% - (((1rem * 0.25) * 2) + 2.7rem));
 	height: 2.3rem;
 }
 
