@@ -1,6 +1,6 @@
 "use strict";
 
-const socket = io.connect("http://localhost:3000");
+const socket = io.connect("/");
 
 /**
  * Socket function for receiving message
@@ -41,81 +41,77 @@ function displayMessage(you, message) {
 	);
 	messageBubble.innerText = message;
 	let messageLine = document.createElement("div");
-	messageLine.classList.add("w-100", "d-inline-block", "my-1", "px-2");
+	messageLine.classList.add(
+		"message-line",
+		"w-100",
+		"d-inline-block",
+		"my-1",
+		"px-2"
+	);
 	messageLine.appendChild(messageBubble);
 	document.getElementById("message-container").appendChild(messageLine);
+	document.getElementById("message-container").scrollTo(0, document.getElementById("message-container").scrollHeight)
 }
 
-// auto fill game filters that the user has for their account
+/**
+ * Function for getting out of the chatroom
+ */
+let exitChatroomBtn = document.getElementById("exit-chatroom");
+exitChatroomBtn.addEventListener("click", (e) => {
+	e.preventDefault();
+	let room = localStorage.getItem("roomID");
+	socket.emit("exit-match", currentUser, room);
+	document
+		.getElementById("match-filters-container")
+		.style.setProperty("display", "block", "important");
+	exitChatroomBtn.style.setProperty("display", "none", "important");
+	displayStatusMessage("You left the room.");
+});
 
-// helper function to create a game filter span field to be displayed on the DOM
-function createGameSpan(gameFilter) {
-	let gameSpan = document.createElement("span");
-	gameSpan.classList.add(
-		"filter",
-		"px-2",
-		"m-1",
+/**
+ * Function for getting out of the chatpage
+ */
+let exitChatpageBtn = document.getElementById("exit-chatpage");
+exitChatpageBtn.addEventListener("click", (e) => {
+	e.preventDefault();
+	let room = localStorage.getItem("roomID");
+	socket.emit("exit-match", currentUser, room);
+	window.location.replace("/user/profile");
+});
+
+/**
+ * Socket function for listening if the other user has left
+ */
+socket.on("ghosted", (message) => {
+	socket.emit("ghosted-status", currentUser);
+	document
+		.getElementById("match-filters-container")
+		.style.setProperty("display", "block", "important");
+	exitChatroomBtn.style.setProperty("display", "none", "important");
+	displayStatusMessage(message);
+});
+
+async function displayStatusMessage(message) {
+	let messageBubble = document.createElement("div");
+	messageBubble.id = "exit-status";
+	messageBubble.classList.add(
+		"message-bubble",
+		"status-msg",
 		"d-inline-block",
-		"rounded-pill"
+		"w-100",
+		"rounded-3",
+		"text-center"
 	);
-	count++;
-	gameSpan.id = "gamefilter" + count;
-	gameSpan.innerText = gameFilter;
-	return gameSpan;
+	messageBubble.innerText = message;
+	let messageLine = document.createElement("div");
+	messageLine.classList.add(
+		"message-line",
+		"w-100",
+		"d-inline-block",
+		"my-1",
+		"px-2"
+	);
+	messageLine.appendChild(messageBubble);
+	document.getElementById("message-container").prepend(messageLine);
+	document.getElementById("message-container").scrollTop = 0;
 }
-
-// helper function to create a delete button for a game filter
-function createGameFilterDeleteButton(gameSpan, gameFilter) {
-	let deleteButton = document.createElement("button");
-	deleteButton.value = gameFilter;
-	deleteButton.innerHTML = '<i class="fa-solid fa-x"></i>';
-	deleteButton.addEventListener("click", function (e) {
-		let name = this.value;
-		let index = gameFilters.indexOf(name.toLowerCase());
-		if (index != -1) {
-			gameFilters.splice(index, 1);
-		}
-		gameSpan.remove();
-		count--;
-		document.getElementById("error-msg").innerText = "";
-	});
-	return deleteButton;
-}
-
-// adds the game filter to be displayed
-function addGame(name) {
-	let gameFilter = name;
-	gameFilters.push(gameFilter.toLowerCase());
-
-	// add the game filter to be displayed
-	let gameSpan = createGameSpan(gameFilter);
-
-	// add a delete button to the game filter
-	let deleteButton = createGameFilterDeleteButton(gameSpan, gameFilter);
-	gameSpan.appendChild(deleteButton);
-
-	// add the game filter to the DOM
-	const gameFiltersDiv = document.getElementById("gameFiltersContainer");
-	gameFiltersDiv.appendChild(gameSpan);
-}
-
-// get the user's data from the server
-async function getUserData() {
-	let data = fetch("/user/info")
-		.then(function (response) {
-			return response.text();
-		})
-		.then(function (data) {
-			return JSON.parse(data);
-		});
-	return data;
-}
-
-// auto fill each game from the user as a filter
-async function autoFillFilters() {
-	let data = await getUserData();
-	data.games.forEach(game => {
-		addGame(game);
-	});
-}
-autoFillFilters();

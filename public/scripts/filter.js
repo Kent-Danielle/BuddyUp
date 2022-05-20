@@ -89,6 +89,44 @@ gameInput.addEventListener("keypress", function (e) {
 	}
 });
 
+// adds the game filter to be displayed
+function addGame(name) {
+	let gameFilter = name;
+	gameFilters.push(gameFilter.toLowerCase());
+
+	// add the game filter to be displayed
+	let gameSpan = createGameSpan(gameFilter);
+
+	// add a delete button to the game filter
+	let deleteButton = createGameFilterDeleteButton(gameSpan, gameFilter);
+	gameSpan.appendChild(deleteButton);
+
+	// add the game filter to the DOM
+	const gameFiltersDiv = document.getElementById("gameFiltersContainer");
+	gameFiltersDiv.appendChild(gameSpan);
+}
+
+// get the user's data from the server
+async function getUserData() {
+	let data = fetch("/user/info")
+		.then(function (response) {
+			return response.text();
+		})
+		.then(function (data) {
+			return JSON.parse(data);
+		});
+	return data;
+}
+
+// auto fill each game from the user as a filter
+async function autoFillFilters() {
+	let data = await getUserData();
+	data.games.forEach((game) => {
+		addGame(game);
+	});
+}
+autoFillFilters();
+
 let currentUser = localStorage.getItem("loggedInName");
 
 // submit the data to the server and find a match

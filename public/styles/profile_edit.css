@@ -135,7 +135,7 @@ form>#submit-container {
 	margin: 1rem 0;
 }
 
-input[type="submit"] {
+#submit {
 	box-sizing: border-box;
 	color: white;
 	background: rgba(22, 100, 214, 0.91);
@@ -149,6 +149,19 @@ input[type="submit"] {
 }
 
 
+#game-text {
+	box-sizing: border-box;
+	background-color: rgba(255, 255, 255, 0);
+	border: none;
+	border-bottom: 2px solid var(--accent-light);
+}
+
+#gameFiltersContainer {
+	background-color: rgba(255, 255, 255, 0);
+	border: 2px solid var(--accent-light);
+	border-radius: 0.5rem;
+	min-height: 2rem;
+}
 
 #loading {
 	text-align: center;

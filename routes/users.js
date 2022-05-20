@@ -68,12 +68,10 @@ router.get("/profile/:name", async function (req, res) {
 			}
 		}
 
-
 		await ChatUser.updateOne(
 			{ name: req.session.name },
-			{ $set: { last_match: null, finding: false, matched: false} }
+			{ $set: { last_match: null, finding: false, matched: false } }
 		);
-
 
 		if (currentUser.about == null) {
 			currentUser.about = "";
@@ -612,7 +610,14 @@ router.get("/info", async function (req, res) {
 // updates the users information after editing and then redirects them back to their profile page
 router.post("/edit/submit", upload.single("image"), async function (req, res) {
 	try {
-		let filters = req.body.filters.split(",");
+		console.log(req.body.filters);
+		let filters = req.body.filters;
+		if (filters != " " && filters != "") {
+			filters = req.body.filters.split(",");
+		} else {
+			filters = null;
+		}
+
 		let noEmailChange = req.body.email === req.session.email;
 
 		let hasSameEmail = await User.findOne({

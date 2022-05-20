@@ -1,4 +1,11 @@
-'use strict';
+"use strict";
+
+document.getElementById("edit-form").onkeypress = function (e) {
+	var key = e.charCode || e.keyCode || 0;
+	if (key == 13) {
+		e.preventDefault();
+	}
+};
 
 // used for the id of each filter
 let count = 0;
@@ -78,7 +85,7 @@ gameInput.addEventListener("keypress", function (e) {
 	var key = e.which || e.keyCode;
 
 	// if we press enter and don't have an empty string for our filter then try and add it
-	if (key == enterKey && gameInput.value !== "") {
+	if (key == enterKey && gameInput.value != "") {
 		e.preventDefault();
 		// if we don't already have this game filter, then proceed
 		if (gameFilters.indexOf(gameInput.value.toLowerCase()) != -1) {
@@ -135,15 +142,13 @@ async function loadUserData() {
 	document.getElementById("email").setAttribute("value", userInfo.email);
 	document.getElementById("about").innerText = userInfo.about;
 	document.getElementById("password").value = userInfo.password;
-	
+
 	// add game filters
-	userInfo.games.forEach(game => {
+	userInfo.games.forEach((game) => {
 		addGame(game);
 	});
-
 }
 loadUserData();
-
 
 //use the fetch api to update the user's profile
 document.getElementById("submit").addEventListener("click", function (e) {
@@ -167,9 +172,12 @@ document.getElementById("submit").addEventListener("click", function (e) {
 			} else {
 				console.log("did not successfully update profile");
 				let inputs = document.querySelectorAll(".inputFields");
-				inputs.forEach((input) => input.style.backgroundColor = "rgba(255, 255, 255, 0)");
+				inputs.forEach(
+					(input) => (input.style.backgroundColor = "rgba(255, 255, 255, 0)")
+				);
 				document.getElementById("errorMsg").innerText = result.message;
-				document.getElementById(result.type).style.backgroundColor = 'var(--accent-light)';
+				document.getElementById(result.type).style.backgroundColor =
+					"var(--accent-light)";
 			}
 		});
 });
