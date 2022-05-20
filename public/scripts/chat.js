@@ -50,6 +50,7 @@ function displayMessage(you, message) {
 	);
 	messageLine.appendChild(messageBubble);
 	document.getElementById("message-container").appendChild(messageLine);
+	document.getElementById("message-container").scrollTo(0, document.getElementById("message-container").scrollHeight)
 }
 
 /**
