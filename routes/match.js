@@ -2,12 +2,11 @@
 
 //express
 const express = require("express");
-const app = express();
 
 //socket.io
 const io = require("socket.io")(3000, {
 	cors: {
-		origin: ["http://localhost:8000"],
+		origin: ["https://buddy-up-comp2800.herokuapp.com/"],
 	},
 });
 
