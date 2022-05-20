@@ -97,6 +97,19 @@ body {
 	width: 100%;
 }
 
+#chat-button {
+	background-color: var(--secondary-light);
+	z-index: 99;
+	height: 1rem;
+	width: 1rem;
+	clip-path: circle();
+	position: fixed;
+	bottom: 1rem;
+	right: 1rem;
+	color: var(--primary-light);
+	text-decoration: none !important;
+}
+
 #bottom-profile {
 	background: rgba(255, 255, 255, 0.2);
 	box-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.37);
@@ -146,11 +159,16 @@ p:hover {
  */
 @media only screen and (max-width: 844px) {
 
-	/* #lg-stories-container {
-		display: none !important;
-	} */
 	#lg-stories-container {
 		width: 100%;
+	}
+	#chat-button {
+		font-size: 2rem;
+		width: 6rem;
+		height: 6rem;
+	}
+	#bottomSpace {
+		height: 8rem;
 	}
 }
 
@@ -159,10 +177,6 @@ p:hover {
  *----------------
  */
 @media only screen and (min-width: 845px) {
-
-	/* section#stories {
-		display: none !important;
-	} */
 	#profile-container {
 		position: fixed;
 		width: 33%;
@@ -171,5 +185,13 @@ p:hover {
 	#lg-stories-container {
 		overflow: auto;
 		width: 67%;
+	}
+	#chat-button {
+		font-size: 3rem;
+		width: 15%;
+		height: 20%;
+	}
+	#bottomSpace {
+		height: 25vh;
 	}
 }

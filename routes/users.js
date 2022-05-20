@@ -85,7 +85,6 @@ router.get("/profile/:name", async function (req, res) {
 			currentUser.name;
 		profileDOM.window.document.getElementById("bio-text").innerHTML =
 			currentUser.about;
-		
 		profileDOM.window.document.getElementById("pfp").src = currentUser.img;
 
 		let allPosts;
