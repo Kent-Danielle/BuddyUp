@@ -7,13 +7,18 @@ if (process.env.NODE_ENV !== 'production') {
 const express = require('express');
 const expressLayouts = require('express-ejs-layouts');
 const mongoose = require('mongoose');
-const app = express()
+const app = express();
+const server = require('http').Server(app);
+const io = require("socket.io")(server);
+
 const bodyParser = require('body-parser');
 const path = require('path');
 const session = require('express-session');
 const cookieParser = require("cookie-parser");
 const User = require("./models/user");
 
+exports.server = server;
+exports.io = io;
 
 app.use(cookieParser())
 app.use(express.json());
@@ -49,7 +54,7 @@ const matchRouter = require('./routes/match');
 
 // // RUN SERVER
 let port = 8000;
-app.listen(process.env.PORT || port, function () {
+server.listen(process.env.PORT || port, function () {
     console.log('Listening on port ' + port + '!');
 });
 //
