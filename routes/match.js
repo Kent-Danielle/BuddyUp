@@ -115,6 +115,8 @@ async function displayMatchedUserProfile(user2) {
 		stories += "</div>";
 	}
 
+	let chatuser = await ChatUser.findOne({ name: user2.name });
+
 	let html =
 		"<div id='top-profile' class=''>" +
 		"<div id='pfp-container' class='mb-3'>" +
@@ -123,7 +125,7 @@ async function displayMatchedUserProfile(user2) {
 		" alt='' id='pfp' />" +
 		"</div>" +
 		"<div id='info-container'>" +
-		"	<h2 id='username'>" +
+		"<h2 id='username'>" +
 		user.name +
 		"</h2>" +
 		"<p id='bio-text'>" +
@@ -133,8 +135,18 @@ async function displayMatchedUserProfile(user2) {
 		"<div id='bottom-profile' class='rounded-3 py-2 mb-3'>" +
 		"<section id='games'>" +
 		"<h3>Games</h3>" +
-		"<div id='games-container'>" +
-		"<p id='game' class='d-inline-block btn-primary px-2 py-1 rounded-3'>Coming Soon</p>" +
+		"<div id='games-container'>";
+
+	let arr = chatuser.filters;
+
+	arr.forEach((element) => {
+		html +=
+			"<p  class='d-inline-block game px-2 py-1 rounded-3 mb-2 me-2'>" +
+			element +
+			"</p>";
+	});
+
+	html +=
 		"</div>" +
 		"</section>" +
 		"<section id='stories'>" +

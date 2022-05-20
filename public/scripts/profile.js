@@ -14,25 +14,41 @@ async function loadGames() {
 
 	const gamesContainer = document.getElementById("games-container");
 
-    
-	if (data.games.length > 0) {   
-        gamesContainer.innerHTML = "";
-		data.games.forEach((game) => {
-			let gamesP = document.createElement("p");
+	console.log(data);
+	console.log(data.games);
+	if (data != null && data.games != null) {
+		if (data.games.length > 0) {
+			gamesContainer.innerHTML = "";
+			data.games.forEach((game) => {
+				let gamesP = document.createElement("p");
+				gamesP.classList.add(
+					"game",
+					"d-inline-block",
+					"px-2",
+					"py-1",
+					"rounded-3",
+					"mb-2",
+					"me-2"
+				);
+				gamesP.innerHTML = game;
+				gamesContainer.appendChild(gamesP);
+			});
+		} else {
+			gamesContainer.innerHTML = "";
+			let gamesP = document.createElement("a");
 			gamesP.classList.add(
 				"game",
 				"d-inline-block",
 				"px-2",
 				"py-1",
-				"rounded-3",
-				"mb-2",
-				"me-2"
+				"rounded-3"
 			);
-			gamesP.innerHTML = game;
+			gamesP.classList.add("text-decoration-none");
+			gamesP.href = "/user/edit";
+			gamesP.innerText = "Add your games here!";
 			gamesContainer.appendChild(gamesP);
-		});
+		}
 	} else {
-        gamesContainer.innerHTML = "";
 		let gamesP = document.createElement("a");
 		gamesP.classList.add("game", "d-inline-block", "px-2", "py-1", "rounded-3");
 		gamesP.classList.add("text-decoration-none");
