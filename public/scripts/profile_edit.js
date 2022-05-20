@@ -144,9 +144,11 @@ async function loadUserData() {
 	document.getElementById("password").value = userInfo.password;
 
 	// add game filters
-	userInfo.games.forEach((game) => {
-		addGame(game);
-	});
+	if (userInfo.games != null) {
+		userInfo.games.forEach((game) => {
+			addGame(game);
+		});
+	}
 }
 loadUserData();
 

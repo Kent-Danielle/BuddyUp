@@ -13,7 +13,16 @@ async function loadGames() {
 		});
 
 	const gamesContainer = document.getElementById("games-container");
+	if (gamesContainer.innerHTML.trim() == "") {
+		let gamesP = document.createElement("a");
+		gamesP.classList.add("game", "d-inline-block", "px-2", "py-1", "rounded-3");
+		gamesP.classList.add("text-decoration-none");
+		gamesP.href = "/user/edit";
+		gamesP.innerText = "Add your games here!";
+		gamesContainer.appendChild(gamesP);
+	}
 	if (data.games != null) {
+        gamesContainer.innerHTML = "";
 		data.games.forEach((game) => {
 			let gamesP = document.createElement("p");
 			gamesP.classList.add(
@@ -22,13 +31,14 @@ async function loadGames() {
 				"px-2",
 				"py-1",
 				"rounded-3",
-                "mb-2",
-                "me-2"
+				"mb-2",
+				"me-2"
 			);
 			gamesP.innerHTML = game;
 			gamesContainer.appendChild(gamesP);
 		});
 	} else {
+        gamesContainer.innerHTML = "";
 		let gamesP = document.createElement("a");
 		gamesP.classList.add("game", "d-inline-block", "px-2", "py-1", "rounded-3");
 		gamesP.classList.add("text-decoration-none");
