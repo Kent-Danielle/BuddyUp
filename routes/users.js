@@ -1,4 +1,4 @@
-'use strict';
+"use strict";
 
 var cloudinary = require("cloudinary");
 cloudinary.config({
@@ -12,11 +12,10 @@ const router = express.Router();
 const User = require("../models/user");
 const AdminRequest = require("../models/admin-request");
 const Timeline = require("../models/user-timeline");
+const ChatUser = require("../models/chat-user.js");
 const path = require("path");
 const fs = require("fs");
-const {
-	JSDOM
-} = require("jsdom");
+const { JSDOM } = require("jsdom");
 
 //get all users
 router.get("/", function (req, res) {
@@ -42,7 +41,6 @@ router.get("/profile/:name", async function (req, res) {
 			currentUser = await User.findOne({
 				email: req.session.email,
 			});
-
 			isAdmin = await User.findOne({
 				email: req.session.email,
 				admin: true,
@@ -70,6 +68,11 @@ router.get("/profile/:name", async function (req, res) {
 			}
 		}
 
+		await ChatUser.updateOne(
+			{ name: req.session.name },
+			{ $set: { last_match: null, finding: false, matched: false } }
+		);
+
 		if (currentUser.about == null) {
 			currentUser.about = "";
 		}
@@ -85,27 +88,70 @@ router.get("/profile/:name", async function (req, res) {
 		let allPosts;
 		try {
 			allPosts = await Timeline.find({
-				author: currentUser.name
+				author: currentUser.name,
 			});
 		} catch (error) {
 			return;
 		}
-
-		let stories = '';
-		for (let i = 0; i < allPosts.length; i++) {
-			stories += '<div id="story" class="rounded-3 py-1 px-3 my-3">' +
+		let dateOptions = {
+			weekday: "long",
+			year: "numeric",
+			month: "long",
+			day: "numeric",
+			hour: "numeric",
+			minute: "numeric",
+		};
+		let stories = "";
+		for (let i = allPosts.length - 1; i >= 0; i--) {
+			stories +=
+				'<div class="story rounded-3 py-1 px-3 my-3">' +
 				'<h4 id="story-title" class="mt-2 mb-0">' +
 				allPosts[i].title +
-				'</h4><p id="story-body" class="mb-3">' +
+				"</h4>" +
+				'<a class="rounded-3 p-0 edit-post-button" href="/user/editPost/' +
+				allPosts[i]._id.valueOf() +
+				'"><i class="fa-solid fa-pen-to-square"></i></a>' +
+				'<button class="delete-post-button" value="' +
+				allPosts[i]._id.valueOf() +
+				'"><i class="fa-solid fa-trash"></i></button>' +
+				'<p id="story-date" class="mb-0">' +
+				allPosts[i]._id.getTimestamp().toLocaleString("en-us", dateOptions) +
+				'</p><p id="story-body" class="mb-3">' +
 				allPosts[i].post +
-				'</p><div id="story-img-container" class="mb-3"><div class="row"><div class="col-12">';
-			if (allPosts[i].img != null) {
-				stories += '<div class="card"><div class="card-img"><img src=' + allPosts[i].img + ' alt="" id="story-img" class="card-img"/></div></div>';
+				"</p>";
+			if (allPosts[i].img[0] != null && allPosts[i].img[0] != undefined) {
+				stories +=
+					'<div id="story-img-container" class="mb-3"><div class="row"><div class="col-12"><div class="card"><div class="card-img"><div id="imageGroup' +
+					i +
+					'" class="carousel slide" data-bs-ride="carousel" data-bs-interval="false"><div class="carousel-inner">';
+				for (let j = 0; j < allPosts[i].img.length; j++) {
+					stories += '<div class="carousel-item';
+					if (j == 0) {
+						stories += " active";
+					}
+					stories +=
+						'"><img src=' +
+						allPosts[i].img[j] +
+						' alt="" class="card-img d-block w-100"/></div>';
+				}
+				if (allPosts[i].img.length > 1) {
+					stories +=
+						'</div><button class="carousel-control-prev" type="button" data-bs-target="#imageGroup' +
+						i +
+						'" data-bs-slide="prev"><span class="carousel-control-prev-icon" aria-hidden="true"></span><span class="visually-hidden">Previous</span> </button><button class="carousel-control-next" type="button" data-bs-target="#imageGroup' +
+						i +
+						'" data-bs-slide="next"><span class="carousel-control-next-icon" aria-hidden="true"></span><span class="visually-hidden">Next</span></button></div>';
+				} else {
+					stories += "</div>";
+				}
+				stories += "</div></div></div></div></div></div>";
 			}
-			stories += '</div></div></div></div>';
+			stories += "</div>";
 		}
-		profileDOM.window.document.getElementById("lg-stories-container").innerHTML += stories;
-		profileDOM.window.document.getElementById("stories-container").innerHTML += stories;
+		profileDOM.window.document.getElementById(
+			"lg-stories-container"
+		).innerHTML += stories;
+		//profileDOM.window.document.getElementById("stories-container").innerHTML += stories;
 		res.header(
 			"Cache-Control",
 			"no-cache, private, no-store, must-revalidate, max-stale=0, post-check=0, pre-check=0"
@@ -148,14 +194,14 @@ function tableHTMLBuilder(result, i) {
 		result.email +
 		//ADMIN COL
 		"</td><td class='admin-column text-center'>" +
-		(result.admin ?
-			"<i class='fa-solid fa-check'></i>" :
-			"<i class='fa-solid fa-xmark'></i>") +
+		(result.admin
+			? "<i class='fa-solid fa-check'></i>"
+			: "<i class='fa-solid fa-xmark'></i>") +
 		//PROMOTON COL
 		"</td><td class='promotion-column text-center'>" +
-		(result.promotion ?
-			"<i class='fa-solid fa-check'></i>" :
-			"<i class='fa-solid fa-xmark'></i>") +
+		(result.promotion
+			? "<i class='fa-solid fa-check'></i>"
+			: "<i class='fa-solid fa-xmark'></i>") +
 		//EDIT BTNS COL
 		"</td><td class='edit-column text-center'>" +
 		"<button id='editModalButton' value='" +
@@ -242,14 +288,22 @@ router.get("/admin", function (req, res) {
 /**
  * Function for searching in the dashboard
  */
-router.post("/adminSearch", function (req, res) {
+router.post("/adminSearch", async function (req, res) {
+	if (
+		(await User.findOne({
+			email: req.session.email,
+			admin: true,
+		})) == null
+	) {
+		return;
+	}
 	res.setHeader("Content-Type", "application/json");
 	let searchOptions = {};
 	if (req.body.input != null || req.body.input != "") {
 		searchOptions.name = new RegExp(req.body.input, "i");
 	}
 	try {
-		User.find(searchOptions, function (err, result) {
+		await User.find(searchOptions, function (err, result) {
 			if (err) {
 				res.send("Error finding users!");
 			} else {
@@ -272,14 +326,22 @@ router.post("/adminSearch", function (req, res) {
 /**
  * Function for filtering admins in the dashboard
  */
-router.post("/adminFilter", function (req, res) {
+router.post("/adminFilter", async function (req, res) {
+	if (
+		(await User.findOne({
+			email: req.session.email,
+			admin: true,
+		})) == null
+	) {
+		return;
+	}
 	res.setHeader("Content-Type", "application/json");
 	let searchOptions = {};
 	if (req.body.input != null) {
 		searchOptions.admin = req.body.input;
 	}
 	try {
-		User.find(searchOptions, function (err, result) {
+		await User.find(searchOptions, function (err, result) {
 			if (err) {
 				res.send("Error finding users!");
 			} else {
@@ -297,20 +359,27 @@ router.post("/adminFilter", function (req, res) {
 	} catch (error) {
 		return;
 	}
-
 });
 
 /**
  * Function for filtering admin candidates in the dashboard
  */
-router.post("/promotionFilter", function (req, res) {
+router.post("/promotionFilter", async function (req, res) {
+	if (
+		(await User.findOne({
+			email: req.session.email,
+			admin: true,
+		})) == null
+	) {
+		return;
+	}
 	res.setHeader("Content-Type", "application/json");
 	let searchOptions = {};
 	if (req.body.input != null) {
 		searchOptions.promotion = req.body.input;
 	}
 	try {
-		User.find(searchOptions, function (err, result) {
+		await User.find(searchOptions, function (err, result) {
 			if (err) {
 				res.send("Error finding users!");
 			} else {
@@ -369,7 +438,6 @@ router.post("/login", function (req, res) {
 			message: "login error",
 		});
 	}
-
 });
 
 //get all users
@@ -417,7 +485,8 @@ router.post("/createAccount", upload.single("pfp"), async function (req, res) {
 			name: req.body.name,
 		});
 		if (hasSameEmail == null && hasSameUsername == null) {
-			let url = "/images/profile.png";
+			let url =
+				"https://res.cloudinary.com/buddyup-images/image/upload/v1652458876/profile_ek8iwp.png";
 			if (req.file != undefined) {
 				let upload = await cloudinary.v2.uploader.upload(
 					"./public/images/" + req.file.filename,
@@ -431,10 +500,35 @@ router.post("/createAccount", upload.single("pfp"), async function (req, res) {
 						}
 					}
 				);
-				await fs.unlink("./public/images/" + req.file.filename, function (err) {
-
-				});
+				await fs.unlink(
+					"./public/images/" + req.file.filename,
+					function (err) {}
+				);
 				url = upload.secure_url;
+			}
+			if (req.body.name.length > 100) {
+				res.send({
+					success: "false",
+					message: "name must be less then 100 characters",
+					type: "name",
+				});
+				return;
+			}
+			if (req.body.email.length > 100) {
+				res.send({
+					success: "false",
+					message: "email must be less then 100 characters",
+					type: "email",
+				});
+				return;
+			}
+			if (req.body.about.length > 280) {
+				res.send({
+					success: "false",
+					message: "bio is too long",
+					type: "about",
+				});
+				return;
 			}
 			const user = new User({
 				name: req.body.name,
@@ -452,16 +546,19 @@ router.post("/createAccount", upload.single("pfp"), async function (req, res) {
 				message: "created account",
 			});
 		} else {
-			let msg = "";
 			if (hasSameEmail != null) {
-				msg = "Email already exists!";
+				res.send({
+					success: "false",
+					message: "email already taken",
+					type: "email",
+				});
 			} else {
-				msg = "Username already exists!";
+				res.send({
+					success: "false",
+					message: "username already taken",
+					type: "name",
+				});
 			}
-			res.send({
-				success: "false",
-				message: msg,
-			});
 		}
 	} catch (err) {
 		res.send({
@@ -471,8 +568,9 @@ router.post("/createAccount", upload.single("pfp"), async function (req, res) {
 	}
 });
 
-router.get("/logout", function (req, res) {
+router.get("/logout", async function (req, res) {
 	if (req.session) {
+		await ChatUser.deleteMany({ name: req.session.name });
 		req.session.destroy(function (error) {
 			if (error) {
 				res.status(400).send("Unable to log out");
@@ -512,6 +610,14 @@ router.get("/info", async function (req, res) {
 // updates the users information after editing and then redirects them back to their profile page
 router.post("/edit/submit", upload.single("image"), async function (req, res) {
 	try {
+		console.log(req.body.filters);
+		let filters = req.body.filters;
+		if (filters != " " && filters != "") {
+			filters = req.body.filters.split(",");
+		} else {
+			filters = null;
+		}
+
 		let noEmailChange = req.body.email === req.session.email;
 
 		let hasSameEmail = await User.findOne({
@@ -528,6 +634,31 @@ router.post("/edit/submit", upload.single("image"), async function (req, res) {
 			(hasSameEmail == null || noEmailChange) &&
 			(hasSameUsername == null || noNameChange)
 		) {
+			if (req.body.name.length > 100) {
+				res.send({
+					success: false,
+					message: "name must be less then 100 characters",
+					type: "name",
+				});
+				return;
+			}
+			if (req.body.email.length > 100) {
+				res.send({
+					success: false,
+					message: "email must be less then 100 characters",
+					type: "email",
+				});
+				return;
+			}
+			if (req.body.about.length > 280) {
+				console.log("bio too big");
+				res.send({
+					success: false,
+					message: "bio is too long",
+					type: "about",
+				});
+				return;
+			}
 			let url;
 			if (req.file != undefined) {
 				let upload = await cloudinary.v2.uploader.upload(
@@ -542,109 +673,137 @@ router.post("/edit/submit", upload.single("image"), async function (req, res) {
 						}
 					}
 				);
-				await fs.unlink("./public/images/" + req.file.filename, function (err) {
-
-				});
+				await fs.unlink(
+					"./public/images/" + req.file.filename,
+					function (err) {}
+				);
 				url = upload.secure_url;
 			}
+
+			try {
+				await Timeline.updateMany(
+					{
+						author: req.session.name,
+					},
+					{
+						$set: {
+							author: req.body.name,
+						},
+					}
+				);
+			} catch (error) {
+				//add log here
+			}
+
 			if (url != null) {
-				await User.updateOne({
-					email: req.session.email
-				}, {
-					$set: {
-						img: url,
-						name: req.body.name,
-						about: req.body.about,
-						email: req.body.email,
-						password: req.body.password,
+				await User.updateOne(
+					{
+						email: req.session.email,
 					},
-				});
+					{
+						$set: {
+							img: url,
+							name: req.body.name,
+							about: req.body.about,
+							email: req.body.email,
+							password: req.body.password,
+							games: filters,
+						},
+					}
+				);
 			} else {
-				await User.updateOne({
-					email: req.session.email
-				}, {
-					$set: {
-						name: req.body.name,
-						about: req.body.about,
-						email: req.body.email,
-						password: req.body.password,
+				await User.updateOne(
+					{
+						email: req.session.email,
 					},
-				});
+					{
+						$set: {
+							name: req.body.name,
+							about: req.body.about,
+							email: req.body.email,
+							password: req.body.password,
+							games: filters,
+						},
+					}
+				);
 			}
 			req.session.email = req.body.email;
+			req.session.name = req.body.name;
 			res.send({
 				success: true,
 			});
 		} else {
-			let msg = "";
 			if (hasSameEmail != null && !noEmailChange) {
-				msg = "Email already exists!";
+				res.send({
+					success: false,
+					error: "email already taken",
+					type: "email",
+				});
 			} else if (hasSameUsername && !noNameChange) {
-				msg = "Username already exists!";
+				res.send({
+					success: false,
+					error: "username already taken",
+					type: "name",
+				});
 			}
-			res.send({
-				success: false,
-				error: msg,
-			});
 		}
 	} catch (e) {
 		res.send({
-			success: false,
-			error: "failed to update account. Error: " + e,
+			success: "false",
+			message: "failed to update account. Error: " + e,
 		});
 	}
 });
 
 module.exports = router;
 
-router.post(
-	"/adminPromotion",
-	upload.single("image"),
-	async function (req, res) {
-		const adminReq = new AdminRequest({
-			name: req.body.name,
+router.post("/adminPromotion", async function (req, res) {
+	const adminReq = new AdminRequest({
+		name: req.body.name,
+		email: req.body.email,
+		reason: req.body.reason,
+	});
+
+	let login = fs.readFileSync("./public/html/admin_promotion.html", "utf-8");
+	let adminPromotionDOM = new JSDOM(login);
+
+	try {
+		let hasSameEmail = await User.findOne({
 			email: req.body.email,
-			reason: req.body.reason,
 		});
-
-		let login = fs.readFileSync("./public/html/admin_promotion.html", "utf-8");
-		let adminPromotionDOM = new JSDOM(login);
-
-		try {
-			let hasSameEmail = await User.findOne({
-				email: req.body.email,
-			});
-			let hasSameUsername = await User.findOne({
-				name: req.body.name
-			});
-			if (hasSameEmail == null && hasSameUsername == null) {
-				let msg = "";
-				if (hasSameEmail == null) {
-					msg = "Email does not exists!";
-				} else {
-					msg = "Username does not exists!";
-				}
-				adminPromotionDOM.window.document.getElementById("errorMsg").innerHTML =
-					msg;
-				res.send(adminPromotionDOM.serialize());
+		let hasSameUsername = await User.findOne({
+			name: req.body.name,
+		});
+		if (hasSameEmail == null && hasSameUsername == null) {
+			let msg = "";
+			if (hasSameEmail == null) {
+				msg = "Email does not exists!";
 			} else {
-				const newAdminReq = await adminReq.save();
-				await User.updateOne({
-					email: req.body.email,
-				}, {
-					$set: {
-						promotion: true
-					},
-				});
-				res.redirect("/user/login");
+				msg = "Username does not exists!";
 			}
-		} catch (err) {
 			adminPromotionDOM.window.document.getElementById("errorMsg").innerHTML =
-				"Failed to make a request";
+				msg;
 			res.send(adminPromotionDOM.serialize());
+		} else {
+			const newAdminReq = await adminReq.save();
+			await User.updateOne(
+				{
+					email: req.body.email,
+				},
+				{
+					$set: {
+						promotion: true,
+					},
+				}
+			);
+			res.redirect("/user/login");
 		}
+	} catch (err) {
+		adminPromotionDOM.window.document.getElementById("errorMsg").innerHTML =
+			"Failed to make a request";
+		res.send(adminPromotionDOM.serialize());
 	}
-);
+});
 
 /**
  * Function for accessing the admin_promotion page
@@ -668,7 +827,16 @@ router.post(
 	"/createAccountAdmin",
 	upload.single("pfp"),
 	async function (req, res) {
-		let url = "/images/profile.png";
+		if (
+			(await User.findOne({
+				email: req.session.email,
+				admin: true,
+			})) == null
+		) {
+			return;
+		}
+		let url =
+			"https://res.cloudinary.com/buddyup-images/image/upload/v1652458876/profile_ek8iwp.png";
 		if (req.file != undefined) {
 			let upload = await cloudinary.v2.uploader.upload(
 				"./public/images/" + req.file.filename,
@@ -682,9 +850,10 @@ router.post(
 					}
 				}
 			);
-			await fs.unlink("./public/images/" + req.file.filename, function (err) {
-
-			});
+			await fs.unlink(
+				"./public/images/" + req.file.filename,
+				function (err) {}
+			);
 			url = upload.secure_url;
 		}
 		let adminValue;
@@ -692,6 +861,30 @@ router.post(
 			adminValue = true;
 		} else {
 			adminValue = false;
+		}
+		if (req.body.name.length > 100) {
+			res.send({
+				success: false,
+				error: "name must be less then 100 characters",
+				type: "name",
+			});
+			return;
+		}
+		if (req.body.email.length > 100) {
+			res.send({
+				success: false,
+				error: "email must be less then 100 characters",
+				type: "email",
+			});
+			return;
+		}
+		if (req.body.about.length > 280) {
+			res.send({
+				success: false,
+				error: "bio is too long",
+				type: "about",
+			});
+			return;
 		}
 		const user = new User({
 			name: req.body.name,
@@ -709,7 +902,7 @@ router.post(
 				email: req.body.email,
 			});
 			let hasSameUsername = await User.findOne({
-				name: req.body.name
+				name: req.body.name,
 			});
 			if (hasSameEmail == null && hasSameUsername == null) {
 				const newUser = await user.save();
@@ -717,16 +910,19 @@ router.post(
 					success: true,
 				});
 			} else {
-				let msg = "";
 				if (hasSameEmail != null) {
-					msg = "Email already exists!";
+					res.send({
+						success: false,
+						error: "email already taken",
+						type: "email",
+					});
 				} else {
-					msg = "Username already exists!";
+					res.send({
+						success: false,
+						error: "username already taken",
+						type: "name",
+					});
 				}
-				res.send({
-					success: false,
-					error: msg,
-				});
 			}
 		} catch (err) {
 			res.send({
@@ -743,10 +939,22 @@ router.post(
 router.get("/delete/:name", async function (req, res) {
 	if (!req.session.loggedIn || req.session.name == req.params["name"]) {
 		res.redirect("/user/login");
+		return;
+	}
+	if (
+		User.findOne({
+			email: req.session.email,
+			admin: true,
+		}) == null
+	) {
+		return;
 	}
 	try {
 		await User.deleteOne({
-			name: req.params["name"]
+			name: req.params["name"],
+		});
+		await Timeline.deleteMany({
+			author: req.params["name"],
 		});
 	} catch (error) {
 		return;
@@ -765,6 +973,14 @@ router.post(
 	"/editAccountAdmin",
 	upload.single("pfp"),
 	async function (req, res) {
+		if (
+			(await User.findOne({
+				email: req.session.email,
+				admin: true,
+			})) == null
+		) {
+			return;
+		}
 		try {
 			let oldUser = await User.findOne({
 				name: req.body.oldName,
@@ -802,9 +1018,7 @@ router.post(
 					);
 					await fs.unlink(
 						"./public/images/" + req.file.filename,
-						function (err) {
-
-						}
+						function (err) {}
 					);
 					url = upload.secure_url;
 				}
@@ -812,59 +1026,108 @@ router.post(
 				let adminValue;
 				if (req.body.admin == "on") {
 					adminValue = true;
-					await AdminRequest.deleteOne({email: oldUser.email});
+					await AdminRequest.deleteOne({
+						email: oldUser.email,
+					});
 				} else {
-					if(oldUser.email != req.session.email){
+					if (oldUser.email != req.session.email) {
 						adminValue = false;
 					}
 				}
-
+				try {
+					await Timeline.updateMany(
+						{
+							author: oldUser.name,
+						},
+						{
+							$set: {
+								author: req.body.name,
+							},
+						}
+					);
+				} catch (error) {
+					//add log here
+				}
 				//check if the user has an admin request
-				let userRequest = await AdminRequest.findOne({email: oldUser.email});
+				let userRequest = await AdminRequest.findOne({
+					email: oldUser.email,
+				});
 
-
+				if (req.body.name.length > 100) {
+					res.send({
+						success: false,
+						error: "name must be less then 100 characters",
+						type: "name",
+					});
+					return;
+				}
+				if (req.body.email.length > 100) {
+					res.send({
+						success: false,
+						error: "email must be less then 100 characters",
+						type: "email",
+					});
+					return;
+				}
+				if (req.body.about.length > 280) {
+					res.send({
+						success: false,
+						error: "bio is too long",
+						type: "about",
+					});
+					return;
+				}
 				if (url != null) {
-					await User.updateOne({
-						email: oldUser.email
-					}, {
-						$set: {
-							img: url,
-							name: req.body.name,
-							about: req.body.about,
-							email: req.body.email,
-							admin: adminValue,
-							promotion: (userRequest != null) ? true : false,
-							password: req.body.password,
+					await User.updateOne(
+						{
+							email: oldUser.email,
 						},
-					});
+						{
+							$set: {
+								img: url,
+								name: req.body.name,
+								about: req.body.about,
+								email: req.body.email,
+								admin: adminValue,
+								promotion: userRequest != null ? true : false,
+								password: req.body.password,
+							},
+						}
+					);
 				} else {
-					await User.updateOne({
-						email: oldUser.email
-					}, {
-						$set: {
-							name: req.body.name,
-							about: req.body.about,
-							email: req.body.email,
-							admin: adminValue,
-							promotion: (userRequest != null) ? true : false,
-							password: req.body.password,
+					await User.updateOne(
+						{
+							email: oldUser.email,
 						},
-					});
+						{
+							$set: {
+								name: req.body.name,
+								about: req.body.about,
+								email: req.body.email,
+								admin: adminValue,
+								promotion: userRequest != null ? true : false,
+								password: req.body.password,
+							},
+						}
+					);
 				}
 				res.send({
 					success: true,
 				});
 			} else {
-				let msg = "";
 				if (hasSameEmail != null) {
-					msg = "Email already exists!";
+					res.send({
+						success: false,
+						error: "email already taken",
+						type: "email",
+					});
 				} else {
-					msg = "Username already exists!";
+					res.send({
+						success: false,
+						error: "name already taken",
+						type: "name",
+					});
 				}
-				res.send({
-					success: false,
-					error: msg,
-				});
 			}
 		} catch (e) {
 			res.send({
@@ -879,6 +1142,14 @@ router.post(
 	"/loadEditModal",
 	upload.single("image"),
 	async function (req, res) {
+		if (
+			(await User.findOne({
+				email: req.session.email,
+				admin: true,
+			})) == null
+		) {
+			return;
+		}
 		try {
 			let oldUser = await User.findOne({
 				name: req.body.oldName,
@@ -895,7 +1166,7 @@ router.post(
 				if (reasonObj != null) {
 					obj.reason = reasonObj.reason;
 				} else {
-					obj.reason = '';
+					obj.reason = "";
 				}
 				res.send(obj);
 			} else {
@@ -926,7 +1197,12 @@ var storagePost = multer.diskStorage({
 		cb(null, "./public/images/");
 	},
 	filename: (req, file, cb) => {
-		cb(null, Date.now() + path.extname(file.originalname));
+		cb(
+			null,
+			Date.now() +
+				Math.floor(Math.random() * 999) +
+				path.extname(file.originalname)
+		);
 	},
 });
 
@@ -934,42 +1210,183 @@ var uploadPost = multer({
 	storage: storagePost,
 });
 
-router.post("/write", uploadPost.single("post-image"), async function (req, res) {
-	let upload = null;
-	try {
-		try {
-			upload = await cloudinary.v2.uploader.upload("./public/images/" + req.file.filename,
-				function (error) {
-
-				})
-			await fs.unlink("./public/images/" + req.file.filename, function (err) {
-
-			});
-		} catch (error) {
+router.post(
+	"/write",
+	uploadPost.array("post-image"),
+	async function (req, res) {
+		let upload = [];
+		if (req.body.title.length > 200) {
 			res.send({
 				success: "false",
-				message: "failed to upload profile picture; error: " + error
+				message: "title is too long",
+				type: "title",
+			});
+			return;
+		}
+		try {
+			try {
+				for (let i = 0; i < req.files.length; i++) {
+					if (i < 4) {
+						let image = await cloudinary.v2.uploader.upload(
+							"./public/images/" + req.files[i].filename,
+							function (error) {}
+						);
+						upload[i] = image.secure_url;
+					}
+					await fs.unlink(
+						"./public/images/" + req.files[i].filename,
+						function (err) {}
+					);
+				}
+			} catch (error) {
+				console.log(error);
+				res.send({
+					success: "false",
+					message: "failed to upload profile picture; error: " + error,
+				});
+				return;
+			}
+
+			const storytimeline = await new Timeline({
+				author: req.session.name,
+				title: req.body.title,
+				post: req.body.content,
+				img: upload,
+			});
+
+			await storytimeline.save();
+			res.send({
+				success: "true",
+				message: "failed to upload profile picture",
+			});
+		} catch (err) {
+			res.send({
+				success: "false",
+				message: "failed to create a post",
 			});
 		}
+	}
+);
 
-		const storytimeline = await new Timeline({
-			author: req.session.name,
-			title: req.body.title,
-			post: req.body.content,
-			img: upload.url
+router.post("/deletePost", async function (req, res) {
+	if (!req.session.loggedIn) {
+		res.redirect("/user/login");
+	} else {
+		let post = await Timeline.findOne({
+			_id: req.body.id,
 		});
-
-		await storytimeline.save();
-		res.send({
-			success: "true",
-			message: "failed to upload profile picture"
-		});
-	} catch (err) {
-		res.send({
-			success: "false",
-			message: "failed to create a post"
-		});
+		if (post.author == req.session.name) {
+			await Timeline.deleteOne({
+				_id: req.body.id,
+			});
+			res.send("Success");
+		}
 	}
 });
+
+router.get("/editPost/:id", async function (req, res) {
+	var postID = req.params["id"];
+	if (!req.session.loggedIn) {
+		res.redirect("/user/login");
+	} else {
+		let post = await Timeline.findOne({
+			_id: postID,
+		});
+		if (post.author == req.session.name) {
+			let edit = fs.readFileSync("./public/html/edit-a-post.html", "utf-8");
+			let editDOM = new JSDOM(edit);
+			editDOM.window.document.getElementById("postID").innerHTML =
+				post._id.valueOf();
+			editDOM.window.document.getElementById("postID").style.display = "none";
+			res.send(editDOM.serialize());
+		}
+	}
+});
+
+router.post("/getPost", async function (req, res) {
+	if (!req.session.loggedIn) {
+		res.redirect("/user/login");
+	} else {
+		let post = await Timeline.findOne({
+			_id: req.body.id,
+		});
+		if (post.author == req.session.name) {
+			res.send(post);
+		}
+	}
+});
+
+router.post(
+	"/editPost",
+	uploadPost.array("post-image"),
+	async function (req, res) {
+		let post = await Timeline.findOne({
+			_id: req.body.id,
+		});
+		if (req.body.title.length > 200) {
+			res.send({
+				success: "false",
+				message: "title is too long",
+				type: "title",
+			});
+			return;
+		}
+		let upload = post.img;
+		if (post.author == req.session.name) {
+			try {
+				try {
+					for (let i = 0; i < req.files.length; i++) {
+						if (i < 4) {
+							let image = await cloudinary.v2.uploader.upload(
+								"./public/images/" + req.files[i].filename,
+								function (error) {}
+							);
+							upload[i] = image.secure_url;
+						}
+						await fs.unlink(
+							"./public/images/" + req.files[i].filename,
+							function (err) {}
+						);
+					}
+				} catch (error) {
+					console.log(error);
+					res.send({
+						success: "false",
+						message: "failed to upload profile picture; error: " + error,
+					});
+					return;
+				}
+
+				await Timeline.updateMany(
+					{
+						_id: req.body.id,
+					},
+					{
+						$set: {
+							title: req.body.title,
+							post: req.body.content,
+							img: upload,
+						},
+					}
+				);
+
+				res.send({
+					success: "true",
+					message: "failed to upload profile picture",
+				});
+			} catch (err) {
+				res.send({
+					success: "false",
+					message: "failed to create a post",
+				});
+			}
+		} else {
+			res.send({
+				success: "false",
+				message: "failed to create a post (bad id)",
+			});
+		}
+	}
+);
 
 module.exports = router;

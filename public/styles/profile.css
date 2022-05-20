@@ -9,6 +9,7 @@
 	--primary-dark: #262322;
 	--neutral-color: #797979;
 }
+
 /*----------------
  * Element styling 
  *----------------
@@ -24,19 +25,24 @@ body {
 	animation: gradient 180s ease infinite;
 	background-size: 300% 300%;
 }
+
 @keyframes gradient {
 	0% {
 		background-position: bottom left;
 	}
+
 	25% {
 		background-position: top left;
 	}
+
 	50% {
 		background-position: top right;
 	}
+
 	75% {
 		background-position: bottom right;
 	}
+
 	100% {
 		background-position: bottom left;
 	}
@@ -62,13 +68,31 @@ body {
 
 #pfp-container {
 	position: relative;
-	width: 40%;
+	min-width: 80px;
+	max-width: 200px;
+	width: 35%;
 }
 
 #edit-profile-button {
 	position: absolute;
-  bottom: 0;
+	bottom: 0;
 	right: 0;
+}
+
+.edit-post-button {
+	position: absolute;
+	right: 1rem;
+	top: 1rem;
+}
+
+.delete-post-button {
+	color: var(--accent-light);
+	background: none;
+	border: none;
+	padding: 0;
+	position: absolute;
+	top: 1rem;
+	right: 3rem;
 }
 
 #pfp {
@@ -76,6 +100,28 @@ body {
 	object-fit: cover;
 	width: 100%;
 }
+
+#chat-button {
+	background: rgba(22, 100, 214, 0.91);
+	border-radius: 16px;
+	box-shadow: 0 4px 30px rgba(0, 0, 0, 0.1);
+	backdrop-filter: blur(2px);
+	-webkit-backdrop-filter: blur(5px);
+	border: 1px solid rgba(22, 100, 214, 0.3);
+	z-index: 99;
+	width: fit-content;
+	padding: 1.8rem;
+	position: fixed;
+	bottom: 1rem;
+	right: 1rem;
+	color: var(--primary-light);
+	text-decoration: none !important;
+}
+
+.fa-message {
+	font-size: 1.8rem;
+}
+
 #bottom-profile {
 	background: rgba(255, 255, 255, 0.2);
 	box-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.37);
@@ -84,7 +130,8 @@ body {
 	border-radius: 10px;
 	border: 1px solid rgba(255, 255, 255, 0.18);
 }
-#game {
+
+.game {
 	color: white;
 	background: rgba(22, 100, 214, 0.71);
 	border-radius: 16px;
@@ -93,6 +140,7 @@ body {
 	-webkit-backdrop-filter: blur(5px);
 	border: 1px solid rgba(22, 100, 214, 0.3);
 }
+
 .write-btn {
 	background: rgba(255, 255, 255, 0.2);
 	box-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.17);
@@ -100,22 +148,39 @@ body {
 	-webkit-backdrop-filter: blur(3px);
 	border-radius: 10px;
 	border: 1px solid rgba(255, 255, 255, 0.18);
+	width: 100%;
 }
-#story {
+
+.story {
 	background: rgba(255, 255, 255, 0.2);
 	box-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.17);
 	backdrop-filter: blur(3px);
 	-webkit-backdrop-filter: blur(3px);
 	border-radius: 10px;
 	border: 1px solid rgba(255, 255, 255, 0.18);
+	position: relative;
 }
+
+p:hover {
+	cursor: default;
+}
+
 /*----------------
  * Mobile layout
  *----------------
  */
 @media only screen and (max-width: 844px) {
 	#lg-stories-container {
-		display: none !important;
+		width: 100%;
+	}
+	#chat-button {
+		padding: 1.3rem;
+	}
+	.fa-message {
+		font-size: 1.3rem;
+	}
+	#bottomSpace {
+		height: 8rem;
 	}
 }
 
@@ -124,7 +189,16 @@ body {
  *----------------
  */
 @media only screen and (min-width: 845px) {
-	section#stories {
-		display: none !important;
+	#profile-container {
+		position: fixed;
+		width: 33%;
+	}
+
+	#lg-stories-container {
+		overflow: auto;
+		width: 67%;
+	}
+	#bottomSpace {
+		height: 25vh;
 	}
 }

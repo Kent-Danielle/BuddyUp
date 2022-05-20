@@ -45,13 +45,13 @@
 					<form id="form-data" method="POST">
 						<h2>Welcome, gamer!</h2>
 						<h3>username</h3>
-						<input id="name" type="text" value="" name="name" />
+						<input id="name" type="text" value="" name="name" class="inputFields"/>
 						<h3>email</h3>
-						<input name="email" type="text" value="" />
+						<input id="email" name="email" type="text" value="" class="inputFields" />
 						<h3>password</h3>
-						<input name="password" type="password" value="" />
+						<input id="password" name="password" type="password" value="" class="inputFields"/>
 						<h3>tell us about yourself</h3>
-						<textarea name="about" id="bio" maxlength="280" rows="4"></textarea>
+						<textarea name="about" id="about" maxlength="280" rows="4" class="inputFields"></textarea>
 						<p id="textarea_remaining_char">280 characters left</p>
 						<h3>upload a profile picture</h3>
 						<div id="file-container">
@@ -59,13 +59,13 @@
 							<input type="file" name="pfp" id="pfp" />
 						</div>
 						<div id="submit-container">
-							<input type="submit" value="signup" id="submit" />
+							<input type="submit" value="signup" id="submit" accept="image/*"/>
 						</div>
+						<p id="errorMsg"></p>
 						<p>
 							Have an account?
 							<a href="/">Login here!</a>
 						</p>
-						<p id="errorMsg"></p>
 					</form>
 				</div>
 			</div>

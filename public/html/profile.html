@@ -1,124 +1,112 @@
 <!DOCTYPE html>
 <html lang="en">
-	<head>
-		<title>BuddyUp</title>
-		<meta name="buddyup template" content="BuddyUp" />
-		<link rel="icon" type="image/x-icon" href="/images/favicon.png" />
 
-		<!------------------------>
-		<!-- Required meta tags -->
-		<!------------------------>
-		<meta charset="utf-8" />
-		<meta name="viewport" content="width=device-width, initial-scale=1" />
+<head>
+	<title>BuddyUp</title>
+	<meta name="buddyup template" content="BuddyUp" />
+	<link rel="icon" type="image/x-icon" href="/images/favicon.png" />
 
-		<!--------------------->
-		<!-- Other libraries -->
-		<!--------------------->
+	<!------------------------>
+	<!-- Required meta tags -->
+	<!------------------------>
+	<meta charset="utf-8" />
+	<meta name="viewport" content="width=device-width, initial-scale=1" />
 
-		<!-- Bootstrap -->
-		<link
-			href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css"
-			rel="stylesheet"
-			integrity="sha384-EVSTQN3/azprG1Anm3QDgpJLIm9Nao0Yz1ztcQTwFspd3yD65VohhpuuCOmLASjC"
-			crossorigin="anonymous"
-		/>
-		<script
-			src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js"
-			integrity="sha384-MrcW6ZMFYlzcLA8Nl+NtUVF0sA7MsXsP1UyJoMp4YLEuNSfAP+JcXn/tWtIaxVXM"
-			crossorigin="anonymous"
-		></script>
-		<!-- Material Icons -->
-		<link
-			href="https://fonts.googleapis.com/icon?family=Material+Icons"
-			rel="stylesheet"
-		/>
-		<!-- Fontawesome -->
-		<script
-		src="https://kit.fontawesome.com/8bb76a9e5f.js"
-		crossorigin="anonymous"
-	></script>
-		<!-- Jquery -->
-		<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+	<!--------------------->
+	<!-- Other libraries -->
+	<!--------------------->
 
-		<!------------------------>
-		<!-- styles of your own -->
-		<!------------------------>
-		<link rel="stylesheet" href="/styles/styles.css" />
-		<link rel="stylesheet" href="/styles/profile.css" />
-	</head>
+	<!-- Bootstrap -->
+	<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet"
+		integrity="sha384-EVSTQN3/azprG1Anm3QDgpJLIm9Nao0Yz1ztcQTwFspd3yD65VohhpuuCOmLASjC" crossorigin="anonymous" />
+	<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js"
+		integrity="sha384-MrcW6ZMFYlzcLA8Nl+NtUVF0sA7MsXsP1UyJoMp4YLEuNSfAP+JcXn/tWtIaxVXM" crossorigin="anonymous">
+	</script>
+	<!-- Material Icons -->
+	<link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet" />
+	<!-- Fontawesome -->
+	<script src="https://kit.fontawesome.com/8bb76a9e5f.js" crossorigin="anonymous"></script>
+	<!-- Jquery -->
+	<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
 
-	<body>
-		<div id="content" class="container-fluid">
-			<div id="content-container" class="row">
-				<div id="profile-container" class="col-sm-12 col-lg-4 pt-3">
-					<!-- Top part of profile containing user name, pfp, and bio -->
-					<div id="top-profile" class="">
-						<a
-							class="btn rounded-3"
-							href="/user/logout"
-							id="logout"
-							role="button"
-							>LOGOUT</a
-						>
-						<div id="pfp-container">
-							<a
-								class="rounded-3 p-0"
-								href="/user/edit"
-								id="edit-profile-button"
-								role="button"
-								><i class="fa-solid fa-pen-to-square"></i
-							></a>
-							<img src="/images/profile.png" alt="" id="pfp" />
-						</div>
-						<div id="info-container">
-							<h2 id="username">Username</h2>
-							<p id="bio-text">
-								Lorem ipsum dolor sit amet consectetur adipisicing elit. Error
-								blanditiis, quibusdam modi aliquid delectus et beatae asperiores
-								recusandae optio nisi temporibus velit, eum enim ea. Rerum
-								nostrum ullam impedit vitae.
-							</p>
-						</div>
+	<!------------------------>
+	<!-- styles of your own -->
+	<!------------------------>
+	<link rel="stylesheet" href="/styles/styles.css" />
+	<link rel="stylesheet" href="/styles/profile.css" />
+</head>
+
+<body>
+	<div id="content" class="container-fluid">
+		<div id="content-container" class="row">
+			<div id="profile-container" class="col-sm-12 pt-3">
+				<!-- Top part of profile containing user name, pfp, and bio -->
+				<div id="top-profile" class="">
+					<a class="btn rounded-3" href="/user/logout" id="logout" role="button">LOGOUT</a>
+					<div id="pfp-container">
+						<a class="rounded-3 p-0" href="/user/edit" id="edit-profile-button" role="button"><i
+								class="fa-solid fa-pen-to-square"></i></a>
+						<img src="/images/profile.png" alt="" id="pfp" />
 					</div>
-					<!-- Bottom part of profile containing games and stories -->
-					<div id="bottom-profile" class="rounded-3 py-2 px-3 mb-3">
-						<section id="games">
-							<h3>Games</h3>
-							<div id="games-container">
-								<p
-									id="game"
-									class="d-inline-block btn-primary px-2 py-1 rounded-3"
-								>
-									Coming Soon
-								</p>
-							</div>
-						</section>
-						<section id="stories">
-							<h3>Stories</h3>
-							<div id="stories-container">
-								<a
-									class="write-btn btn rounded-pill w-100 mx-0 mb-2 text-start"
-									href="/user/write"
-								>
-									Write a story...
-								</a>
-							</div>
-						</section>
+					<div id="info-container">
+						<h2 id="username">Username</h2>
+						<p id="bio-text">
+							Lorem ipsum dolor sit amet consectetur adipisicing elit. Error
+							blanditiis, quibusdam modi aliquid delectus et beatae asperiores
+							recusandae optio nisi temporibus velit, eum enim ea. Rerum
+							nostrum ullam impedit vitae.
+						</p>
 					</div>
 				</div>
-				<div id="lg-stories-container" class="col-lg-8 pt-3">
-					<a
-						class="write-btn btn rounded-pill w-100 mx-0 mb-2 text-start"
-						href="/user/write"
-					>
+				<!-- Bottom part of profile containing games and stories -->
+				<div id="bottom-profile" class="rounded-3 py-2 px-3 mb-3">
+					<section id="games">
+						<h3>Games</h3>
+						<div id="games-container">
+							
+						</div>
+					</section>
+					<!-- <section id="stories">
+						<h3>Stories</h3>
+						<div id="stories-container">
+							<a class="write-btn btn rounded-pill w-100 mx-0 mb-2 text-start" href="/user/write">
+								Write a story...
+							</a>
+						</div>
+
+					</section> -->
+				</div>
+			</div>
+			<div id="right-side">
+				<div id="lg-stories-container" class="pt-3 float-end">
+					<a class="write-btn btn rounded-pill w-100 mx-0 mb-2 text-start" href="/user/write">
 						Write a story...
 					</a>
 				</div>
 			</div>
+			<a id="chat-button" href="/match" class="d-flex justify-content-center align-items-center rounded-circle"><i class="fa-solid fa-message" ></i></a>
+			<div id="bottomSpace"></div>
 		</div>
+	</div>
+	<div id="confirmDeleteModal" class="modal d-flex justify-content-center">
+		<!-- Modal content -->
+		<div class="modal-content w-75 p-3 py-4 h-auto align-self-center">
+			<h3 id="modalText" class="text-center">
+				Do you want to delete this post?
+			</h3>
+			<div class="d-flex justify-content-evenly mt-3">
+				<button id="noBtn" class="btn btn-outline-danger d-inline-block w-25">
+					<i class="fa-solid fa-xmark"></i>
+				</button>
+				<a id="yesBtn" class="btn btn-primary d-inline-block w-25" href="" role="button"><i
+						class="fa-solid fa-check"></i></a>
+			</div>
+		</div>
+	</div>
+	<!---------------------------->
+	<!-- Client-side Javascript -->
+	<!---------------------------->
+	<script src="/scripts/profile.js"></script>
+</body>
 
-		<!---------------------------->
-		<!-- Client-side Javascript -->
-		<!---------------------------->
-	</body>
 </html>

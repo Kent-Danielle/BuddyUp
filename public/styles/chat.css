@@ -1,0 +1,261 @@
+/*----------------
+ * Color palette
+ *----------------
+ */
+:root {
+	--primary-light: #ffffff;
+	--secondary-light: #1664d6;
+	--accent-light: #dd375b;
+	--primary-dark: #262322;
+	--neutral-color: #797979;
+}
+/*----------------
+ * Element styling 
+ *----------------
+ */
+body {
+	background: rgb(63, 200, 251);
+	background: linear-gradient(
+		50deg,
+		rgba(63, 200, 251, 0.8) 0%,
+		rgba(252, 70, 215, 0.8) 50%,
+		rgba(252, 225, 70, 0.8) 100%
+	);
+	animation: gradient 180s ease infinite;
+	background-size: 300% 300%;
+}
+@keyframes gradient {
+	0% {
+		background-position: bottom left;
+	}
+	25% {
+		background-position: top left;
+	}
+	50% {
+		background-position: top right;
+	}
+	75% {
+		background-position: bottom right;
+	}
+	100% {
+		background-position: bottom left;
+	}
+}
+
+#container {
+	height: 100vh !important;
+}
+
+#buttons-container {
+	height: 5%;
+}
+
+#exit-chatroom {
+	display: none;
+}
+
+#message-container {
+	background: rgba(255, 255, 255, 0.4);
+	box-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.37);
+	backdrop-filter: blur(3px);
+	-webkit-backdrop-filter: blur(3px);
+	border: 1px solid rgba(255, 255, 255, 0.18);
+	height: 85%;
+	overflow-y: scroll;
+}
+
+#exit-status {
+	background: rgba(255, 255, 255, 0.2);
+	box-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.37);
+	backdrop-filter: blur(3px);
+	-webkit-backdrop-filter: blur(3px);
+	border: 1px solid rgba(255, 255, 255, 0.18);
+}
+
+#message-area {
+	height: 8%;
+}
+
+#message-field {
+	background: rgba(255, 255, 255, 0.4);
+	box-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.37);
+	backdrop-filter: blur(3px);
+	-webkit-backdrop-filter: blur(3px);
+	border: 1px solid rgba(255, 255, 255, 0.18);
+	width: calc(100% - (((1rem * 0.25) * 2) + 2.7rem));
+	height: 2.3rem;
+}
+
+#send-button {
+	width: 2rem;
+	background: none;
+	border: none;
+	font-size: 1.4rem;
+}
+
+#stop-matching-button {
+	padding: 0;
+	border: none;
+	background: none;
+}
+
+/* filter container */
+.game {
+	color: white;
+	background: rgba(22, 100, 214, 0.71);
+	border-radius: 16px;
+	box-shadow: 0 4px 30px rgba(0, 0, 0, 0.1);
+	backdrop-filter: blur(2px);
+	-webkit-backdrop-filter: blur(5px);
+	border: 1px solid rgba(22, 100, 214, 0.3);
+}
+
+#match-filters-container {
+	background: rgba(255, 255, 255, 0.1);
+	box-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.37);
+	backdrop-filter: blur(3px);
+	-webkit-backdrop-filter: blur(3px);
+	border: 1px solid rgba(255, 255, 255, 0.18);
+}
+
+#game-text {
+	background: rgba(255, 255, 255, 0.2);
+	box-shadow: 0 2px 10px 0 rgba(31, 38, 135, 0.37);
+	backdrop-filter: blur(3px);
+	-webkit-backdrop-filter: blur(3px);
+	border: 1px solid rgba(255, 255, 255, 0.18);
+}
+
+#gameFiltersContainer {
+	background: rgba(255, 255, 255, 0.2);
+	box-shadow: 0 2px 10px 0 rgba(31, 38, 135, 0.37);
+	backdrop-filter: blur(3px);
+	-webkit-backdrop-filter: blur(3px);
+	border: 1px solid rgba(255, 255, 255, 0.18);
+	min-height: 2rem;
+}
+
+.filter {
+	color: white;
+	background: rgba(22, 100, 214, 0.71);
+	box-shadow: 0 4px 30px rgba(0, 0, 0, 0.1);
+	backdrop-filter: blur(2px);
+	-webkit-backdrop-filter: blur(5px);
+	border: 1px solid rgba(22, 100, 214, 0.3);
+}
+
+.filter button {
+	margin-left: 0.3rem;
+	background: none;
+	border: none;
+}
+
+/* modal */
+/* The Modal (background) */
+.modal {
+	display: none !important;
+	position: fixed; /* Stay in place */
+	z-index: 1; /* Sit on top */
+	left: 0;
+	top: 0;
+	width: 100%; /* Full width */
+	height: 100%; /* Full height */
+	overflow: auto; /* Enable scroll if needed */
+	background-color: rgba(0, 0, 0, 0.5); /* Black w/ opacity */
+}
+
+/* Modal Content/Box */
+.modal-content {
+	background: rgba(255, 255, 255, 0.66);
+	box-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.37);
+	backdrop-filter: blur(3px);
+	-webkit-backdrop-filter: blur(3px);
+	border-radius: 10px;
+	border: 1px solid rgba(255, 255, 255, 0.18);
+	height: 95% !important;
+	overflow-y: hidden;
+}
+
+/* profile */
+#profile-container {
+	height: 85%;
+	overflow-y: scroll;
+}
+
+#pfp-container {
+	position: relative;
+	width: 20%;
+}
+
+#pfp {
+	clip-path: circle();
+	object-fit: cover;
+	width: 100%;
+}
+
+#game {
+	color: white;
+	background: rgba(22, 100, 214, 0.71);
+	border-radius: 16px;
+	box-shadow: 0 4px 30px rgba(0, 0, 0, 0.1);
+	backdrop-filter: blur(2px);
+	-webkit-backdrop-filter: blur(5px);
+	border: 1px solid rgba(22, 100, 214, 0.3);
+}
+#story {
+	background: rgba(255, 255, 255, 0.2);
+	box-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.17);
+	backdrop-filter: blur(3px);
+	-webkit-backdrop-filter: blur(3px);
+	border-radius: 10px;
+	border: 1px solid rgba(255, 255, 255, 0.18);
+}
+
+.story {
+	background: rgba(255, 255, 255, 0.2);
+	box-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.17);
+	backdrop-filter: blur(3px);
+	-webkit-backdrop-filter: blur(3px);
+	border-radius: 10px;
+	border: 1px solid rgba(255, 255, 255, 0.18);
+	position: relative;
+}
+
+.your-message {
+	color: white;
+	background: rgba(22, 100, 214, 0.71);
+	border-radius: 1rem;
+	box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+	backdrop-filter: blur(2px);
+	-webkit-backdrop-filter: blur(5px);
+	border: 1px solid rgba(22, 100, 214, 0.3);
+}
+.not-your-message {
+	background: rgba(255, 255, 255, 0.2);
+	box-shadow: 0 4px 10px 0 rgba(31, 38, 135, 0.17);
+	backdrop-filter: blur(3px);
+	-webkit-backdrop-filter: blur(3px);
+	border-radius: 1rem;
+	border: 1px solid rgba(255, 255, 255, 0.18);
+}
+
+
+/*----------------
+ * Mobile layout
+ *----------------
+ */
+@media only screen and (max-width: 844px) {
+	.modal-content {
+		width: 95% !important;
+	}
+}
+
+/*----------------
+ * Desktop layout
+ *----------------
+ */
+@media only screen and (min-width: 845px) {
+	.modal-content {
+		width: 844px;
+	}
+}

@@ -260,9 +260,6 @@ input[type="submit"] {
 	width: 100%;
 	font-variant: small-caps;
 }
-#errorMsg {
-	text-align: center;
-}
 form > p {
 	text-align: center;
 	margin: 0;
@@ -275,9 +272,7 @@ form a {
 	font-size: 0.8rem;
 	color: var(--primary-dark);
 }
-#errorMsg {
-	text-align: center;
-}
+
 /*----------------
  * Mobile layout
  *----------------

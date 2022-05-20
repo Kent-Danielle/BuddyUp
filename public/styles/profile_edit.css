@@ -48,7 +48,7 @@ body {
 
 .back-button {
 	position: absolute;
-	top: 3%;
+	top: 1%;
 	left: 3%;
 	font-size: 2rem;
 	color: var(--primary-dark);
@@ -135,7 +135,7 @@ form>#submit-container {
 	margin: 1rem 0;
 }
 
-input[type="submit"] {
+#submit {
 	box-sizing: border-box;
 	color: white;
 	background: rgba(22, 100, 214, 0.91);
@@ -148,8 +148,19 @@ input[type="submit"] {
 	font-variant: small-caps;
 }
 
-#errorMsg {
-	text-align: center;
+
+#game-text {
+	box-sizing: border-box;
+	background-color: rgba(255, 255, 255, 0);
+	border: none;
+	border-bottom: 2px solid var(--accent-light);
+}
+
+#gameFiltersContainer {
+	background-color: rgba(255, 255, 255, 0);
+	border: 2px solid var(--accent-light);
+	border-radius: 0.5rem;
+	min-height: 2rem;
 }
 
 #loading {
@@ -162,6 +173,30 @@ form>p {
 
 form a {
 	color: var(--secondary-light);
+}
+
+/* filter container */
+#match-filters-container {
+	background: rgba(255, 255, 255, 0.1);
+	box-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.37);
+	backdrop-filter: blur(3px);
+	-webkit-backdrop-filter: blur(3px);
+	border: 1px solid rgba(255, 255, 255, 0.18);
+}
+
+.filter {
+	color: white;
+	background: rgba(22, 100, 214, 0.71);
+	box-shadow: 0 4px 30px rgba(0, 0, 0, 0.1);
+	backdrop-filter: blur(2px);
+	-webkit-backdrop-filter: blur(5px);
+	border: 1px solid rgba(22, 100, 214, 0.3);
+}
+
+.filter button {
+	margin-left: 0.3rem;
+	background: none;
+	border: none;
 }
 
 /*----------------

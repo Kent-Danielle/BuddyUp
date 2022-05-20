@@ -26,7 +26,10 @@ document.getElementById("submit").addEventListener("click", async (e) => {
 			if (result.success == "true") {
 				window.location.replace("/user/profile");
 			} else {
-				document.getElementById("errorMsg").innerHTML = result.message;
+				let inputs = document.querySelectorAll(".inputFields");
+				inputs.forEach((input) => input.style.backgroundColor = "rgba(255, 255, 255, 0)");
+				document.getElementById("errorMsg").innerText = result.message;
+				document.getElementById(result.type).style.backgroundColor = 'var(--accent-light)';
 			}
 		});
 });
