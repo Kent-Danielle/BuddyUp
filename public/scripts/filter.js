@@ -1,3 +1,5 @@
+"use strict";
+
 // used for the id of each filter
 let count = 0;
 
@@ -94,12 +96,8 @@ const submitFilter = document.getElementById("submit");
 submitFilter.addEventListener("click", function (e) {
 	e.preventDefault;
 
-	document
-		.getElementById("match-filters-container")
-		.style.setProperty("display", "none", "important");
-	document
-		.getElementById("loader")
-		.style.setProperty("display", "block", "important");
+	removeMessage();
+	document.getElementById("profile-container").innerHTML = "Finding...";
 
 	let data = {};
 	if (gameFilters.length == 0) {
@@ -109,21 +107,33 @@ submitFilter.addEventListener("click", function (e) {
 		data.gameFilters = gameFilters;
 		data.currentUser = currentUser;
 
+		document
+			.getElementById("profile-modal")
+			.style.setProperty("display", "flex", "important");
+		document
+			.getElementById("match-filters-container")
+			.style.setProperty("display", "none", "important");
+		document
+			.getElementById("accept-match")
+			.style.setProperty("display", "none", "important");
+		document
+			.getElementById("reject-match")
+			.style.setProperty("display", "none", "important");
+
 		let filters = JSON.stringify(data);
 
 		socket.emit("find-match", filters, async function (result) {
-			document
-				.getElementById("loader")
-				.style.setProperty("display", "none", "important");
 			if (result.status == "Success") {
 				document
 					.getElementById("match-filters-container")
 					.style.setProperty("display", "none", "important");
 				document
-					.getElementById("profile-modal")
-					.style.setProperty("display", "flex", "important");
+					.getElementById("accept-match")
+					.style.setProperty("display", "inline-block", "important");
+				document
+					.getElementById("reject-match")
+					.style.setProperty("display", "inline-block", "important");
 				document.getElementById("profile-container").innerHTML = result.profile;
-				console.log(result.roomID);
 				localStorage.setItem("roomID", result.roomID);
 				//update their status to match
 				socket.emit("update-status", currentUser, true);
@@ -136,8 +146,9 @@ submitFilter.addEventListener("click", function (e) {
 					.style.setProperty("display", "none", "important");
 				document.getElementById("send-button").disabled = true;
 				document.getElementById("message-field").disabled = true;
-				document.getElementById("status-msg").innerText = result.status;
+				displayStatusMessage(result.status);
 				socket.emit("update-status", currentUser, false);
+				socket.emit("no-match-status", currentUser);
 			}
 		});
 	}
@@ -150,10 +161,9 @@ document
 	.getElementById("accept-match")
 	.addEventListener("click", async function (e) {
 		let roomID = localStorage.getItem("roomID");
+		let otherUser = document.getElementById("username").innerText;
 
-
-
-		socket.emit("accept-match", currentUser,roomID);
+		socket.emit("accept-match", currentUser, otherUser, roomID);
 		document
 			.getElementById("profile-modal")
 			.style.setProperty("display", "none", "important");
@@ -170,48 +180,23 @@ document
 document
 	.getElementById("reject-match")
 	.addEventListener("click", async function (e) {
+		e.preventDefault();
 		let room = localStorage.getItem("roomID");
+		let otherUser = document.getElementById("username").innerText;
+		document.getElementById("profile-container").innerHTML = "Finding...";
 
-		await socket.emit("reject-match", currentUser, room);
+		await socket.emit("reject-match", currentUser, otherUser, room);
 
-		await socket.emit("update-status", currentUser, false);
-		let data = {};
-		data.gameFilters = gameFilters;
-		data.currentUser = currentUser;
-
-		let filters = JSON.stringify(data);
-		socket.emit("find-match", filters, async function (result) {
-			if (result.status == "Success") {
-				document
-					.getElementById("match-filters-container")
-					.style.setProperty("display", "none", "important");
-				document
-					.getElementById("profile-modal")
-					.style.setProperty("display", "flex", "important");
-				document.getElementById("profile-container").innerHTML = result.profile;
-				localStorage.setItem("roomID", result.roomID);
-
-				//update their status to match
-				socket.emit("update-status", currentUser, true);
-			} else {
-				document
-					.getElementById("match-filters-container")
-					.style.setProperty("display", "block", "important");
-				document
-					.getElementById("profile-modal")
-					.style.setProperty("display", "none", "important");
-				document.getElementById("send-button").disabled = true;
-				document.getElementById("message-field").disabled = true;
-				document.getElementById("status-msg").innerText = result.status;
-				socket.emit("update-status", currentUser, false);
-			}
-		});
+		await sleep(300);
+		submitFilter.click();
 	});
 
 /**
  * Listen for rejection
  */
-socket.on("rejected", function () {
+socket.on("rejected", async function () {
+	await socket.emit("reject-status", currentUser);
+
 	document
 		.getElementById("match-filters-container")
 		.style.setProperty("display", "block", "important");
@@ -220,7 +205,8 @@ socket.on("rejected", function () {
 		.style.setProperty("display", "none", "important");
 	document.getElementById("send-button").disabled = true;
 	document.getElementById("message-field").disabled = true;
-	socket.emit("update-status", currentUser, false);
+	displayStatusMessage("You got rejected, nothin' personal Kid");
+	document.getElementById("profile-container").innerHTML = "Finding...";
 });
 
 /**
@@ -229,7 +215,14 @@ socket.on("rejected", function () {
 const exitMatchingBtn = document.getElementById("stop-matching-button");
 exitMatchingBtn.addEventListener("click", async (e) => {
 	let room = localStorage.getItem("roomID");
-	await socket.emit("reject-match", currentUser, room);
+	let otherUser;
+	try {
+		if (document.getElementById("username").innerText != null) {
+			otherUser = document.getElementById("username").innerText;
+			await socket.emit("reject-match", currentUser, otherUser, room);
+		}
+	} catch {}
+
 	await socket.emit("update-status", currentUser, false);
 	document
 		.getElementById("match-filters-container")
@@ -240,3 +233,14 @@ exitMatchingBtn.addEventListener("click", async (e) => {
 	document.getElementById("send-button").disabled = true;
 	document.getElementById("message-field").disabled = true;
 });
+
+function sleep(ms) {
+	return new Promise((resolve) => setTimeout(resolve, ms));
+}
+
+function removeMessage() {
+	let container = document.querySelectorAll(".message-line");
+	container.forEach((element) => {
+		element.remove();
+	});
+}

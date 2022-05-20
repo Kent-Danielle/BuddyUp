@@ -64,6 +64,14 @@ body {
 	overflow-y: scroll;
 }
 
+#exit-status {
+	background: rgba(255, 255, 255, 0.2);
+	box-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.37);
+	backdrop-filter: blur(3px);
+	-webkit-backdrop-filter: blur(3px);
+	border: 1px solid rgba(255, 255, 255, 0.18);
+}
+
 #message-area {
 	height: 8%;
 }
@@ -221,21 +229,6 @@ body {
 	border: 1px solid rgba(255, 255, 255, 0.18);
 }
 
-/* loader */
-#loader {
-	display: none !important;
-  border: 16px solid #f3f3f3; /* Light grey */
-  border-top: 16px solid #3498db; /* Blue */
-  border-radius: 50%;
-  width: 120px;
-  height: 120px;
-  animation: spin 2s linear infinite;
-}
-
-@keyframes spin {
-  0% { transform: rotate(0deg); }
-  100% { transform: rotate(360deg); }
-}
 
 /*----------------
  * Mobile layout

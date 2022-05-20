@@ -49,13 +49,12 @@
 	<body>
 		<div id="container" class="container-fluid w-100 p-2 p-lg-3">
 			<div id="buttons-container" class="d-inline-block w-100">
-				<a
+				<button
 					id="exit-chatpage"
-					class="btn-red rounded-3 px-3 py-1 float-start text-decoration-none"
-					href="/user/profile"
+					class="btn-red rounded-3 px-3 py-1 float-start"
 				>
 					Exit
-				</a>
+				</button>
 				<button
 					id="exit-chatroom"
 					class="btn-blue rounded-3 px-3 py-1 float-end"
@@ -65,10 +64,9 @@
 			</div>
 			<div id="message-container" class="rounded-3 p-2 position-relative">
 				<div
-					id="loader"
-					class="loader position-absolute top-50 start-50 end-50"
-				></div>
-				<div id="match-filters-container" class="p-3 p-m-1 mt-4 mx-2 rounded-3">
+					id="match-filters-container"
+					class="p-3 p-m-1 mt-4 mx-2 mb-4 rounded-3"
+				>
 					<div id="match-filter">
 						<h3 id="match-filter-cta">
 							Find other people that plays the same game as you.
@@ -120,34 +118,7 @@
 						<i class="fa-solid fa-xmark"></i>
 					</button>
 				</div>
-				<div id="profile-container" class="">
-					<div id="top-profile" class="">
-						<div id="pfp-container" class="mb-3">
-							<img src="/images/profile.png" alt="" id="pfp" />
-						</div>
-						<div id="info-container">
-							<h2 id="username">Username</h2>
-							<p id="bio-text"></p>
-						</div>
-					</div>
-					<div id="bottom-profile" class="rounded-3 py-2 mb-3">
-						<section id="games">
-							<h3>Games</h3>
-							<div id="games-container">
-								<p
-									id="game"
-									class="d-inline-block btn-primary px-2 py-1 rounded-3"
-								>
-									Coming Soon
-								</p>
-							</div>
-						</section>
-						<section id="stories">
-							<h3>Stories</h3>
-							<div id="stories-container"></div>
-						</section>
-					</div>
-				</div>
+				<div id="profile-container" class="">Finding...</div>
 				<div
 					class="d-flex justify-content-center pb-4 pt-2 position-absolute bottom-0 start-50 end-50"
 				>

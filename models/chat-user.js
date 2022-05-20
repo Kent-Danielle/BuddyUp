@@ -11,7 +11,14 @@ const chatuserSchema = new mongoose.Schema({
 		type: Array,
 		required: false,
 	},
-	matched: {},
+	matched: {
+		type: Boolean,
+		required: false,
+	},
+	current_match: {
+		type: String,
+		required: false,
+	},
 	last_match: {
 		type: String,
 		required: false,
@@ -26,4 +33,4 @@ const chatuserSchema = new mongoose.Schema({
 	},
 });
 
-module.exports = mongoose.model("kent-chat-user", chatuserSchema);
+module.exports = mongoose.model("bby09-chat-user", chatuserSchema);
