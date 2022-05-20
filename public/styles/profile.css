@@ -136,6 +136,10 @@ body {
 	position: relative;
 }
 
+p:hover {
+	cursor: default;
+}
+
 /*----------------
  * Mobile layout
  *----------------

@@ -1,6 +1,28 @@
 'use strict';
 //const modalText = document.getElementById("modalText");
 //const loggedInName = document.getElementById("name").innerText;
+
+// load the user's games onto their profile
+async function loadGames() {
+    let data = await fetch("/user/info")
+    .then(function (response) {
+        return response.text();
+    })
+    .then(function (data) {
+        return JSON.parse(data);
+    });
+
+    const gamesContainer = document.getElementById("games-container");
+    data.games.forEach(game => {
+        let gamesP = document.createElement("p");
+        gamesP.classList.add("d-inline-block", "bg-primary", "px-3", "py-3", "rounded-3", "d-grid", "gap-3", "text-center");
+        gamesP.innerHTML = game;
+        gamesContainer.appendChild(gamesP);
+    });
+}
+loadGames();
+
+
 function createListener() {
     const deleteBtn = document.querySelectorAll(".delete-post-button");
     const editBtn = document.querySelectorAll(".edit-post-button");
@@ -8,6 +30,7 @@ function createListener() {
     const confirmBtn = document.getElementById("yesBtn");
     var confirmModal = document.getElementById("confirmDeleteModal");
     confirmModal.style.setProperty("display", "none", "important");
+
     for (let i = 0; i < deleteBtn.length; i++) {
         deleteBtn[i].addEventListener("click", (event) => {
             event.preventDefault();
@@ -38,6 +61,7 @@ function createListener() {
     });
 }
 createListener();
+
 if (document.getElementById("bio-text").innerHTML == 'jeb_') {
     let sound = new Audio('https://www.sndup.net/smzs/d');
     sound.play();
