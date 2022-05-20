@@ -612,6 +612,7 @@ router.get("/info", async function (req, res) {
 // updates the users information after editing and then redirects them back to their profile page
 router.post("/edit/submit", upload.single("image"), async function (req, res) {
 	try {
+		let filters = req.body.filters.split(",");
 		let noEmailChange = req.body.email === req.session.email;
 
 		let hasSameEmail = await User.findOne({
@@ -645,6 +646,7 @@ router.post("/edit/submit", upload.single("image"), async function (req, res) {
 				return;
 			}
 			if (req.body.about.length > 280) {
+				console.log("bio too big");
 				res.send({
 					success: false,
 					message: "bio is too long",
@@ -700,6 +702,7 @@ router.post("/edit/submit", upload.single("image"), async function (req, res) {
 							about: req.body.about,
 							email: req.body.email,
 							password: req.body.password,
+							games: filters,
 						},
 					}
 				);
@@ -714,6 +717,7 @@ router.post("/edit/submit", upload.single("image"), async function (req, res) {
 							about: req.body.about,
 							email: req.body.email,
 							password: req.body.password,
+							games: filters,
 						},
 					}
 				);
