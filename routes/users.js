@@ -85,8 +85,6 @@ router.get("/profile/:name", async function (req, res) {
 			currentUser.name;
 		profileDOM.window.document.getElementById("bio-text").innerHTML =
 			currentUser.about;
-		profileDOM.window.document.getElementById("game").innerHTML =
-		"<a href=\"/match/\">Coming soon</a>";
 		profileDOM.window.document.getElementById("pfp").src = currentUser.img;
 
 		let allPosts;

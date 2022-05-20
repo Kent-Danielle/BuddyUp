@@ -24,8 +24,12 @@ const ChatUser = require("../models/chat-user.js");
 //fs and jsdom
 const path = require("path");
 const fs = require("fs");
-const { JSDOM } = require("jsdom");
-const { setInterval } = require("timers/promises");
+const {
+	JSDOM
+} = require("jsdom");
+const {
+	setInterval
+} = require("timers/promises");
 const chatUser = require("../models/chat-user.js");
 
 /**
@@ -38,11 +42,22 @@ router.get("/", async function (req, res) {
 		"no-cache, private, no-store, must-revalidate, max-stale=0, post-check=0, pre-check=0"
 	);
 	if (req.session.loggedIn) {
-		const chatUser1 = await ChatUser.updateOne(
-			{ name: req.session.name },
-			{ name: req.session.name, finding: false },
-			{ upsert: true }
-		);
+		let check = await ChatUser.findOne({
+			name: req.session.name
+		});
+		if(check == null){
+			const chatUser1 = await ChatUser.updateOne({
+				name: req.session.name
+			}, {
+				name: req.session.name,
+				finding: false
+			}, {
+				upsert: true
+			});
+		} else {
+			res.redirect("/user/profile");
+			return;
+		}
 		// if user is not logged in, go to the login page
 		let login = fs.readFileSync("./public/html/chat.html", "utf-8");
 		res.send(login);
@@ -55,7 +70,9 @@ router.get("/", async function (req, res) {
  * Function for building the profile html
  */
 async function displayMatchedUserProfile(user2) {
-	let user = await User.findOne({ name: user2.name });
+	let user = await User.findOne({
+		name: user2.name
+	});
 
 	let allPosts;
 	try {
@@ -156,29 +173,36 @@ io.on("connection", (socket) => {
 	 * Function for accepting match
 	 */
 	socket.on("accept-match", async function (name, other, room, cb) {
-		await ChatUser.updateOne(
-			{ name: name },
-			{
-				$set: {
-					current_match: other,
-					last_match: other,
-					matched: true,
-					finding: false,
-					response: "accept",
-				},
-			}
-		);
+		await ChatUser.updateOne({
+			name: name
+		}, {
+			$set: {
+				current_match: other,
+				last_match: other,
+				matched: true,
+				finding: false,
+				response: "accept",
+			},
+		});
 
-		let chatUser2 = await ChatUser.findOne({ name: other });
+		let chatUser2 = await ChatUser.findOne({
+			name: other
+		});
 		while (chatUser2.response == "wait") {
-			chatUser2 = await ChatUser.findOne({ name: other });
+			chatUser2 = await ChatUser.findOne({
+				name: other
+			});
 		}
 		if (chatUser2.response == "accept") {
 			socket.join(room);
-			cb({ success: true });
+			cb({
+				success: true
+			});
 		} else {
 			socket.leave(room);
-			cb({ success: false });
+			cb({
+				success: false
+			});
 		}
 	});
 
@@ -189,19 +213,20 @@ io.on("connection", (socket) => {
 		socket.to(room).volatile.emit("rejected");
 		socket.leave(room);
 
-		await ChatUser.updateOne(
-			{ name: user },
-			{
-				$set: {
-					current_match: null,
-					last_match: other,
-					matched: false,
-					finding: false,
-					response: "reject",
-				},
-				$unset: { room: "" },
-			}
-		);
+		await ChatUser.updateOne({
+			name: user
+		}, {
+			$set: {
+				current_match: null,
+				last_match: other,
+				matched: false,
+				finding: false,
+				response: "reject",
+			},
+			$unset: {
+				room: ""
+			},
+		});
 	});
 
 	/**
@@ -211,17 +236,18 @@ io.on("connection", (socket) => {
 		socket.to(room).emit("ghosted", user + " disconnected.");
 		socket.leave(room);
 
-		await ChatUser.updateOne(
-			{ name: user },
-			{
-				$set: {
-					current_match: null,
-					matched: false,
-					finding: false,
-				},
-				$unset: { room: "" },
-			}
-		);
+		await ChatUser.updateOne({
+			name: user
+		}, {
+			$set: {
+				current_match: null,
+				matched: false,
+				finding: false,
+			},
+			$unset: {
+				room: ""
+			},
+		});
 	});
 
 	/**
@@ -231,23 +257,25 @@ io.on("connection", (socket) => {
 		let d = JSON.parse(data);
 		let filters = d.gameFilters;
 		let currentUser = d.currentUser;
+		socket.userName = currentUser;
 
-		await ChatUser.updateOne(
-			{
-				name: currentUser,
+		await ChatUser.updateOne({
+			name: currentUser,
+		}, {
+			$set: {
+				matched: false,
+				filters: filters,
+				finding: true,
+				response: "wait",
 			},
-			{
-				$set: {
-					matched: false,
-					filters: filters,
-					finding: true,
-					response: "wait",
-				},
-				$unset: { room: "" },
-			}
-		);
+			$unset: {
+				room: ""
+			},
+		});
 
-		let chatUser1 = await ChatUser.findOne({ name: currentUser });
+		let chatUser1 = await ChatUser.findOne({
+			name: currentUser
+		});
 		let chatUser1IsFinding = chatUser1.finding;
 
 		let chatUser2 = null;
@@ -257,13 +285,23 @@ io.on("connection", (socket) => {
 
 		while (chatUser2 == null && i < 20 && chatUser1IsFinding && !soulmates) {
 			chatUser2 = await ChatUser.findOne({
-				name: { $not: { $in: [chatUser1.name, chatUser1.last_match] } },
+				name: {
+					$not: {
+						$in: [chatUser1.name, chatUser1.last_match]
+					}
+				},
 				matched: false,
 				finding: true,
-				filters: { $elemMatch: { $in: chatUser1.filters } },
+				filters: {
+					$elemMatch: {
+						$in: chatUser1.filters
+					}
+				},
 			});
 			await sleep(500);
-			chatUser1 = await ChatUser.findOne({ name: currentUser });
+			chatUser1 = await ChatUser.findOne({
+				name: currentUser
+			});
 			chatUser1IsFinding = chatUser1.finding;
 
 			//IF U FOUND SOMEONE, MAKE SURE U ACTUALLY MATCH WITH THEM, IF NOT, FIND SOMEBODY ELSE
@@ -283,12 +321,18 @@ io.on("connection", (socket) => {
 			i = 0;
 			while (chatUser2 == null && i < 20 && chatUser1IsFinding && !soulmates) {
 				chatUser2 = await ChatUser.findOne({
-					name: { $not: { $in: [chatUser1.name] } },
+					name: {
+						$not: {
+							$in: [chatUser1.name]
+						}
+					},
 					matched: false,
 					finding: true,
 				});
 				await sleep(500);
-				chatUser1 = await ChatUser.findOne({ name: currentUser });
+				chatUser1 = await ChatUser.findOne({
+					name: currentUser
+				});
 				chatUser1IsFinding = chatUser1.finding;
 				//IF U FOUND SOMEONE, MAKE SURE U ACTUALLY MATCH WITH THEM, IF NOT, FIND SOMEBODY ELSE
 				if (chatUser2 != null) {
@@ -306,37 +350,47 @@ io.on("connection", (socket) => {
 		if (!chatUser1IsFinding) {
 			await sleep(300);
 			//if someone found them then find who found them and save them as user 2
-			chatUser2 = await ChatUser.findOne({ current_match: currentUser });
+			chatUser2 = await ChatUser.findOne({
+				current_match: currentUser
+			});
 		}
 
-		chatUser1 = await ChatUser.findOne({ name: currentUser });
+		chatUser1 = await ChatUser.findOne({
+			name: currentUser
+		});
 		chatUser1IsFinding = chatUser.finding;
 		//After finding send the results back to client
 		if (chatUser2 != null && !chatUser1IsFinding) {
-			await ChatUser.updateMany(
-				{
-					$or: [{ name: chatUser1.name }, { name: chatUser2.name }],
-					room: { $exists: false },
+			await ChatUser.updateMany({
+				$or: [{
+					name: chatUser1.name
+				}, {
+					name: chatUser2.name
+				}],
+				room: {
+					$exists: false
 				},
-				{
-					$set: {
-						finding: false,
-						room: chatUser1._id,
-					},
+			}, {
+				$set: {
+					finding: false,
+					room: chatUser1._id,
+				},
+			});
+
+			await ChatUser.updateOne({
+				name: chatUser1.name,
+			}, {
+				$set: {
+					current_match: chatUser2.name
 				}
-			);
+			});
 
-			await ChatUser.updateOne(
-				{
-					name: chatUser1.name,
-				},
-				{ $set: { current_match: chatUser2.name } }
-			);
-
-			chatUser1 = await ChatUser.findOne({ name: chatUser1.name });
+			chatUser1 = await ChatUser.findOne({
+				name: chatUser1.name
+			});
 
 			socket.join(chatUser1.room);
-
+			socket.roomName = chatUser1.room;
 			let chatUser2Profile = await displayMatchedUserProfile(chatUser2);
 			cb({
 				status: "Success",
@@ -344,7 +398,9 @@ io.on("connection", (socket) => {
 				profile: chatUser2Profile,
 			});
 		} else {
-			cb({ status: "No Users Found at the Moment :C" });
+			cb({
+				status: "No Users Found at the Moment :C"
+			});
 		}
 	});
 
@@ -353,50 +409,42 @@ io.on("connection", (socket) => {
 	 *
 	 */
 	socket.on("update-status", async (name, match) => {
-		await ChatUser.updateOne(
-			{ name: name },
-			{
-				$set: {
-					matched: match,
-					finding: false,
-					response: "wait",
-				},
-			}
-		);
+		await ChatUser.updateOne({
+			name: name
+		}, {
+			$set: {
+				matched: match,
+				finding: false,
+				response: "wait",
+			},
+		});
 	});
 
-	/**
-	 * Function for updating last match after being kicked out
-	 */
-	// socket.on("no-match-status", async (name) => {
-	// 	await ChatUser.updateOne(
-	// 		{ name: name },
-	// 		{
-	// 			$set: {
-	// 				last_match: null,
-	// 			},
-	// 		}
-	// 	);
-	// });
+	socket.on('disconnect', async function (data) {
+		let user = socket.userName;
+		socket.to(socket.roomName).emit("ghosted", user + " disconnected.");
+		await ChatUser.deleteMany({ name: user });
+	});
 
 	/**
 	 * Function for being rejected
 	 *
 	 */
 	socket.on("reject-status", async (name, room) => {
-		await ChatUser.updateOne(
-			{ name: name },
-			{
-				$set: {
-					current_match: null,
-					// last_match: null,
-					matched: false,
-					finding: false,
-					response: "wait",
-				},
-				$unset: { room: "" },
-			}
-		);
+		await ChatUser.updateOne({
+			name: name
+		}, {
+			$set: {
+				current_match: null,
+				// last_match: null,
+				matched: false,
+				finding: false,
+				response: "wait",
+			},
+			$unset: {
+				room: ""
+			},
+		});
 		socket.leave(room);
 	});
 
@@ -405,17 +453,18 @@ io.on("connection", (socket) => {
 	 *
 	 */
 	socket.on("ghosted-status", async (name) => {
-		await ChatUser.updateOne(
-			{ name: name },
-			{
-				$set: {
-					current_match: null,
-					matched: false,
-					finding: false,
-				},
-				$unset: { room: "" },
-			}
-		);
+		await ChatUser.updateOne({
+			name: name
+		}, {
+			$set: {
+				current_match: null,
+				matched: false,
+				finding: false,
+			},
+			$unset: {
+				room: ""
+			},
+		});
 	});
 
 	socket.on("send-message", (message, room) => {
