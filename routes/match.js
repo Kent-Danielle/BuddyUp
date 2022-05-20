@@ -4,7 +4,7 @@
 const express = require("express");
 
 //socket.io
-var Server = require('../server');
+var Server = require("../server");
 const io = Server.io;
 // require("socket.io")(3000, {
 // 	cors: {
@@ -155,7 +155,7 @@ io.on("connection", (socket) => {
 	/**
 	 * Function for accepting match
 	 */
-	socket.on("accept-match", async function (name, other, room) {
+	socket.on("accept-match", async function (name, other, room, cb) {
 		await ChatUser.updateOne(
 			{ name: name },
 			{
@@ -164,17 +164,29 @@ io.on("connection", (socket) => {
 					last_match: other,
 					matched: true,
 					finding: false,
+					response: "accept",
 				},
 			}
 		);
-		socket.join(room);
+
+		let chatUser2 = await ChatUser.findOne({ name: other });
+		while (chatUser2.response == "wait") {
+			chatUser2 = await ChatUser.findOne({ name: other });
+		}
+		if (chatUser2.response == "accept") {
+			socket.join(room);
+			cb({ success: true });
+		} else {
+			socket.leave(room);
+			cb({ success: false });
+		}
 	});
 
 	/**
 	 * Function for rejecting match
 	 */
 	socket.on("reject-match", async function (user, other, room) {
-		socket.to(room).emit("rejected");
+		socket.to(room).volatile.emit("rejected");
 		socket.leave(room);
 
 		await ChatUser.updateOne(
@@ -185,6 +197,7 @@ io.on("connection", (socket) => {
 					last_match: other,
 					matched: false,
 					finding: false,
+					response: "reject",
 				},
 				$unset: { room: "" },
 			}
@@ -228,6 +241,7 @@ io.on("connection", (socket) => {
 					matched: false,
 					filters: filters,
 					finding: true,
+					response: "wait",
 				},
 				$unset: { room: "" },
 			}
@@ -330,7 +344,7 @@ io.on("connection", (socket) => {
 				profile: chatUser2Profile,
 			});
 		} else {
-			cb({ status: "No Users Found at the Moment :C"});
+			cb({ status: "No Users Found at the Moment :C" });
 		}
 	});
 
@@ -345,6 +359,7 @@ io.on("connection", (socket) => {
 				$set: {
 					matched: match,
 					finding: false,
+					response: "wait",
 				},
 			}
 		);
@@ -353,34 +368,36 @@ io.on("connection", (socket) => {
 	/**
 	 * Function for updating last match after being kicked out
 	 */
-	socket.on("no-match-status", async (name) => {
-		await ChatUser.updateOne(
-			{ name: name },
-			{
-				$set: {
-					last_match: null,
-				},
-			}
-		);
-	});
+	// socket.on("no-match-status", async (name) => {
+	// 	await ChatUser.updateOne(
+	// 		{ name: name },
+	// 		{
+	// 			$set: {
+	// 				last_match: null,
+	// 			},
+	// 		}
+	// 	);
+	// });
 
 	/**
 	 * Function for being rejected
 	 *
 	 */
-	socket.on("reject-status", async (name) => {
+	socket.on("reject-status", async (name, room) => {
 		await ChatUser.updateOne(
 			{ name: name },
 			{
 				$set: {
 					current_match: null,
-					last_match: null,
+					// last_match: null,
 					matched: false,
 					finding: false,
+					response: "wait",
 				},
 				$unset: { room: "" },
 			}
 		);
+		socket.leave(room);
 	});
 
 	/**

@@ -68,7 +68,12 @@ router.get("/profile/:name", async function (req, res) {
 			}
 		}
 
-		await ChatUser.deleteMany({ name: req.session.name });
+
+		await ChatUser.updateOne(
+			{ name: req.session.name },
+			{ $set: { last_match: null, finding: false, matched: false} }
+		);
+
 
 		if (currentUser.about == null) {
 			currentUser.about = "";
@@ -567,8 +572,9 @@ router.post("/createAccount", upload.single("pfp"), async function (req, res) {
 	}
 });
 
-router.get("/logout", function (req, res) {
+router.get("/logout", async function (req, res) {
 	if (req.session) {
+		await ChatUser.deleteMany({ name: req.session.name });
 		req.session.destroy(function (error) {
 			if (error) {
 				res.status(400).send("Unable to log out");

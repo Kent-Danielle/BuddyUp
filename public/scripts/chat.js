@@ -112,4 +112,5 @@ async function displayStatusMessage(message) {
 	);
 	messageLine.appendChild(messageBubble);
 	document.getElementById("message-container").prepend(messageLine);
+	document.getElementById("message-container").scrollTop = 0;
 }

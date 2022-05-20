@@ -148,7 +148,7 @@ submitFilter.addEventListener("click", function (e) {
 				document.getElementById("message-field").disabled = true;
 				displayStatusMessage(result.status);
 				socket.emit("update-status", currentUser, false);
-				socket.emit("no-match-status", currentUser);
+				// socket.emit("no-match-status", currentUser);
 			}
 		});
 	}
@@ -162,16 +162,42 @@ document
 	.addEventListener("click", async function (e) {
 		let roomID = localStorage.getItem("roomID");
 		let otherUser = document.getElementById("username").innerText;
+		document.getElementById("profile-container").innerHTML =
+			"Waiting for response...";
+		document.getElementById("accept-match").style.display = "none";
+		document.getElementById("reject-match").style.display = "none";
+		socket.emit(
+			"accept-match",
+			currentUser,
+			otherUser,
+			roomID,
+			async function (result) {
+				if (result.success) {
+					document
+						.getElementById("profile-modal")
+						.style.setProperty("display", "none", "important");
+					document.getElementById("send-button").disabled = false;
+					document.getElementById("message-field").disabled = false;
+					document
+						.getElementById("exit-chatroom")
+						.style.setProperty("display", "block", "important");
+				} else {
+					await socket.emit("reject-status", currentUser, roomID);
 
-		socket.emit("accept-match", currentUser, otherUser, roomID);
-		document
-			.getElementById("profile-modal")
-			.style.setProperty("display", "none", "important");
-		document.getElementById("send-button").disabled = false;
-		document.getElementById("message-field").disabled = false;
-		document
-			.getElementById("exit-chatroom")
-			.style.setProperty("display", "block", "important");
+					document
+						.getElementById("match-filters-container")
+						.style.setProperty("display", "block", "important");
+					document
+						.getElementById("profile-modal")
+						.style.setProperty("display", "none", "important");
+					document.getElementById("send-button").disabled = true;
+					document.getElementById("message-field").disabled = true;
+					document.getElementById("profile-container").innerHTML = "Finding...";
+				}
+				document.getElementById("accept-match").style.display = "inline-block";
+				document.getElementById("reject-match").style.display = "inline-block";
+			}
+		);
 	});
 
 /**
@@ -195,7 +221,8 @@ document
  * Listen for rejection
  */
 socket.on("rejected", async function () {
-	await socket.emit("reject-status", currentUser);
+	let roomID = localStorage.getItem("roomID");
+	await socket.emit("reject-status", currentUser, roomID);
 
 	document
 		.getElementById("match-filters-container")
