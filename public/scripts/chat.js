@@ -1,6 +1,6 @@
 "use strict";
 
-const socket = io.connect("http://localhost:3000");
+const socket = io.connect("/");
 
 /**
  * Socket function for receiving message
