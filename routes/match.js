@@ -45,7 +45,7 @@ router.get("/", async function (req, res) {
 		let check = await ChatUser.findOne({
 			name: req.session.name
 		});
-		if(check == null){
+		if(check == null || (check.room == null && check.finding == false)){
 			const chatUser1 = await ChatUser.updateOne({
 				name: req.session.name
 			}, {
@@ -233,6 +233,7 @@ io.on("connection", (socket) => {
 	 * Function for quitting match
 	 */
 	socket.on("exit-match", async function (user, room) {
+		//await ChatUser.deleteMany({ name: user });
 		socket.to(room).emit("ghosted", user + " disconnected.");
 		socket.leave(room);
 
@@ -255,6 +256,16 @@ io.on("connection", (socket) => {
 	 */
 	socket.on("find-match", async function (data, cb) {
 		let d = JSON.parse(data);
+		//check if another version of the same account is already logged in and using chat
+		let check = await ChatUser.findOne({
+			name: d.currentUser
+		});
+		if(check != null && (check.room != null || check.finding == true)){
+			cb({
+				status: "You are signed in elsewhere?!?"
+			});
+			return;
+		}
 		let filters = d.gameFilters;
 		let currentUser = d.currentUser;
 		socket.userName = currentUser;
@@ -272,11 +283,18 @@ io.on("connection", (socket) => {
 				room: ""
 			},
 		});
-
+		let chatUser1IsFinding;
+		console.log(currentUser);
 		let chatUser1 = await ChatUser.findOne({
 			name: currentUser
 		});
-		let chatUser1IsFinding = chatUser1.finding;
+
+		try {
+			chatUser1IsFinding = chatUser1.finding;
+		} catch (error) {
+			console.log(error)
+			chatUser1IsFinding = false;
+		}
 
 		let chatUser2 = null;
 		let i = 0;
