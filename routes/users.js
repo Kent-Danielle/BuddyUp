@@ -928,14 +928,6 @@ router.post(
  * Function for deleting a new user from the admin dashboard
  */
 router.get("/delete/:name", async function (req, res) {
-	if (
-		(await User.findOne({
-			email: req.session.email,
-			admin: true,
-		})) == null
-	) {
-		return;
-	}
 	if (!req.session.loggedIn || req.session.name == req.params["name"]) {
 		res.redirect("/user/login");
 		return;
@@ -951,6 +943,9 @@ router.get("/delete/:name", async function (req, res) {
 	try {
 		await User.deleteOne({
 			name: req.params["name"],
+		});
+		await Timeline.deleteMany({
+			author: req.params["name"],
 		});
 	} catch (error) {
 		return;
