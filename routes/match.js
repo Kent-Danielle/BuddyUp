@@ -220,7 +220,7 @@ io.on("connection", (socket) => {
 	 * Function for quitting match
 	 */
 	socket.on("exit-match", async function (user, room) {
-		socket.to(room).emit("ghosted", user + " disconnected.");
+		socket.to(room).volatile.emit("ghosted", user + " disconnected.");
 		socket.leave(room);
 
 		await ChatUser.updateOne(
@@ -237,16 +237,22 @@ io.on("connection", (socket) => {
 	});
 
 	/**
-	 * Function for finding match
+	 * Prototype function for finding a match
 	 */
 	socket.on("find-match", async function (data, cb) {
 		let d = JSON.parse(data);
-		let filters = d.gameFilters;
-		let currentUser = d.currentUser;
+		let filters = d.gameFilters; //the game filters that the users added
+		let currentUserName = d.currentUser; //name of the logged in user
 
-		await ChatUser.updateOne(
+		/*get and update the current user's document in MongoDB to signify that the user is:
+		1) Finding someone
+		2) Is not matched with anyone
+		3) Still waiting for response
+		4) No rooms yet
+		*/
+		let chatUser1 = await ChatUser.findOneAndUpdate(
 			{
-				name: currentUser,
+				name: currentUserName,
 			},
 			{
 				$set: {
@@ -256,96 +262,145 @@ io.on("connection", (socket) => {
 					response: "wait",
 				},
 				$unset: { room: "" },
+			},
+			{
+				returnNewDocument: true,
 			}
 		);
 
-		let chatUser1 = await ChatUser.findOne({ name: currentUser });
-		let chatUser1IsFinding = chatUser1.finding;
-
-		let chatUser2 = null;
+		//declare a variable for chat user 2
+		let chatUser2 = { current_match: null };
 		let i = 0;
+		//double check to make sure that you matched with the right person
+		while (i < 5 && currentUserName != chatUser2.current_match) {
+			chatUser2 = null;
+			/*find another user that is:
+			1) not you, and not the last person you matched with
+			2) has at least one similar game filter as you
+			3) still finding and not yet matched
+			Do this for 5 seconds or until someone found you or u found someone
+			*/
+			let j = 0;
+			while (chatUser2 == null && j < 4 && !chatUser1.matched) {
+				/*try to find someone,
+				if u did = update them too
+				if u didn't = just find another after 5 seconds
+				*/
+				chatUser2 = await ChatUser.findOneAndUpdate(
+					{
+						name: { $not: { $in: [currentUserName, chatUser1.last_match] } },
+						matched: false,
+						finding: true,
+						filters: { $elemMatch: { $in: chatUser1.filters } },
+					},
+					{ $set: { current_match: currentUserName, matched: true } },
+					{
+						returnNewDocument: true,
+					}
+				);
+				console.log(currentUserName + " found " + chatUser2 + j);
 
-		let soulmates = false;
+				//update existing chatuser1 to see if someone found you
+				chatUser1 = await ChatUser.findOne({ name: currentUserName });
 
-		while (chatUser2 == null && i < 20 && chatUser1IsFinding && !soulmates) {
-			chatUser2 = await ChatUser.findOne({
-				name: { $not: { $in: [chatUser1.name, chatUser1.last_match] } },
-				matched: false,
-				finding: true,
-				filters: { $elemMatch: { $in: chatUser1.filters } },
-			});
-			await sleep(500);
-			chatUser1 = await ChatUser.findOne({ name: currentUser });
-			chatUser1IsFinding = chatUser1.finding;
+				await sleep(250);
 
-			//IF U FOUND SOMEONE, MAKE SURE U ACTUALLY MATCH WITH THEM, IF NOT, FIND SOMEBODY ELSE
-			if (chatUser2 != null) {
-				if (
-					chatUser2.current_match == chatUser1.name ||
-					chatUser2.current_match == null
-				) {
-					soulmates = true;
+				j++;
+			}
+
+			//check if someone found you
+			if (chatUser2 == null && chatUser1.matched) {
+				console.log("Someone found " + currentUserName + " first");
+				chatUser2 = await ChatUser.findOne({
+					current_match: currentUserName,
+				});
+			}
+
+			//if u didn't find chatuser2, then just find anyone lol
+			if (chatUser2 == null) {
+				j = 0;
+				while (chatUser2 == null && j < 4 && !chatUser1.matched) {
+					/*try to find someone,
+					if u did = update them too
+					if u didn't = just find another after 5 seconds
+					*/
+					chatUser2 = await ChatUser.findOneAndUpdate(
+						{
+							name: { $not: { $in: [currentUserName] } },
+							matched: false,
+							finding: true,
+						},
+						{ $set: { current_match: currentUserName, matched: true } },
+						{
+							returnNewDocument: true,
+						}
+					);
+
+					console.log(currentUserName + " found " + chatUser2 + j);
+
+					//update existing chatuser1 to see if someone found you
+					chatUser1 = await ChatUser.findOne({ name: currentUserName });
+
+					await sleep(250);
+
+					j++;
 				}
+			}
+
+			//check if someone found you
+			if (chatUser2 == null && chatUser1.matched) {
+				console.log("Someone found " + currentUserName + " first");
+				chatUser2 = await ChatUser.findOne({
+					current_match: currentUserName,
+				});
+			}
+
+			//if u found chatuser2, then do something to check if chatuser2 found you too
+			if (chatUser2 != null) {
+				console.log("Updating " + currentUserName);
+				//add chatuser2 to chatuser1's data
+				chatUser1 = await ChatUser.findOneAndUpdate(
+					{ name: currentUserName },
+					{ $set: { current_match: chatUser2.name, matched: true } },
+					{
+						returnNewDocument: true,
+					}
+				);
+
+				console.log(currentUserName + " is now... " + chatUser1);
+				//if chatuser2 doesnt have any name for current match, then just wait for 5 seconds
+				let k = 0;
+				while (chatUser2.current_match == null && k < 20) {
+					chatUser2 = await ChatUser.findOne({ name: chatUser2.name });
+					await sleep(250);
+					k++;
+				}
+			} else {
+				chatUser2 = { current_match: null };
 			}
 
 			i++;
 		}
 
-		if (chatUser2 == null) {
-			i = 0;
-			while (chatUser2 == null && i < 20 && chatUser1IsFinding && !soulmates) {
-				chatUser2 = await ChatUser.findOne({
-					name: { $not: { $in: [chatUser1.name] } },
-					matched: false,
-					finding: true,
-				});
-				await sleep(500);
-				chatUser1 = await ChatUser.findOne({ name: currentUser });
-				chatUser1IsFinding = chatUser1.finding;
-				//IF U FOUND SOMEONE, MAKE SURE U ACTUALLY MATCH WITH THEM, IF NOT, FIND SOMEBODY ELSE
-				if (chatUser2 != null) {
-					if (
-						chatUser2.current_match == chatUser1.name ||
-						chatUser2.current_match == null
-					) {
-						soulmates = true;
-					}
-				}
-				i++;
-			}
-		}
-
-		if (!chatUser1IsFinding) {
-			await sleep(300);
-			//if someone found them then find who found them and save them as user 2
-			chatUser2 = await ChatUser.findOne({ current_match: currentUser });
-		}
-
-		chatUser1 = await ChatUser.findOne({ name: currentUser });
-		chatUser1IsFinding = chatUser.finding;
-		//After finding send the results back to client
-		if (chatUser2 != null && !chatUser1IsFinding) {
+		//Send it depending if u found someone or not
+		if (
+			(chatUser2 != null || chatUser2.current_match == null) &&
+			chatUser1.finding
+		) {
+			console.log(chatUser2);
 			await ChatUser.updateMany(
 				{
-					$or: [{ name: chatUser1.name }, { name: chatUser2.name }],
+					$or: [{ name: currentUserName }, { name: chatUser2.name }],
 					room: { $exists: false },
 				},
 				{
 					$set: {
-						finding: false,
 						room: chatUser1._id,
 					},
 				}
 			);
 
-			await ChatUser.updateOne(
-				{
-					name: chatUser1.name,
-				},
-				{ $set: { current_match: chatUser2.name } }
-			);
-
-			chatUser1 = await ChatUser.findOne({ name: chatUser1.name });
+			chatUser1 = await ChatUser.findOne({ name: currentUserName });
 
 			socket.join(chatUser1.room);
 
@@ -378,20 +433,6 @@ io.on("connection", (socket) => {
 	});
 
 	/**
-	 * Function for updating last match after being kicked out
-	 */
-	// socket.on("no-match-status", async (name) => {
-	// 	await ChatUser.updateOne(
-	// 		{ name: name },
-	// 		{
-	// 			$set: {
-	// 				last_match: null,
-	// 			},
-	// 		}
-	// 	);
-	// });
-
-	/**
 	 * Function for being rejected
 	 *
 	 */
@@ -416,7 +457,8 @@ io.on("connection", (socket) => {
 	 * Function for being rejected
 	 *
 	 */
-	socket.on("ghosted-status", async (name) => {
+	socket.on("ghosted-status", async (name, roomID) => {
+		await socket.leave(roomID);
 		await ChatUser.updateOne(
 			{ name: name },
 			{

@@ -65,6 +65,8 @@ exitChatroomBtn.addEventListener("click", (e) => {
 		.getElementById("match-filters-container")
 		.style.setProperty("display", "block", "important");
 	exitChatroomBtn.style.setProperty("display", "none", "important");
+	document.getElementById("send-button").disabled = true;
+	document.getElementById("message-field").disabled = true;
 	displayStatusMessage("You left the room.");
 });
 
@@ -83,11 +85,14 @@ exitChatpageBtn.addEventListener("click", (e) => {
  * Socket function for listening if the other user has left
  */
 socket.on("ghosted", (message) => {
-	socket.emit("ghosted-status", currentUser);
+	let room = localStorage.getItem("roomID");
+	socket.emit("ghosted-status", currentUser, room);
 	document
 		.getElementById("match-filters-container")
 		.style.setProperty("display", "block", "important");
 	exitChatroomBtn.style.setProperty("display", "none", "important");
+	document.getElementById("send-button").disabled = true;
+	document.getElementById("message-field").disabled = true;
 	displayStatusMessage(message);
 });
 
