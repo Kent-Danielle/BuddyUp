@@ -7,9 +7,6 @@ document.getElementById("edit-form").onkeypress = function (e) {
 	}
 };
 
-// used for the id of each filter
-let count = 0;
-
 // display the error message noting that you cannot add any more games for a few seconds
 let errorMessageTimer = null;
 
@@ -30,8 +27,6 @@ function createGameSpan(gameFilter) {
 		"d-inline-block",
 		"rounded-pill"
 	);
-	count++;
-	gameSpan.id = "gamefilter" + count;
 	gameSpan.innerText = gameFilter;
 	return gameSpan;
 }
@@ -57,7 +52,6 @@ function createGameFilterDeleteButton(gameSpan, gameFilter) {
 			gameFilters.splice(index, 1);
 		}
 		gameSpan.remove();
-		count--;
 		document.getElementById("error-msg").innerText = "";
 	});
 	return deleteButton;
@@ -93,7 +87,7 @@ gameInput.addEventListener("keypress", function (e) {
 		}
 
 		// only allow a max of 10 game filters
-		if (count >= maxGames) {
+		if (gameFilters.length >= maxGames) {
 			displayMaxGameFiltersMessage();
 			return;
 		}
@@ -101,6 +95,36 @@ gameInput.addEventListener("keypress", function (e) {
 		addGame(gameInput.value);
 		gameInput.value = "";
 	}
+});
+
+/**
+ * deletes all game filters once the delete-all-games button is clicked
+ */
+document.getElementById("delete-all-games").addEventListener("click", function(e) {
+	e.preventDefault();
+	gameFilters.length = 0;
+	let gameFiltersContainer = document.getElementById("gameFiltersContainer");
+	gameFiltersContainer.innerHTML = "";
+});
+
+/**
+ * Adds the current game as a filter once clicked on the add filter button
+ */
+document.getElementById("add-filter-button").addEventListener("click", function(e) {
+	e.preventDefault();
+	
+	// only allow a max of 10 game filters
+	if (gameFilters.length >= maxGames) {
+		displayMaxGameFiltersMessage();
+		return;
+	}
+
+	if (gameInput.value === "") {
+		return;
+	}
+
+	addGame(gameInput.value);
+	gameInput.value = "";
 });
 
 /**

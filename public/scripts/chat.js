@@ -56,6 +56,39 @@ function displayMessage(you, message) {
 }
 
 /**
+ * deletes all game filters once the delete-all-games button is clicked
+ */
+ document.getElementById("delete-all-games").addEventListener("click", function(e) {
+	e.preventDefault();
+	gameFilters.length = 0;
+	let gameFiltersContainer = document.getElementById("gameFiltersContainer");
+	gameFiltersContainer.innerHTML = "";
+});
+
+/**
+ * Adds the current game as a filter once clicked on the add filter button
+ */
+/**
+ * Adds the current game as a filter once clicked on the add filter button
+ */
+ document.getElementById("add-filter-button").addEventListener("click", function(e) {
+	e.preventDefault();
+	
+	// only allow a max of 10 game filters
+	if (gameFilters.length >= maxGames) {
+		displayMaxGameFiltersMessage();
+		return;
+	}
+
+	if (gameInput.value === "") {
+		return;
+	}
+
+	addGame(gameInput.value);
+	gameInput.value = "";
+});
+
+/**
  * Function for getting out of the chatroom
  */
 let exitChatroomBtn = document.getElementById("exit-chatroom");
