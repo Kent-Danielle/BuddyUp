@@ -42,7 +42,7 @@ const chatuserSchema = new mongoose.Schema({
 	response: {
 		type: String,
 		required: false,
-	}
+	},
 });
 
 module.exports = mongoose.model("bby09-chat-user", chatuserSchema);

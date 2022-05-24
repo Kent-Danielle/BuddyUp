@@ -121,9 +121,11 @@ async function getUserData() {
 // auto fill each game from the user as a filter
 async function autoFillFilters() {
 	let data = await getUserData();
-	data.games.forEach((game) => {
-		addGame(game);
-	});
+	if (Array.isArray(data.games) && data.games.length) {
+		data.games.forEach((game) => {
+			addGame(game);
+		});
+	}
 }
 autoFillFilters();
 

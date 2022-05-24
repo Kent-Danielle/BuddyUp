@@ -172,7 +172,6 @@ async function displayMatchedUserProfile(user2) {
  */
 io.on("connection", (socket) => {
 	socket.user = name;
-
 	/**
 	 * Function for handling disconnection for unknown reasons
 	 */
@@ -268,101 +267,68 @@ io.on("connection", (socket) => {
 	 */
 	socket.on("find-match", async function (data, cb) {
 		let d = JSON.parse(data);
-		let filters = d.gameFilters; //the game filters that the users added
 		let currentUserName = d.currentUser; //name of the logged in user
 
-		/*get and update the current user's document in MongoDB to signify that the user is:
+		let user = await ChatUser.findOne({ name: currentUserName });
+		if (user.finding || user.matched) {
+			cb({ status: "You're already logged in somewhere :C" });
+		} else {
+			let filters = d.gameFilters; //the game filters that the users added
+
+			/*get and update the current user's document in MongoDB to signify that the user is:
 		1) Finding someone
 		2) Is not matched with anyone
 		3) Still waiting for response
 		4) No rooms yet
 		*/
-		let chatUser1 = await ChatUser.findOneAndUpdate(
-			{
-				name: currentUserName,
-			},
-			{
-				$set: {
-					matched: false,
-					filters: filters,
-					finding: true,
-					response: "wait",
+			let chatUser1 = await ChatUser.findOneAndUpdate(
+				{
+					name: currentUserName,
 				},
-				$unset: { room: "" },
-			},
-			{
-				new: true,
-			}
-		);
+				{
+					$set: {
+						matched: false,
+						filters: filters,
+						finding: true,
+						response: "wait",
+					},
+					$unset: { room: "" },
+				},
+				{
+					new: true,
+				}
+			);
 
-		//declare a variable for chat user 2
-		let chatUser2 = { current_match: null };
-		let i = 0;
-		//double check to make sure that you matched with the right person
-		while (i < 8 && currentUserName != chatUser2.current_match) {
-			chatUser2 = null;
-			/*find another user that is:
+			//declare a variable for chat user 2
+			let chatUser2 = { current_match: null };
+			let i = 0;
+			//double check to make sure that you matched with the right person
+			while (i < 8 && currentUserName != chatUser2.current_match) {
+				chatUser2 = null;
+				/*find another user that is:
 			1) not you, and not the last person you matched with
 			2) has at least one similar game filter as you
 			3) still finding and not yet matched
 			Do this for 5 seconds or until someone found you or u found someone
 			*/
-			let j = 0;
-			while (chatUser2 == null && j < 4 && !chatUser1.matched) {
-				/*try to find someone,
+				let j = 0;
+				while (chatUser2 == null && j < 4 && !chatUser1.matched) {
+					/*try to find someone,
 				if u did = update them too
 				if u didn't = just find another after 5 seconds
 				*/
-				chatUser2 = await ChatUser.findOneAndUpdate(
-					{
-						name: { $not: { $in: [currentUserName, chatUser1.last_match] } },
-						matched: false,
-						finding: true,
-						filters: { $elemMatch: { $in: chatUser1.filters } },
-					},
-					{ $set: { current_match: currentUserName, matched: true } },
-					{
-						new: true,
-					}
-				);
-				console.log(currentUserName + " found " + chatUser2 + j);
-
-				//update existing chatuser1 to see if someone found you
-				chatUser1 = await ChatUser.findOne({ name: currentUserName });
-
-				await sleep(250);
-
-				j++;
-			}
-
-			//check if someone found you
-			if (chatUser2 == null && chatUser1.matched) {
-				console.log("Someone found " + currentUserName + " first");
-				chatUser2 = await ChatUser.findOne({
-					current_match: currentUserName,
-				});
-			}
-
-			//if u didn't find chatuser2, then just find anyone lol
-			if (chatUser2 == null) {
-				j = 0;
-				while (chatUser2 == null && j < 4 && !chatUser1.matched && i > 5) {
-					/*try to find someone,
-					if u did = update them too
-					if u didn't = just find another after 5 seconds
-					*/
 					chatUser2 = await ChatUser.findOneAndUpdate(
 						{
-							name: { $not: { $in: [currentUserName] } },
+							name: { $not: { $in: [currentUserName, chatUser1.last_match] } },
 							matched: false,
 							finding: true,
+							filters: { $elemMatch: { $in: chatUser1.filters } },
 						},
 						{ $set: { current_match: currentUserName, matched: true } },
 						{
 							new: true,
 						}
 					);
-
 					console.log(currentUserName + " found " + chatUser2 + j);
 
 					//update existing chatuser1 to see if someone found you
@@ -372,74 +338,113 @@ io.on("connection", (socket) => {
 
 					j++;
 				}
+
+				//check if someone found you
+				if (chatUser2 == null && chatUser1.matched) {
+					console.log("Someone found " + currentUserName + " first");
+					chatUser2 = await ChatUser.findOne({
+						current_match: currentUserName,
+					});
+				}
+
+				//if u didn't find chatuser2, then just find anyone lol
+				if (chatUser2 == null) {
+					j = 0;
+					while (chatUser2 == null && j < 4 && !chatUser1.matched && i > 5) {
+						/*try to find someone,
+					if u did = update them too
+					if u didn't = just find another after 5 seconds
+					*/
+						chatUser2 = await ChatUser.findOneAndUpdate(
+							{
+								name: { $not: { $in: [currentUserName] } },
+								matched: false,
+								finding: true,
+							},
+							{ $set: { current_match: currentUserName, matched: true } },
+							{
+								new: true,
+							}
+						);
+
+						console.log(currentUserName + " found " + chatUser2 + j);
+
+						//update existing chatuser1 to see if someone found you
+						chatUser1 = await ChatUser.findOne({ name: currentUserName });
+
+						await sleep(250);
+
+						j++;
+					}
+				}
+
+				//check if someone found you
+				if (chatUser2 == null && chatUser1.matched) {
+					console.log("Someone found " + currentUserName + " first");
+					chatUser2 = await ChatUser.findOne({
+						current_match: currentUserName,
+					});
+				}
+
+				//if u found chatuser2, then do something to check if chatuser2 found you too
+				if (chatUser2 != null) {
+					console.log("Updating " + currentUserName);
+					//add chatuser2 to chatuser1's data
+					chatUser1 = await ChatUser.findOneAndUpdate(
+						{ name: currentUserName },
+						{ $set: { current_match: chatUser2.name, matched: true } },
+						{
+							new: true,
+						}
+					);
+
+					console.log(currentUserName + " is now... " + chatUser1);
+					//if chatuser2 doesnt have any name for current match, then just wait for 5 seconds
+					let k = 0;
+					while (chatUser2.current_match == null && k < 20) {
+						chatUser2 = await ChatUser.findOne({ name: chatUser2.name });
+						await sleep(250);
+						k++;
+					}
+				} else {
+					chatUser2 = { current_match: null };
+				}
+
+				i++;
 			}
 
-			//check if someone found you
-			if (chatUser2 == null && chatUser1.matched) {
-				console.log("Someone found " + currentUserName + " first");
-				chatUser2 = await ChatUser.findOne({
-					current_match: currentUserName,
-				});
-			}
-
-			//if u found chatuser2, then do something to check if chatuser2 found you too
-			if (chatUser2 != null) {
-				console.log("Updating " + currentUserName);
-				//add chatuser2 to chatuser1's data
-				chatUser1 = await ChatUser.findOneAndUpdate(
-					{ name: currentUserName },
-					{ $set: { current_match: chatUser2.name, matched: true } },
+			//Send it depending if u found someone or not
+			if (
+				(chatUser2 != null || chatUser2.current_match == null) &&
+				chatUser1.finding
+			) {
+				console.log(chatUser2);
+				await ChatUser.updateMany(
 					{
-						new: true,
+						$or: [{ name: currentUserName }, { name: chatUser2.name }],
+						room: { $exists: false },
+					},
+					{
+						$set: {
+							room: chatUser1._id,
+						},
 					}
 				);
 
-				console.log(currentUserName + " is now... " + chatUser1);
-				//if chatuser2 doesnt have any name for current match, then just wait for 5 seconds
-				let k = 0;
-				while (chatUser2.current_match == null && k < 20) {
-					chatUser2 = await ChatUser.findOne({ name: chatUser2.name });
-					await sleep(250);
-					k++;
-				}
+				chatUser1 = await ChatUser.findOne({ name: currentUserName });
+
+				socket.join(chatUser1.room);
+				socket.room_ID = chatUser1.room;
+
+				let chatUser2Profile = await displayMatchedUserProfile(chatUser2);
+				cb({
+					status: "Success",
+					roomID: chatUser1.room,
+					profile: chatUser2Profile,
+				});
 			} else {
-				chatUser2 = { current_match: null };
+				cb({ status: "No Users Found at the Moment :C" });
 			}
-
-			i++;
-		}
-
-		//Send it depending if u found someone or not
-		if (
-			(chatUser2 != null || chatUser2.current_match == null) &&
-			chatUser1.finding
-		) {
-			console.log(chatUser2);
-			await ChatUser.updateMany(
-				{
-					$or: [{ name: currentUserName }, { name: chatUser2.name }],
-					room: { $exists: false },
-				},
-				{
-					$set: {
-						room: chatUser1._id,
-					},
-				}
-			);
-
-			chatUser1 = await ChatUser.findOne({ name: currentUserName });
-
-			socket.join(chatUser1.room);
-			socket.room_ID = chatUser1.room;
-
-			let chatUser2Profile = await displayMatchedUserProfile(chatUser2);
-			cb({
-				status: "Success",
-				roomID: chatUser1.room,
-				profile: chatUser2Profile,
-			});
-		} else {
-			cb({ status: "No Users Found at the Moment :C" });
 		}
 	});
 

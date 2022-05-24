@@ -570,7 +570,12 @@ router.post("/createAccount", upload.single("pfp"), async function (req, res) {
 
 router.get("/logout", async function (req, res) {
 	if (req.session) {
-		await ChatUser.deleteMany({ name: req.session.name });
+		let user = await ChatUser.findOne({ name: req.session.name });
+
+		if (!user.finding && !user.matched) {
+			await ChatUser.deleteMany({ name: req.session.name });
+		}
+
 		req.session.destroy(function (error) {
 			if (error) {
 				res.status(400).send("Unable to log out");
