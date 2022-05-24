@@ -28,6 +28,8 @@ const { JSDOM } = require("jsdom");
 const { setInterval } = require("timers/promises");
 const chatUser = require("../models/chat-user.js");
 
+let name = null;
+
 /**
  * GET route for sending the chat html page
  */
@@ -37,10 +39,15 @@ router.get("/", async function (req, res) {
 		"Cache-Control",
 		"no-cache, private, no-store, must-revalidate, max-stale=0, post-check=0, pre-check=0"
 	);
-	if (req.session.loggedIn) {
+	let user = await ChatUser.findOne({ name: req.session.name });
+	if (
+		req.session.loggedIn &&
+		(user == null || (user.matched == false && user.finding == false))
+	) {
+		name = req.session.name;
 		const chatUser1 = await ChatUser.updateOne(
 			{ name: req.session.name },
-			{ name: req.session.name, finding: false },
+			{ name: req.session.name, finding: false, response: "wait" },
 			{ upsert: true }
 		);
 		// if user is not logged in, go to the login page
@@ -164,6 +171,26 @@ async function displayMatchedUserProfile(user2) {
  * Function for socket.io
  */
 io.on("connection", (socket) => {
+	socket.user = name;
+
+	/**
+	 * Function for handling disconnection for unknown reasons
+	 */
+	socket.on("disconnect", async function () {
+		let chatUser1 = await ChatUser.findOne({ name: socket.user });
+		if (chatUser1.response == "wait") {
+			socket.to(socket.room_ID).volatile.emit("rejected");
+		} else if (chatUser1.response == "accept") {
+			socket
+				.to(socket.room_ID)
+				.volatile.emit("ghosted", socket.user + " disconnected.");
+		}
+
+		socket.leave(socket.room_ID);
+
+		await ChatUser.deleteOne({ name: socket.user });
+	});
+
 	/**
 	 * Function for accepting match
 	 */
@@ -403,6 +430,7 @@ io.on("connection", (socket) => {
 			chatUser1 = await ChatUser.findOne({ name: currentUserName });
 
 			socket.join(chatUser1.room);
+			socket.room_ID = chatUser1.room;
 
 			let chatUser2Profile = await displayMatchedUserProfile(chatUser2);
 			cb({

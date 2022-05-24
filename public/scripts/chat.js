@@ -50,7 +50,9 @@ function displayMessage(you, message) {
 	);
 	messageLine.appendChild(messageBubble);
 	document.getElementById("message-container").appendChild(messageLine);
-	document.getElementById("message-container").scrollTo(0, document.getElementById("message-container").scrollHeight)
+	document
+		.getElementById("message-container")
+		.scrollTo(0, document.getElementById("message-container").scrollHeight);
 }
 
 /**
@@ -77,7 +79,7 @@ let exitChatpageBtn = document.getElementById("exit-chatpage");
 exitChatpageBtn.addEventListener("click", (e) => {
 	e.preventDefault();
 	let room = localStorage.getItem("roomID");
-	socket.emit("exit-match", currentUser, room);
+	socket.disconnect();
 	window.location.replace("/user/profile");
 });
 
