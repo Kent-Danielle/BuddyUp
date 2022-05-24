@@ -49,6 +49,12 @@ body {
 	border: 1px solid rgba(221, 55, 91, 0.3);
 }
 
+.btn-gray {
+	color: var(--primary-dark);
+	background: none;
+	border: 3px solid var(--neutral-color);
+}
+
 .btn-blue {
 	color: white;
 	background: rgba(22, 100, 214, 0.71);

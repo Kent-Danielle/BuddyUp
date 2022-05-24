@@ -188,6 +188,12 @@ th {
 	-webkit-backdrop-filter: blur(3px);
 	border-radius: 10px;
 	border: 1px solid rgba(255, 255, 255, 0.18);
+
+	width: clamp(200px, 45%, 650px);
+}
+
+#yesBtn, #noBtn {
+	width: clamp(75px, 35%, 250px);
 }
 
 #confirmModal {
@@ -300,6 +306,11 @@ form a {
 		width: 100%;
 		font-size: 0.8rem;
 	}
+
+	.modal-content {
+		width: 80% !important;
+	}
+	
 }
 
 /*----------------
