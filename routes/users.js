@@ -15,7 +15,9 @@ const Timeline = require("../models/user-timeline");
 const ChatUser = require("../models/chat-user.js");
 const path = require("path");
 const fs = require("fs");
-const { JSDOM } = require("jsdom");
+const {
+	JSDOM
+} = require("jsdom");
 
 //get all users
 router.get("/", function (req, res) {
@@ -68,10 +70,15 @@ router.get("/profile/:name", async function (req, res) {
 			}
 		}
 
-		await ChatUser.updateOne(
-			{ name: req.session.name },
-			{ $set: { last_match: null, finding: false, matched: false } }
-		);
+		await ChatUser.updateOne({
+			name: req.session.name
+		}, {
+			$set: {
+				last_match: null,
+				finding: false,
+				matched: false
+			}
+		});
 
 		if (currentUser.about == null) {
 			currentUser.about = "";
@@ -194,14 +201,14 @@ function tableHTMLBuilder(result, i) {
 		result.email +
 		//ADMIN COL
 		"</td><td class='admin-column text-center'>" +
-		(result.admin
-			? "<i class='fa-solid fa-check'></i>"
-			: "<i class='fa-solid fa-xmark'></i>") +
+		(result.admin ?
+			"<i class='fa-solid fa-check'></i>" :
+			"<i class='fa-solid fa-xmark'></i>") +
 		//PROMOTON COL
 		"</td><td class='promotion-column text-center'>" +
-		(result.promotion
-			? "<i class='fa-solid fa-check'></i>"
-			: "<i class='fa-solid fa-xmark'></i>") +
+		(result.promotion ?
+			"<i class='fa-solid fa-check'></i>" :
+			"<i class='fa-solid fa-xmark'></i>") +
 		//EDIT BTNS COL
 		"</td><td class='edit-column text-center'>" +
 		"<button id='editModalButton' value='" +
@@ -461,7 +468,9 @@ router.get("/register", function (req, res) {
 });
 
 var multer = require("multer");
-const { findOne } = require("../models/user");
+const {
+	findOne
+} = require("../models/user");
 
 var storage = multer.diskStorage({
 	destination: (req, file, cb) => {
@@ -570,10 +579,16 @@ router.post("/createAccount", upload.single("pfp"), async function (req, res) {
 
 router.get("/logout", async function (req, res) {
 	if (req.session) {
-		let user = await ChatUser.findOne({ name: req.session.name });
+		let user = await ChatUser.findOne({
+			name: req.session.name
+		});
 
-		if (!user.finding && !user.matched) {
-			await ChatUser.deleteMany({ name: req.session.name });
+		if (user != null) {
+			if (!user.finding && !user.matched) {
+				await ChatUser.deleteMany({
+					name: req.session.name
+				});
+			}
 		}
 
 		req.session.destroy(function (error) {
@@ -686,51 +701,42 @@ router.post("/edit/submit", upload.single("image"), async function (req, res) {
 			}
 
 			try {
-				await Timeline.updateMany(
-					{
-						author: req.session.name,
+				await Timeline.updateMany({
+					author: req.session.name,
+				}, {
+					$set: {
+						author: req.body.name,
 					},
-					{
-						$set: {
-							author: req.body.name,
-						},
-					}
-				);
+				});
 			} catch (error) {
 				//add log here
 			}
 
 			if (url != null) {
-				await User.updateOne(
-					{
-						email: req.session.email,
+				await User.updateOne({
+					email: req.session.email,
+				}, {
+					$set: {
+						img: url,
+						name: req.body.name,
+						about: req.body.about,
+						email: req.body.email,
+						password: req.body.password,
+						games: filters,
 					},
-					{
-						$set: {
-							img: url,
-							name: req.body.name,
-							about: req.body.about,
-							email: req.body.email,
-							password: req.body.password,
-							games: filters,
-						},
-					}
-				);
+				});
 			} else {
-				await User.updateOne(
-					{
-						email: req.session.email,
+				await User.updateOne({
+					email: req.session.email,
+				}, {
+					$set: {
+						name: req.body.name,
+						about: req.body.about,
+						email: req.body.email,
+						password: req.body.password,
+						games: filters,
 					},
-					{
-						$set: {
-							name: req.body.name,
-							about: req.body.about,
-							email: req.body.email,
-							password: req.body.password,
-							games: filters,
-						},
-					}
-				);
+				});
 			}
 			req.session.email = req.body.email;
 			req.session.name = req.body.name;
@@ -791,16 +797,13 @@ router.post("/adminPromotion", async function (req, res) {
 			res.send(adminPromotionDOM.serialize());
 		} else {
 			const newAdminReq = await adminReq.save();
-			await User.updateOne(
-				{
-					email: req.body.email,
+			await User.updateOne({
+				email: req.body.email,
+			}, {
+				$set: {
+					promotion: true,
 				},
-				{
-					$set: {
-						promotion: true,
-					},
-				}
-			);
+			});
 			res.redirect("/user/login");
 		}
 	} catch (err) {
@@ -1040,16 +1043,13 @@ router.post(
 					}
 				}
 				try {
-					await Timeline.updateMany(
-						{
-							author: oldUser.name,
+					await Timeline.updateMany({
+						author: oldUser.name,
+					}, {
+						$set: {
+							author: req.body.name,
 						},
-						{
-							$set: {
-								author: req.body.name,
-							},
-						}
-					);
+					});
 				} catch (error) {
 					//add log here
 				}
@@ -1083,38 +1083,32 @@ router.post(
 					return;
 				}
 				if (url != null) {
-					await User.updateOne(
-						{
-							email: oldUser.email,
+					await User.updateOne({
+						email: oldUser.email,
+					}, {
+						$set: {
+							img: url,
+							name: req.body.name,
+							about: req.body.about,
+							email: req.body.email,
+							admin: adminValue,
+							promotion: userRequest != null ? true : false,
+							password: req.body.password,
 						},
-						{
-							$set: {
-								img: url,
-								name: req.body.name,
-								about: req.body.about,
-								email: req.body.email,
-								admin: adminValue,
-								promotion: userRequest != null ? true : false,
-								password: req.body.password,
-							},
-						}
-					);
+					});
 				} else {
-					await User.updateOne(
-						{
-							email: oldUser.email,
+					await User.updateOne({
+						email: oldUser.email,
+					}, {
+						$set: {
+							name: req.body.name,
+							about: req.body.about,
+							email: req.body.email,
+							admin: adminValue,
+							promotion: userRequest != null ? true : false,
+							password: req.body.password,
 						},
-						{
-							$set: {
-								name: req.body.name,
-								about: req.body.about,
-								email: req.body.email,
-								admin: adminValue,
-								promotion: userRequest != null ? true : false,
-								password: req.body.password,
-							},
-						}
-					);
+					});
 				}
 				res.send({
 					success: true,
@@ -1205,8 +1199,8 @@ var storagePost = multer.diskStorage({
 		cb(
 			null,
 			Date.now() +
-				Math.floor(Math.random() * 999) +
-				path.extname(file.originalname)
+			Math.floor(Math.random() * 999) +
+			path.extname(file.originalname)
 		);
 	},
 });
@@ -1362,18 +1356,15 @@ router.post(
 					return;
 				}
 
-				await Timeline.updateMany(
-					{
-						_id: req.body.id,
+				await Timeline.updateMany({
+					_id: req.body.id,
+				}, {
+					$set: {
+						title: req.body.title,
+						post: req.body.content,
+						img: upload,
 					},
-					{
-						$set: {
-							title: req.body.title,
-							post: req.body.content,
-							img: upload,
-						},
-					}
-				);
+				});
 
 				res.send({
 					success: "true",
