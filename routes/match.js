@@ -264,7 +264,7 @@ io.on("connection", (socket) => {
 				$unset: { room: "" },
 			},
 			{
-				returnNewDocument: true,
+				new: true,
 			}
 		);
 
@@ -272,7 +272,7 @@ io.on("connection", (socket) => {
 		let chatUser2 = { current_match: null };
 		let i = 0;
 		//double check to make sure that you matched with the right person
-		while (i < 5 && currentUserName != chatUser2.current_match) {
+		while (i < 8 && currentUserName != chatUser2.current_match) {
 			chatUser2 = null;
 			/*find another user that is:
 			1) not you, and not the last person you matched with
@@ -295,7 +295,7 @@ io.on("connection", (socket) => {
 					},
 					{ $set: { current_match: currentUserName, matched: true } },
 					{
-						returnNewDocument: true,
+						new: true,
 					}
 				);
 				console.log(currentUserName + " found " + chatUser2 + j);
@@ -319,7 +319,7 @@ io.on("connection", (socket) => {
 			//if u didn't find chatuser2, then just find anyone lol
 			if (chatUser2 == null) {
 				j = 0;
-				while (chatUser2 == null && j < 4 && !chatUser1.matched) {
+				while (chatUser2 == null && j < 4 && !chatUser1.matched && i > 5) {
 					/*try to find someone,
 					if u did = update them too
 					if u didn't = just find another after 5 seconds
@@ -332,7 +332,7 @@ io.on("connection", (socket) => {
 						},
 						{ $set: { current_match: currentUserName, matched: true } },
 						{
-							returnNewDocument: true,
+							new: true,
 						}
 					);
 
@@ -363,7 +363,7 @@ io.on("connection", (socket) => {
 					{ name: currentUserName },
 					{ $set: { current_match: chatUser2.name, matched: true } },
 					{
-						returnNewDocument: true,
+						new: true,
 					}
 				);
 
