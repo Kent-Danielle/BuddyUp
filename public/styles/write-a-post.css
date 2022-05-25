@@ -18,6 +18,11 @@
 	margin-top: 1rem;
 }
 
+form {
+	margin-top: 1rem;
+	padding: 1.3rem;
+}
+
 body {
 	background: rgb(63, 200, 251);
 	background: linear-gradient(50deg,
@@ -89,6 +94,12 @@ h3 {
 #submit,
 #cancelBtn {
 	width: clamp(100px, 25%, 200px) !important;
+	margin: 1rem 1rem;
+}
+
+#buttons {
+	display: flex;
+	justify-content: center;
 }
 
 /*----------------
@@ -96,17 +107,20 @@ h3 {
  *----------------
  */
 @media only screen and (max-width: 844px) {
-	#input-container {
-		width: 95% !important;
-	}
 
 	textarea {
 		height: 0.1vh;
 	}
 
 	#form-container {
-		width: 95% !important;
+		width: 100% !important;
+		height: 100% !important;
+		border-radius: 0;
+		border: 0;
+		box-shadow: none;
+		backdrop-filter: none;
 		overflow-y: scroll;
+		box-sizing: content-box !important;
 	}
 }
 

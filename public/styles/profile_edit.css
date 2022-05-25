@@ -212,7 +212,14 @@ form a {
 	}
 
 	#form-container {
-		width: 95% !important;
+		display: grid;
+		align-items: center;
+		width: 100% !important;
+		height: 100% !important;
+		border-radius: 0;
+		border: 0;
+		box-shadow: none;
+		backdrop-filter: none;
 		overflow-y: scroll;
 		box-sizing: content-box !important;
 	}
