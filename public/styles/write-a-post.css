@@ -20,15 +20,15 @@
 
 body {
 	background: rgb(63, 200, 251);
-	background: linear-gradient(50deg,
-			rgba(63, 200, 251, 0.8) 0%,
-			rgba(252, 70, 215, 0.8) 50%,
-			rgba(252, 225, 70, 0.8) 100%);
+	background: linear-gradient(
+		50deg,
+		rgba(63, 200, 251, 0.8) 0%,
+		rgba(252, 70, 215, 0.8) 50%,
+		rgba(252, 225, 70, 0.8) 100%
+	);
 	animation: gradient 180s ease infinite;
 	background-size: 300% 300%;
 }
-
-
 
 #loadingMsg {
 	margin: 0;
@@ -74,6 +74,11 @@ form input[type="text"] {
 	padding: 0.3rem !important;
 	width: 100% !important;
 	background-color: rgba(255, 255, 255, 0);
+}
+
+#submit,
+#cancelBtn {
+	width: clamp(100px, 25%, 200px) !important;
 }
 
 /*----------------

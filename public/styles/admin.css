@@ -33,12 +33,6 @@ input[type="file"] {
 	right: 0.5rem;
 	font-size: 0.7rem;
 	padding: 0.3rem;
-	background: rgba(221, 55, 91, 0.66);
-	color: white;
-	box-shadow: 0 4px 30px rgba(0, 0, 0, 0.1);
-	backdrop-filter: blur(1.7px);
-	-webkit-backdrop-filter: blur(1.7px);
-	border: 1px solid rgba(221, 55, 91, 0.3);
 }
 
 body {
@@ -117,15 +111,6 @@ input[type="text"] {
 	-webkit-backdrop-filter: blur(5px);
 	border: 1px solid rgba(22, 100, 214, 0.3);
 }
-#addUserButton {
-	color: white !important;
-	background: rgba(22, 100, 214, 0.41);
-	border-radius: 16px;
-	box-shadow: 0 4px 30px rgba(0, 0, 0, 0.1);
-	backdrop-filter: blur(2px);
-	-webkit-backdrop-filter: blur(5px);
-	border: 1px solid rgba(22, 100, 214, 0.3);
-}
 #filter-btns,
 #newUser {
 	display: inline-block;
@@ -192,7 +177,8 @@ th {
 	width: clamp(200px, 45%, 650px);
 }
 
-#yesBtn, #noBtn {
+#yesBtn,
+#noBtn {
 	width: clamp(75px, 35%, 250px);
 }
 
@@ -310,7 +296,6 @@ form a {
 	.modal-content {
 		width: 80% !important;
 	}
-	
 }
 
 /*----------------
