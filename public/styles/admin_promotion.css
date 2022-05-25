@@ -86,7 +86,8 @@ form > h3 {
 	font-variant: small-caps;
 }
 form > input[type="text"],
-form > input[type="password"] {
+form > input[type="password"],
+form > input[type="email"] {
 	box-sizing: border-box;
 	border: none;
 	border-bottom: 2px solid var(--accent-light);

@@ -118,6 +118,7 @@ input[type="file"] {
 	padding: 0.4rem;
 	width: 100%;
 	font-variant: small-caps;
+	border-radius: 0.5rem;
 	cursor: pointer;
 }
 

@@ -102,12 +102,14 @@ input[type="file"] {
 }
 
 #file-container {
+	box-sizing: border-box;
+	color: #ffffff;
+	background: #797979;
+	box-shadow: 0 4px 30px rgba(0, 0, 0, 0.1);
+	padding: 0.4rem;
 	width: 100%;
-	resize: none;
-	background-color: rgba(255, 255, 255, 0);
-	border: 2px solid var(--accent-light);
+	font-variant: small-caps;
 	border-radius: 0.5rem;
-	padding: 0.3rem;
 	cursor: pointer;
 }
 
@@ -208,6 +210,7 @@ form a {
 		grid-template-rows: 1fr;
 		grid-template-columns: 100%;
 	}
+
 	#form-container {
 		width: 95% !important;
 	}
@@ -223,6 +226,7 @@ form a {
 		grid-template-rows: 1fr;
 		grid-template-columns: 100%;
 	}
+
 	#form-container {
 		width: 75% !important;
 	}
