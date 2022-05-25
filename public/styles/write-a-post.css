@@ -20,12 +20,10 @@
 
 body {
 	background: rgb(63, 200, 251);
-	background: linear-gradient(
-		50deg,
-		rgba(63, 200, 251, 0.8) 0%,
-		rgba(252, 70, 215, 0.8) 50%,
-		rgba(252, 225, 70, 0.8) 100%
-	);
+	background: linear-gradient(50deg,
+			rgba(63, 200, 251, 0.8) 0%,
+			rgba(252, 70, 215, 0.8) 50%,
+			rgba(252, 225, 70, 0.8) 100%);
 	animation: gradient 180s ease infinite;
 	background-size: 300% 300%;
 }
@@ -43,13 +41,18 @@ body {
 	font-style: italic;
 }
 
-#input-container {
-	background: rgba(255, 255, 255, 0.2) !important;
-	box-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.37) !important;
-	backdrop-filter: blur(3px) !important;
-	-webkit-backdrop-filter: blur(3px) !important;
-	border-radius: 10px !important;
-	border: 1px solid rgba(255, 255, 255, 0.18) !important;
+#form-container {
+	position: absolute;
+	top: 50%;
+	left: 50%;
+	transform: translate(-50%, -50%);
+	width: 75%;
+	background: rgba(255, 255, 255, 0.456);
+	box-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.37);
+	backdrop-filter: blur(3px);
+	-webkit-backdrop-filter: blur(3px);
+	border-radius: 10px;
+	border: 1px solid rgba(255, 255, 255, 0.18);
 }
 
 input[type="file"] {
@@ -57,12 +60,14 @@ input[type="file"] {
 }
 
 #file-container {
+	box-sizing: border-box;
+	color: #ffffff;
+	background: #797979;
+	box-shadow: 0 4px 30px rgba(0, 0, 0, 0.1);
+	padding: 0.4rem;
 	width: 100%;
-	resize: none;
-	background-color: rgba(255, 255, 255, 0);
-	border: 2px solid var(--accent-light);
+	font-variant: small-caps;
 	border-radius: 0.5rem;
-	padding: 0.3rem;
 	cursor: pointer;
 }
 
@@ -74,6 +79,11 @@ form input[type="text"] {
 	padding: 0.3rem !important;
 	width: 100% !important;
 	background-color: rgba(255, 255, 255, 0);
+}
+
+h3 {
+	margin: 0.7rem 0 0.1rem !important;
+	font-variant: small-caps !important;
 }
 
 #submit,
@@ -88,6 +98,15 @@ form input[type="text"] {
 @media only screen and (max-width: 844px) {
 	#input-container {
 		width: 95% !important;
+	}
+
+	textarea {
+		height: 0.1vh;
+	}
+
+	#form-container {
+		width: 95% !important;
+		overflow-y: scroll;
 	}
 }
 

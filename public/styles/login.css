@@ -125,6 +125,19 @@ form a {
     grid-template-rows: 1fr;
     grid-template-columns: 100%;
   }
+
+  #form-container {
+		width: 95%;
+	}
+
+	#form-data {
+		padding-top: 0;
+		margin-top: 0;
+	}
+
+	#form-logo {
+		height: 3rem;
+	}
 }
 
 /*----------------

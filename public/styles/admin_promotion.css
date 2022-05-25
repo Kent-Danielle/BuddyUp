@@ -86,7 +86,8 @@ form > h3 {
 	font-variant: small-caps;
 }
 form > input[type="text"],
-form > input[type="password"] {
+form > input[type="password"],
+form > input[type="email"] {
 	box-sizing: border-box;
 	border: none;
 	border-bottom: 2px solid var(--accent-light);
@@ -146,10 +147,23 @@ form a {
 		grid-template-rows: 1fr;
 		grid-template-columns: 100%;
 	}
+
+	#form-container {
+		width: 95%;
+	}
+
+	#form-data {
+		padding-top: 0;
+		margin-top: 0;
+	}
+
+	#form-logo {
+		height: 3rem;
+	}
 }
 
 /*----------------
- * Mobile layout
+ * Desktop layout
  *----------------
  */
 @media only screen and (min-width: 845px) {

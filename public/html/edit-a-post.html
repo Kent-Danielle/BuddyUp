@@ -54,17 +54,14 @@
 	<body>
 		<div id="grid-container">
 
-			<div id="content" class="p-2 on-page-load">
-				<div id="form-logo" class="mb-5">
-					<img id="logo" src="/images/logo.png" alt="" />
-				</div>
+			<div id="content" class="p-1 on-page-load">
 				<form
-					id="input-container"
+					id="form-container"
 					class="p-4 m-auto"
 					onkeypress="return event.keyCode != 13;"
 				>
 					<div id="title-box" class="form-group mb-3">
-						<label for="title" class="col-form-label">Title</label>
+						<h3>title</h3>
 						<input
 							id="title"
 							class="form-control inputFields"
@@ -76,7 +73,7 @@
 					</div>
 
 					<div id="post-box" class="mb-3 form-group">
-						<label for="post">Post</label>
+						<h3>post</h3>
 						<textarea
 							name="content"
 							class="form-control"
@@ -86,7 +83,7 @@
 					</div>
 
 					<div id="add-image" class="form-group mb-3">
-						<p>Add Images (Max 4)</p>
+						<h3>add images (max <small>4</small>)</h3>
 						<div id="file-container">
 							<span id="file-label">choose file...</span>
 							<input
