@@ -45,33 +45,70 @@
 		<link rel="stylesheet" href="../styles/profile_edit.css" />
 		<link rel="stylesheet" href="../styles/styles.css" />
 	</head>
+
 	<body>
 		<div id="grid-container">
 			<div id="content">
-				
-				<div id="form-container">
+				<div id="form-container" class="on-page-load">
 					<a class="back-button" href="/user/profile/self">
 						<i class="fa fa-angle-left fs-1 text-secondary"></i
 					></a>
-					<form id="edit-form"
-					>
-						<h3>username<span class="required"> *</span></h3>
-						<input id="name" type="text" value="" name="name" class="inputFields" placeholder="Enter your username"/>
+					<form id="edit-form" autocomplete="off">
 						<h3>email<span class="required"> *</span></h3>
-						<input name="email" id="email" type="email" value="" class="inputFields" placeholder="Enter your email"/>
+						<input
+							name="email"
+							id="email"
+							type="email"
+							value=""
+							class="inputFields"
+							readonly
+							onfocus="this.removeAttribute('readonly');"
+							autocomplete="off"
+							placeholder="Enter your email"
+						/>
+						<h3>username<span class="required"> *</span></h3>
+						<input
+							id="name"
+							type="text"
+							value=""
+							name="name"
+							class="inputFields"
+							readonly
+							onfocus="this.removeAttribute('readonly');"
+							autocomplete="off"
+							placeholder="Enter your username"
+						/>
 						<h3>password<span class="required"> *</span></h3>
-						<input name="password" id="password" type="password" value="" class="inputFields" placeholder="Enter your password"/>
+						<input
+							name="password"
+							id="password"
+							type="password"
+							value=""
+							class="inputFields"
+							readonly
+							onfocus="this.removeAttribute('readonly');"
+							autocomplete="off"
+							placeholder="Enter your password"
+						/>
 						<h3>tell us about yourself</h3>
-						<textarea name="about" id="about" maxlength="280" rows="4" class="inputFields" placeholder="Write about yourself"></textarea>
+						<textarea
+							name="about"
+							id="about"
+							maxlength="280"
+							rows="4"
+							class="inputFields"
+							readonly
+							onfocus="this.removeAttribute('readonly');"
+							autocomplete="off"
+							placeholder="Write about yourself"
+						></textarea>
 						<p id="textarea_remaining_char">280 characters left</p>
 
 						<!-- match filters -->
-				
-						<h3 id="match-filter-cta">
-							enter your games here
-						</h3>
 
-						<br/>
+						<h3 id="match-filter-cta">enter your games here</h3>
+
+						<br />
 
 						<div id="match-filter">
 							<input
@@ -80,8 +117,15 @@
 								class="mb-3 px-3 py-1"
 								placeholder="Enter Name of Game"
 							/>
-							<button id="add-filter-button" class="btn-blue rounded-3 px-3 py-1">Add Filter</button> 
-							<button id="delete-all-games" class="btn-red rounded-3 px-3 py-1">Delete all</button>
+							<button
+								id="add-filter-button"
+								class="btn-blue rounded-3 px-3 py-1"
+							>
+								Add Filter
+							</button>
+							<button id="delete-all-games" class="btn-red rounded-3 px-3 py-1">
+								Delete all
+							</button>
 						</div>
 
 						<div id="error-msg" class="text-danger"></div>
@@ -91,7 +135,7 @@
 						<h3>profile picture</h3>
 						<div id="file-container" class="input-group mb-3">
 							<span id="file-label">choose file...</span>
-							<input type="file" name="image" id="pfp" accept="image/*"/>
+							<input type="file" name="image" id="pfp" accept="image/*" />
 						</div>
 						<div id="submit-container">
 							<button id="submit" class="btn-blue">update profile</button>
@@ -102,7 +146,6 @@
 					</form>
 				</div>
 			</div>
-
 		</div>
 		<!---------------------------->
 		<!-- Client-side Javascript -->
