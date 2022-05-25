@@ -1,69 +1,68 @@
 <!DOCTYPE html>
 <html lang="en">
-	<head>
-		<title>BuddyUp</title>
-		<meta name="buddyup template" content="BuddyUp" />
-		<link rel="icon" href="/images/favicon.png" />
 
-		<!------------------------>
-		<!-- Required meta tags -->
-		<!------------------------>
-		<meta charset="utf-8" />
-		<meta name="viewport" content="width=device-width, initial-scale=1" />
+<head>
+	<title>BuddyUp</title>
+	<meta name="buddyup template" content="BuddyUp" />
+	<link rel="icon" href="/images/favicon.png" />
 
-		<!--------------------->
-		<!-- Other libraries -->
-		<!--------------------->
+	<!------------------------>
+	<!-- Required meta tags -->
+	<!------------------------>
+	<meta charset="utf-8" />
+	<meta name="viewport" content="width=device-width, initial-scale=1" />
 
-		<!-- Material Icons -->
-		<link
-			href="https://fonts.googleapis.com/icon?family=Material+Icons"
-			rel="stylesheet"
-		/>
-		<!-- Fontawesome -->
-		<script
-			src="https://kit.fontawesome.com/542cfc8e1c.js"
-			crossorigin="anonymous"
-		></script>
-		<!-- Jquery -->
-		<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+	<!--------------------->
+	<!-- Other libraries -->
+	<!--------------------->
 
-		<!------------------------>
-		<!-- styles of your own -->
-		<!------------------------>
-		<link rel="stylesheet" href="../styles/login.css" />
-		<link rel="stylesheet" href="../styles/styles.css" />
-	</head>
-	<body>
-		<div id="grid-container">
-			<div id="content">
-				<div id="form-container">
-					<div id="form-logo">
-						<img id="logo" src="../images/logo.png" alt="" />
-					</div>
-					<form id="userForm">
-						<h2>Welcome, gamer!</h2>
-						<h3>email</h3>
-						<input id="email" name="email" type="email" value="" placeholder="Enter your email*"/>
-						<h3>password</h3>
-						<input name="password" type="password" value="" placeholder="Enter your password*"/>
-						<div id="submit-container">
-							<input id="submit" class="btn-blue" type="submit" value="login" />
-						</div>
-						<h4 id="errorMsg"></h4>
-						<p>Need an account? <a href="/user/register">Start here!</a></p>
-						<br />
-						<hr />
-						<br />
-						<p><a href="/user/promotion">Be promoted as an admin here!</a></p>
-					</form>
+	<!-- Material Icons -->
+	<link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet" />
+	<!-- Fontawesome -->
+	<script src="https://kit.fontawesome.com/542cfc8e1c.js" crossorigin="anonymous"></script>
+	<!-- Jquery -->
+	<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+
+	<!------------------------>
+	<!-- styles of your own -->
+	<!------------------------>
+	<link rel="stylesheet" href="../styles/login.css" />
+	<link rel="stylesheet" href="../styles/styles.css" />
+</head>
+
+<body>
+	<div id="grid-container">
+		<div id="content">
+			<div id="form-container">
+				<div id="form-logo">
+					<img id="logo" src="../images/logo.png" alt="" />
 				</div>
+				<form id="userForm">
+					<h2>Welcome, gamer!</h2>
+					<h3>email</h3>
+					<input id="email" name="email" type="email" value="" placeholder="Enter your email*"
+						autocomplete="email" />
+					<h3>password</h3>
+					<input name="password" type="password" value="" placeholder="Enter your password*"
+						autocomplete="current-password" />
+					<div id="submit-container">
+						<input id="submit" class="btn-blue" type="submit" value="login" />
+					</div>
+					<h4 id="errorMsg"></h4>
+					<p>Need an account? <a href="/user/register">Start here!</a></p>
+					<br />
+					<hr />
+					<br />
+					<p><a href="/user/promotion">Be promoted as an admin here!</a></p>
+				</form>
 			</div>
 		</div>
-		<!---------------------------->
-		<!-- Client-side Javascript -->
-		<!---------------------------->
-		<script src="../scripts/skeleton.js"></script>
-		<script src="../scripts/login.js"></script>
-	</body>
+	</div>
+	<!---------------------------->
+	<!-- Client-side Javascript -->
+	<!---------------------------->
+	<script src="../scripts/skeleton.js"></script>
+	<script src="../scripts/login.js"></script>
+</body>
+
 </html>

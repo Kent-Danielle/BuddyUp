@@ -409,9 +409,10 @@ router.post("/promotionFilter", async function (req, res) {
 
 router.post("/login", function (req, res) {
 	let currentUser;
+	let userEmail = req.body.email.toLowerCase();
 	try {
 		currentUser = User.findOne({
-			email: req.body.email,
+			email: userEmail,
 		});
 		currentUser.then((result) => {
 			if (result == null) {
@@ -470,6 +471,7 @@ var multer = require("multer");
 const {
 	findOne
 } = require("../models/user");
+const user = require("../models/user");
 
 var storage = multer.diskStorage({
 	destination: (req, file, cb) => {
@@ -485,9 +487,10 @@ var upload = multer({
 });
 
 router.post("/createAccount", upload.single("pfp"), async function (req, res) {
+	let userEmail = req.body.email.toLowerCase();
 	try {
 		let hasSameEmail = await User.findOne({
-			email: req.body.email,
+			email: userEmail,
 		});
 		let hasSameUsername = await User.findOne({
 			name: req.body.name,
@@ -540,7 +543,7 @@ router.post("/createAccount", upload.single("pfp"), async function (req, res) {
 			}
 			const user = new User({
 				name: req.body.name,
-				email: req.body.email,
+				email: userEmail,
 				password: req.body.password,
 				about: req.body.about,
 				admin: false,
@@ -629,6 +632,7 @@ router.get("/info", async function (req, res) {
 // updates the users information after editing and then redirects them back to their profile page
 router.post("/edit/submit", upload.single("image"), async function (req, res) {
 	try {
+		let userEmail = req.body.email.toLowerCase();
 		let filters = req.body.filters;
 		if (filters != " " && filters != "") {
 			filters = req.body.filters.split(",");
@@ -636,10 +640,10 @@ router.post("/edit/submit", upload.single("image"), async function (req, res) {
 			filters = null;
 		}
 
-		let noEmailChange = req.body.email === req.session.email;
+		let noEmailChange = userEmail === req.session.email;
 
 		let hasSameEmail = await User.findOne({
-			email: req.body.email,
+			email: userEmail,
 		});
 
 		let noNameChange = req.body.name === req.session.name;
@@ -717,7 +721,7 @@ router.post("/edit/submit", upload.single("image"), async function (req, res) {
 						img: url,
 						name: req.body.name,
 						about: req.body.about,
-						email: req.body.email,
+						email: userEmail,
 						password: req.body.password,
 						games: filters,
 					},
@@ -729,13 +733,13 @@ router.post("/edit/submit", upload.single("image"), async function (req, res) {
 					$set: {
 						name: req.body.name,
 						about: req.body.about,
-						email: req.body.email,
+						email: userEmail,
 						password: req.body.password,
 						games: filters,
 					},
 				});
 			}
-			req.session.email = req.body.email;
+			req.session.email = userEmail;
 			req.session.name = req.body.name;
 			res.send({
 				success: true,
@@ -855,6 +859,7 @@ router.post(
 	"/createAccountAdmin",
 	upload.single("pfp"),
 	async function (req, res) {
+		let userEmail = req.body.email.toLowerCase();
 		if (
 			(await User.findOne({
 				email: req.session.email,
@@ -916,7 +921,7 @@ router.post(
 		}
 		const user = new User({
 			name: req.body.name,
-			email: req.body.email,
+			email: userEmail,
 			password: req.body.password,
 			about: req.body.about,
 			admin: adminValue,
@@ -927,7 +932,7 @@ router.post(
 
 		try {
 			let hasSameEmail = await User.findOne({
-				email: req.body.email,
+				email: userEmail,
 			});
 			let hasSameUsername = await User.findOne({
 				name: req.body.name,
@@ -1001,6 +1006,7 @@ router.post(
 	"/editAccountAdmin",
 	upload.single("pfp"),
 	async function (req, res) {
+		let userEmail = req.body.email.toLowerCase();
 		if (
 			(await User.findOne({
 				email: req.session.email,
@@ -1014,10 +1020,10 @@ router.post(
 				name: req.body.oldName,
 			});
 
-			let noEmailChange = req.body.email === oldUser.email;
+			let noEmailChange = userEmail === oldUser.email;
 
 			let hasSameEmail = await User.findOne({
-				email: req.body.email,
+				email: userEmail,
 			});
 
 			let noNameChange = req.body.name === oldUser.name;
@@ -1110,7 +1116,7 @@ router.post(
 							img: url,
 							name: req.body.name,
 							about: req.body.about,
-							email: req.body.email,
+							email: userEmail,
 							admin: adminValue,
 							promotion: userRequest != null ? true : false,
 							password: req.body.password,
@@ -1123,7 +1129,7 @@ router.post(
 						$set: {
 							name: req.body.name,
 							about: req.body.about,
-							email: req.body.email,
+							email: userEmail,
 							admin: adminValue,
 							promotion: userRequest != null ? true : false,
 							password: req.body.password,

@@ -1,112 +1,103 @@
 <!DOCTYPE html>
 <html lang="en">
-	<head>
-		<title>BuddyUp</title>
-		<meta name="buddyup template" content="BuddyUp" />
-		<link rel="shortcut icon" href="/images/favicon.png" />
 
-		<!------------------------>
-		<!-- Required meta tags -->
-		<!------------------------>
-		<meta charset="utf-8" />
-		<meta name="viewport" content="width=device-width, initial-scale=1" />
+<head>
+	<title>BuddyUp</title>
+	<meta name="buddyup template" content="BuddyUp" />
+	<link rel="shortcut icon" href="/images/favicon.png" />
 
-		<!--------------------->
-		<!-- Other libraries -->
-		<!--------------------->
-		<!-- Bootstrap -->
-		<link
-			href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css"
-			rel="stylesheet"
-			integrity="sha384-EVSTQN3/azprG1Anm3QDgpJLIm9Nao0Yz1ztcQTwFspd3yD65VohhpuuCOmLASjC"
-			crossorigin="anonymous"
-		/>
-		<script
-			src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js"
-			integrity="sha384-MrcW6ZMFYlzcLA8Nl+NtUVF0sA7MsXsP1UyJoMp4YLEuNSfAP+JcXn/tWtIaxVXM"
-			crossorigin="anonymous"
-		></script>
-		<!-- Material Icons -->
-		<link
-			href="https://fonts.googleapis.com/icon?family=Material+Icons"
-			rel="stylesheet"
-		/>
-		<!-- Fontawesome -->
-		<script
-			src="https://kit.fontawesome.com/8bb76a9e5f.js"
-			crossorigin="anonymous"
-		></script>
-		<!-- Jquery -->
-		<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+	<!------------------------>
+	<!-- Required meta tags -->
+	<!------------------------>
+	<meta charset="utf-8" />
+	<meta name="viewport" content="width=device-width, initial-scale=1" />
 
-		<!------------------------>
-		<!-- styles of your own -->
-		<!------------------------>
-		<link rel="stylesheet" href="../styles/profile_edit.css" />
-		<link rel="stylesheet" href="../styles/styles.css" />
-	</head>
-	<body>
-		<div id="grid-container">
-			<div id="content">
-				
-				<div id="form-container">
-					<a class="back-button" href="/user/profile/self">
-						<i class="fa fa-angle-left fs-1 text-secondary"></i
-					></a>
-					<form id="edit-form"
-					>
-						<h3>username<span class="required"> *</span></h3>
-						<input id="name" type="text" value="" name="name" class="inputFields" placeholder="Enter your username"/>
-						<h3>email<span class="required"> *</span></h3>
-						<input name="email" id="email" type="email" value="" class="inputFields" placeholder="Enter your email"/>
-						<h3>password<span class="required"> *</span></h3>
-						<input name="password" id="password" type="password" value="" class="inputFields" placeholder="Enter your password"/>
-						<h3>tell us about yourself</h3>
-						<textarea name="about" id="about" maxlength="280" rows="4" class="inputFields" placeholder="Write about yourself"></textarea>
-						<p id="textarea_remaining_char">280 characters left</p>
+	<!--------------------->
+	<!-- Other libraries -->
+	<!--------------------->
+	<!-- Bootstrap -->
+	<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet"
+		integrity="sha384-EVSTQN3/azprG1Anm3QDgpJLIm9Nao0Yz1ztcQTwFspd3yD65VohhpuuCOmLASjC" crossorigin="anonymous" />
+	<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js"
+		integrity="sha384-MrcW6ZMFYlzcLA8Nl+NtUVF0sA7MsXsP1UyJoMp4YLEuNSfAP+JcXn/tWtIaxVXM" crossorigin="anonymous">
+	</script>
+	<!-- Material Icons -->
+	<link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet" />
+	<!-- Fontawesome -->
+	<script src="https://kit.fontawesome.com/8bb76a9e5f.js" crossorigin="anonymous"></script>
+	<!-- Jquery -->
+	<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
 
-						<!-- match filters -->
-				
-						<h3 id="match-filter-cta">
-							enter your games here
-						</h3>
+	<!------------------------>
+	<!-- styles of your own -->
+	<!------------------------>
+	<link rel="stylesheet" href="../styles/profile_edit.css" />
+	<link rel="stylesheet" href="../styles/styles.css" />
+</head>
 
-						<br/>
+<body>
+	<div id="grid-container">
+		<div id="content">
 
-						<div id="match-filter">
-							<input
-								type="text"
-								id="game-text"
-								class="mb-3 px-3 py-1"
-								placeholder="Enter Name of Game"
-							/>
-							<button id="add-filter-button" class="btn-blue rounded-3 px-3 py-1">Add Filter</button> 
-							<button id="delete-all-games" class="btn-red rounded-3 px-3 py-1">Delete all</button>
-						</div>
+			<div id="form-container">
+				<a class="back-button" href="/user/profile/self">
+					<i class="fa fa-angle-left fs-1 text-secondary"></i></a>
+				<form id="edit-form" autocomplete="off">
+					<h3>email<span class="required"> *</span></h3>
+					<input name="email" id="email" type="email" value="" class="inputFields" readonly
+						onfocus="this.removeAttribute('readonly');" autocomplete="off" placeholder="Enter your email" />
+					<h3>username<span class="required"> *</span></h3>
+					<input id="name" type="text" value="" name="name" class="inputFields" readonly
+						onfocus="this.removeAttribute('readonly');" autocomplete="off"
+						placeholder="Enter your username" />
+					<h3>password<span class="required"> *</span></h3>
+					<input name="password" id="password" type="password" value="" class="inputFields" readonly
+						onfocus="this.removeAttribute('readonly');" autocomplete="off"
+						placeholder="Enter your password" />
+					<h3>tell us about yourself</h3>
+					<textarea name="about" id="about" maxlength="280" rows="4" class="inputFields" readonly
+						onfocus="this.removeAttribute('readonly');" autocomplete="off"
+						placeholder="Write about yourself"></textarea>
+					<p id="textarea_remaining_char">280 characters left</p>
 
-						<div id="error-msg" class="text-danger"></div>
-						<p class="m-0 p-0" id="status-msg"></p>
-						<div id="gameFiltersContainer" class="rounded-3 p-2 mb-3"></div>
+					<!-- match filters -->
 
-						<h3>profile picture</h3>
-						<div id="file-container" class="input-group mb-3">
-							<span id="file-label">choose file...</span>
-							<input type="file" name="image" id="pfp" accept="image/*"/>
-						</div>
-						<div id="submit-container">
-							<button id="submit" class="btn-blue">update profile</button>
-						</div>
+					<h3 id="match-filter-cta">
+						enter your games here
+					</h3>
 
-						<p id="errorMsg"></p>
-						<p id="loading"></p>
-					</form>
-				</div>
+					<br />
+
+					<div id="match-filter">
+						<input type="text" id="game-text" class="mb-3 px-3 py-1" placeholder="Enter Name of Game" />
+						<button id="add-filter-button" class="btn-blue rounded-3 px-3 py-1">Add Filter</button>
+						<button id="delete-all-games" class="btn-red rounded-3 px-3 py-1">Delete all</button>
+					</div>
+
+					<div id="error-msg" class="text-danger"></div>
+					<p class="m-0 p-0" id="status-msg"></p>
+					<div id="gameFiltersContainer" class="rounded-3 p-2 mb-3"></div>
+
+					<h3>profile picture</h3>
+					<div id="file-container" class="input-group mb-3">
+						<span id="file-label">choose file...</span>
+						<input type="file" name="image" id="pfp" accept="image/*" />
+					</div>
+					<div id="submit-container">
+						<button id="submit" class="btn-blue">update profile</button>
+					</div>
+
+					<p id="errorMsg"></p>
+					<p id="loading"></p>
+				</form>
 			</div>
-
 		</div>
-		<!---------------------------->
-		<!-- Client-side Javascript -->
-		<!---------------------------->
-		<script src="../scripts/profile_edit.js"></script>
-	</body>
+
+	</div>
+	<!---------------------------->
+	<!-- Client-side Javascript -->
+	<!---------------------------->
+	<script src="../scripts/profile_edit.js"></script>
+</body>
+
 </html>
