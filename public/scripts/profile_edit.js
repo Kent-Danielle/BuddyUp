@@ -100,7 +100,7 @@ gameInput.addEventListener("keypress", function (e) {
 /**
  * deletes all game filters once the delete-all-games button is clicked
  */
-document.getElementById("delete-all-games").addEventListener("click", function(e) {
+document.getElementById("delete-all-games").addEventListener("click", function (e) {
 	e.preventDefault();
 	gameFilters.length = 0;
 	let gameFiltersContainer = document.getElementById("gameFiltersContainer");
@@ -110,9 +110,9 @@ document.getElementById("delete-all-games").addEventListener("click", function(e
 /**
  * Adds the current game as a filter once clicked on the add filter button
  */
-document.getElementById("add-filter-button").addEventListener("click", function(e) {
+document.getElementById("add-filter-button").addEventListener("click", function (e) {
 	e.preventDefault();
-	
+
 	// only allow a max of 10 game filters
 	if (gameFilters.length >= maxGames) {
 		displayMaxGameFiltersMessage();
@@ -132,7 +132,9 @@ document.getElementById("add-filter-button").addEventListener("click", function(
  */
 const textarea = document.querySelector("textarea");
 
-textarea.addEventListener("input", ({ currentTarget: target }) => {
+textarea.addEventListener("input", ({
+	currentTarget: target
+}) => {
 	const maxLength = target.getAttribute("maxlength");
 	const currentLength = target.value.length;
 
@@ -178,34 +180,42 @@ loadUserData();
 
 //use the fetch api to update the user's profile
 document.getElementById("submit").addEventListener("click", function (e) {
-	e.preventDefault();
-	document.getElementById("loading").innerHTML = "loading...";
-	let form = document.getElementById("edit-form");
-	let formData = new FormData(form);
-	formData.append("filters", gameFilters);
+	// Check if the email input is valid
+	let email = document.getElementById("email").value;
+	if ((email.indexOf("@") > -1) && (email.charAt(0) != "@") && (email.charAt(email.length - 1) != "@")) {
 
-	fetch("/user/edit/submit", {
-		method: "POST",
-		body: formData,
-	})
-		.then(function (response) {
-			return response.json();
-		})
-		.then(function (result) {
-			document.getElementById("loading").innerHTML = "";
-			if (result.success) {
-				window.location.replace("/user/profile/self");
-			} else {
-				console.log("did not successfully update profile");
-				let inputs = document.querySelectorAll(".inputFields");
-				inputs.forEach(
-					(input) => (input.style.backgroundColor = "rgba(255, 255, 255, 0)")
-				);
-				document.getElementById("errorMsg").innerText = result.message;
-				document.getElementById(result.type).style.backgroundColor =
-					"var(--accent-light)";
-			}
-		});
+		// If email input is valid then POST
+		e.preventDefault();
+		document.getElementById("loading").innerHTML = "loading...";
+		let form = document.getElementById("edit-form");
+		let formData = new FormData(form);
+		formData.append("filters", gameFilters);
+
+		fetch("/user/edit/submit", {
+				method: "POST",
+				body: formData,
+			})
+			.then(function (response) {
+				return response.json();
+			})
+			.then(function (result) {
+				document.getElementById("loading").innerHTML = "";
+				if (result.success) {
+					window.location.replace("/user/profile/self");
+				} else {
+					console.log("did not successfully update profile");
+					let inputs = document.querySelectorAll(".inputFields");
+					inputs.forEach(
+						(input) => (input.style.backgroundColor = "rgba(255, 255, 255, 0)")
+					);
+					document.getElementById("errorMsg").innerText = result.message;
+					document.getElementById(result.type).style.backgroundColor =
+						"var(--accent-light)";
+				}
+			});
+	} else {
+		document.getElementById("errorMsg").innerText = "Incomplete Email";
+	}
 });
 
 document

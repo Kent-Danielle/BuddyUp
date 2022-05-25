@@ -16,12 +16,10 @@
  */
 body {
 	background: rgb(63, 200, 251);
-	background: linear-gradient(
-		50deg,
-		rgba(63, 200, 251, 1) 0%,
-		rgba(252, 70, 215, 1) 50%,
-		rgba(252, 225, 70, 1) 100%
-	);
+	background: linear-gradient(50deg,
+			rgba(63, 200, 251, 1) 0%,
+			rgba(252, 70, 215, 1) 50%,
+			rgba(252, 225, 70, 1) 100%);
 	animation: gradient 30s ease infinite;
 	background-size: 300% 300%;
 }
@@ -30,15 +28,19 @@ body {
 	0% {
 		background-position: bottom left;
 	}
+
 	25% {
 		background-position: top left;
 	}
+
 	50% {
 		background-position: top right;
 	}
+
 	75% {
 		background-position: bottom right;
 	}
+
 	100% {
 		background-position: bottom left;
 	}
@@ -86,36 +88,48 @@ form {
 }
 
 form>h2 {
-  margin: 0 0 0.1rem;
+	margin: 0 0 0.1rem;
 }
 
 form>h3 {
-  margin: 0.7rem 0 0.1rem;
-  font-variant: small-caps;
+	margin: 0.7rem 0 0.1rem;
+	font-variant: small-caps;
 }
 
 input[type="file"] {
-  display: none;
+	display: none;
 }
 
-#file-container{
-  width: 100%;
+#file-container {
+	/* width: 100%;
   resize: none;
   background-color: rgba(255, 255, 255, 0);
   border: 2px solid var(--accent-light);
   border-radius: 0.5rem;
-  padding: 0.3rem;
-  cursor: pointer;
+  padding: 0.3rem; */
+	box-sizing: border-box;
+	color: #ffffff;
+	background: #797979;
+	box-shadow: 0 4px 30px rgba(0, 0, 0, 0.1);
+	/* backdrop-filter: blur(2px); */
+	/* -webkit-backdrop-filter: blur(5px); */
+	/* border: 2px solid #797979; */
+	/* font-weight: 700; */
+	padding: 0.4rem;
+	width: 100%;
+	font-variant: small-caps;
+	cursor: pointer;
 }
 
 form>input[type="text"],
-form>input[type="password"] {
-  box-sizing: border-box;
-  border: none;
-  border-bottom: 2px solid var(--accent-light);
-  padding: 0.3rem;
-  width: 100%;
-  background-color: rgba(255, 255, 255, 0);
+form>input[type="password"],
+form>input[type="email"] {
+	box-sizing: border-box;
+	border: none;
+	border-bottom: 2px solid var(--accent-light);
+	padding: 0.3rem;
+	width: 100%;
+	background-color: rgba(255, 255, 255, 0);
 }
 
 textarea {
@@ -125,7 +139,8 @@ textarea {
 	border: 2px solid var(--accent-light);
 	border-radius: 0.5rem;
 }
-form > #submit-container {
+
+form>#submit-container {
 	display: flex;
 	justify-content: center;
 	margin: 1rem 0;
@@ -145,7 +160,7 @@ input[type="submit"] {
 }
 
 
-form > p {
+form>p {
 	text-align: center;
 	margin: 0;
 }
@@ -153,10 +168,15 @@ form > p {
 form a {
 	color: var(--secondary-light);
 }
+
 #textarea_remaining_char {
-  text-align: start;
+	text-align: start;
 	font-size: 0.8rem;
 	color: var(--primary-dark);
+}
+
+.required {
+	color: red;
 }
 
 /*----------------

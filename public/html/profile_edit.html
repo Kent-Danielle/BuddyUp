@@ -55,14 +55,14 @@
 					></a>
 					<form id="edit-form"
 					>
-						<h3>username</h3>
-						<input id="name" type="text" value="" name="name" class="inputFields"/>
-						<h3>email</h3>
-						<input name="email" id="email" type="text" value="" class="inputFields"/>
-						<h3>password</h3>
-						<input name="password" id="password" type="password" value="" class="inputFields"/>
+						<h3>username<span class="required"> *</span></h3>
+						<input id="name" type="text" value="" name="name" class="inputFields" placeholder="Enter your username"/>
+						<h3>email<span class="required"> *</span></h3>
+						<input name="email" id="email" type="email" value="" class="inputFields" placeholder="Enter your email"/>
+						<h3>password<span class="required"> *</span></h3>
+						<input name="password" id="password" type="password" value="" class="inputFields" placeholder="Enter your password"/>
 						<h3>tell us about yourself</h3>
-						<textarea name="about" id="about" maxlength="280" rows="4" class="inputFields"></textarea>
+						<textarea name="about" id="about" maxlength="280" rows="4" class="inputFields" placeholder="Write about yourself"></textarea>
 						<p id="textarea_remaining_char">280 characters left</p>
 
 						<!-- match filters -->
