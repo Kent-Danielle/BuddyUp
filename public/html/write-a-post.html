@@ -59,12 +59,12 @@
 				<div id="form-logo" class="mb-5">
 					<img id="logo" src="/images/logo.png" alt="" />
 				</div>
-				<form id="input-container" class="p-4 m-auto">
+				<form id="input-container" class="p-4 m-auto" onkeypress="return event.keyCode != 13;">
 					<div id="title-box" class="form-group mb-3">
 						<label for="title" class="col-form-label">Title</label>
 						<input
 							id="title"
-							class="form-control"
+							class="form-control inputFields"
 							type="text"
 							value=""
 							name="title"
@@ -86,18 +86,20 @@
 						<p>Add Images (Max 4)</p>
 						<div id="file-container">
 							<span id="file-label">choose file...</span>
-							<input type="file" name="post-image" id="image" accept="image/*" multiple="multiple"/>
+							<input type="file" name="post-image" id="image" accept="image/*" multiple="multiple" class="inputFields"/>
 						</div>
 					</div>
 
 					<div id="buttons" class="d-flex justify-content-center">
+						<button id="cancelBtn" class="btn-red rounded-3 mx-4">
+							Cancel
+						</button>
 						<input
 							id="submit"
-							class="btn btn-primary mx-2"
+							class="btn-blue rounded-3 mx-3"
 							type="submit"
 							value="Post"
 						/>
-						<button id="cancelBtn" class="btn btn-danger mx-2">Cancel</button>
 					</div>
 
 					<h4 id="errorMsg" class="d-flex justify-content-center"></h4>

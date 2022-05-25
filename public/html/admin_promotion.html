@@ -44,26 +44,23 @@
 					<div id="form-logo">
 						<img id="logo" src="../images/logo.png" alt="" />
 					</div>
-					<form
-						action="/user/adminPromotion"
-						method="POST"
-						enctype="multipart/form-data"
-					>
+					<form id="requestForm">
 						<h2>Are you ready to be an admin?</h2>
 						<h3>username</h3>
-						<input id="name" type="text" value="" name="name" />
+						<input id="username" type="text" value="" name="name" class="inputFields"/>
 						<h3>email</h3>
-						<input name="email" type="text" value="" />
+						<input name="email" type="text" value="" id="email" class="inputFields"/>
 						<h3>tell us why you want to be an admin</h3>
 						<textarea
 							name="reason"
 							id="reason"
 							maxlength="280"
 							rows="4"
+							class="inputFields"
 						></textarea>
 						<p id="textarea_remaining_char">280 characters left</p>
 						<div id="submit-container">
-							<input type="submit" value="request for promotion" />
+							<input type="submit" class="btn-blue" value="request for promotion" id="submit"/>
 						</div>
 						<p id="errorMsg"></p>
 						<p>Need an account? <a href="/user/register">Start here!</a></p>

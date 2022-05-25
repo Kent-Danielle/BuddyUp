@@ -41,21 +41,65 @@ body {
 }
 
 .btn-red {
+	border-radius: 0.3rem;
 	background: rgba(221, 55, 91, 0.66);
-	color: white;
+	color: rgba(255, 255, 255, 0.843);
 	box-shadow: 0 4px 30px rgba(0, 0, 0, 0.1);
 	backdrop-filter: blur(1.7px);
 	-webkit-backdrop-filter: blur(1.7px);
 	border: 1px solid rgba(221, 55, 91, 0.3);
+	transition: all 0.2s ease-in-out;
+}
+
+.btn-gray {
+	border-radius: 0.3rem;
+	color: var(--primary-dark);
+	background: none;
+	border: 3px solid var(--neutral-color);
+	transition: all 0.2s ease-in-out;
 }
 
 .btn-blue {
-	color: white;
+	border-radius: 0.3rem;
+	color: rgba(255, 255, 255, 0.843);
 	background: rgba(22, 100, 214, 0.71);
 	box-shadow: 0 4px 30px rgba(0, 0, 0, 0.1);
 	backdrop-filter: blur(2px);
 	-webkit-backdrop-filter: blur(5px);
 	border: 1px solid rgba(22, 100, 214, 0.3);
+	transition: all 0.2s ease-in-out;
+}
+
+.btn-gray:hover {
+	color: white;
+	box-shadow: 0 0 14px rgba(112, 112, 112, 0.717);
+	background-color: var(--neutral-color);
+}
+
+.btn-gray:active {
+	color: var(--primary-dark);
+	box-shadow: 0 0 0 rgba(11, 11, 11, 0);
+	background: none;
+}
+
+.btn-blue:hover {
+	color: white;
+	box-shadow: 0 0 10px rgba(28, 48, 228, 0.547);
+}
+
+.btn-blue:active {
+	color: white;
+	box-shadow: 0 0 18px rgba(41, 87, 255, 0.947);
+}
+
+.btn-red:hover {
+	color: white;
+	box-shadow: 0 0 10px rgba(228, 28, 28, 0.547);
+}
+
+.btn-red:active {
+	color: white;
+	box-shadow: 0 0 18px rgba(228, 28, 28, 0.947);
 }
 
 /*----------------

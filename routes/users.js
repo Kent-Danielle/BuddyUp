@@ -406,9 +406,6 @@ router.post("/promotionFilter", async function (req, res) {
 	}
 });
 
-router.post("/banUser", function (req, res) {
-	res.setHeader("Content-Type", "application/json");
-});
 
 router.post("/login", function (req, res) {
 	let currentUser;
@@ -420,6 +417,7 @@ router.post("/login", function (req, res) {
 			if (result == null) {
 				res.send({
 					success: "false",
+					type: "email",
 					message: "account not found",
 				});
 			} else {
@@ -434,6 +432,7 @@ router.post("/login", function (req, res) {
 				} else {
 					res.send({
 						success: "false",
+						type: "password",
 						message: "incorrect password",
 					});
 				}
@@ -630,7 +629,6 @@ router.get("/info", async function (req, res) {
 // updates the users information after editing and then redirects them back to their profile page
 router.post("/edit/submit", upload.single("image"), async function (req, res) {
 	try {
-		console.log(req.body.filters);
 		let filters = req.body.filters;
 		if (filters != " " && filters != "") {
 			filters = req.body.filters.split(",");
@@ -671,7 +669,6 @@ router.post("/edit/submit", upload.single("image"), async function (req, res) {
 				return;
 			}
 			if (req.body.about.length > 280) {
-				console.log("bio too big");
 				res.send({
 					success: false,
 					message: "bio is too long",
@@ -770,31 +767,50 @@ module.exports = router;
 
 router.post("/adminPromotion", async function (req, res) {
 	const adminReq = new AdminRequest({
-		name: req.body.name,
+		name: req.body.username,
 		email: req.body.email,
 		reason: req.body.reason,
 	});
-
-	let login = fs.readFileSync("./public/html/admin_promotion.html", "utf-8");
-	let adminPromotionDOM = new JSDOM(login);
-
+	if(req.body.reason == null || req.body.reason.trim() == ""){
+		res.send({
+			success: "false",
+			type: "reason",
+			reason: "reason can't be blank"
+		});
+		return;
+	} else if (req.body.reason.length > 5000){
+		res.send({
+			success: "false",
+			type: "reason",
+			reason: "reason is too long"
+		});
+		return;
+	}
 	try {
 		let hasSameEmail = await User.findOne({
 			email: req.body.email,
 		});
 		let hasSameUsername = await User.findOne({
-			name: req.body.name,
+			name: req.body.username,
 		});
-		if (hasSameEmail == null && hasSameUsername == null) {
-			let msg = "";
-			if (hasSameEmail == null) {
-				msg = "Email does not exists!";
-			} else {
-				msg = "Username does not exists!";
-			}
-			adminPromotionDOM.window.document.getElementById("errorMsg").innerHTML =
-				msg;
-			res.send(adminPromotionDOM.serialize());
+		if (hasSameEmail == null) {
+			res.send({
+				success: "false",
+				type: "email",
+				reason: "email doesn't exist"
+			});
+		} else if (hasSameUsername == null) {
+			res.send({
+				success: "false",
+				type: "username",
+				reason: "username doesn't exist"
+			});
+		} else if (hasSameEmail.name != hasSameUsername.name) {
+			res.send({
+				success: "false",
+				type: "username",
+				reason: "username and email don't match"
+			});
 		} else {
 			const newAdminReq = await adminReq.save();
 			await User.updateOne({
@@ -804,12 +820,16 @@ router.post("/adminPromotion", async function (req, res) {
 					promotion: true,
 				},
 			});
-			res.redirect("/user/login");
+			res.send({
+				success: "true",
+				reason: "success"
+			});
 		}
 	} catch (err) {
-		adminPromotionDOM.window.document.getElementById("errorMsg").innerHTML =
-			"Failed to make a request";
-		res.send(adminPromotionDOM.serialize());
+		res.send({
+			success: "false",
+			reason: "failed to make request"
+		});
 	}
 });
 
@@ -1222,6 +1242,14 @@ router.post(
 			});
 			return;
 		}
+		if (req.body.content.length > 10000) {
+			res.send({
+				success: "false",
+				message: "post is too long",
+				type: "post",
+			});
+			return;
+		}
 		try {
 			try {
 				for (let i = 0; i < req.files.length; i++) {
@@ -1238,10 +1266,10 @@ router.post(
 					);
 				}
 			} catch (error) {
-				console.log(error);
 				res.send({
 					success: "false",
-					message: "failed to upload profile picture; error: " + error,
+					type: "pfp",
+					message: "failed to upload profile picture",
 				});
 				return;
 			}
@@ -1330,6 +1358,14 @@ router.post(
 			});
 			return;
 		}
+		if (req.body.content.length > 10000) {
+			res.send({
+				success: "false",
+				message: "post is too long",
+				type: "post",
+			});
+			return;
+		}
 		let upload = post.img;
 		if (post.author == req.session.name) {
 			try {
@@ -1348,9 +1384,9 @@ router.post(
 						);
 					}
 				} catch (error) {
-					console.log(error);
 					res.send({
 						success: "false",
+						type: "pfp",
 						message: "failed to upload profile picture; error: " + error,
 					});
 					return;

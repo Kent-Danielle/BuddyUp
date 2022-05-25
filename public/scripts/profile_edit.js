@@ -59,8 +59,8 @@ function createGameFilterDeleteButton(gameSpan, gameFilter) {
 
 // adds the game filter to be displayed
 function addGame(name) {
-	let gameFilter = name;
-	gameFilters.push(gameFilter.toLowerCase());
+	let gameFilter = name.toLowerCase().substring(0, 50);
+	gameFilters.push(gameFilter);
 
 	// add the game filter to be displayed
 	let gameSpan = createGameSpan(gameFilter);

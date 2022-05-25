@@ -192,7 +192,9 @@ function createDeleteListener() {
 			} else {
 				modalText.innerHTML =
 					"Do you want to delete " + deleteBtn[i].value + "'s account?";
-				confirmBtn.href = "/user/delete/" + deleteBtn[i].value;
+				confirmBtn.addEventListener("click", function(e) {
+					window.location.href = "/user/delete/" + deleteBtn[i].value;
+				});
 				confirmBtn.style.setProperty("display", "inline-block", "important");
 				confirmModal.style.setProperty("display", "flex", "important");
 			}
