@@ -24,8 +24,17 @@ document.getElementById("submit").addEventListener("click", async (e) => {
 				window.location.replace("/user/profile");
 			} else {
 				document.getElementById("errorMsg").innerHTML = result.message;
-				if(result.type != null && result.type != undefined){
-					document.getElementById("title").style.backgroundColor = 'var(--accent-light)';
+				document.getElementsByClassName("tox")[0].style.border = 'none';
+				if (result.type != null && result.type != undefined) {
+					let inputs = document.querySelectorAll(".inputFields");
+					inputs.forEach((input) => input.style.backgroundColor = "rgba(255, 255, 255, 0)");
+					if (result.type == "title") {
+						document.getElementById("title").style.backgroundColor = 'var(--accent-light)';
+					} else if (result.type == "pfp") {
+						document.getElementById("file-container").style.backgroundColor = 'var(--accent-light)';
+					} else if (result.type == "post") {
+						document.getElementsByClassName("tox")[0].style.border = 'solid 5px var(--accent-light)';
+					}
 				}
 				document.getElementById("loadingMsg").innerHTML = "";
 			}
