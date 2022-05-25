@@ -127,16 +127,7 @@ form a {
   }
 
   #form-container {
-		display: grid;
-		align-items: center;
-		width: 100% !important;
-		height: 100% !important;
-		border-radius: 0;
-		border: 0;
-		box-shadow: none;
-		backdrop-filter: none;
-		overflow-y: scroll;
-		box-sizing: content-box !important;
+		width: 95%;
 	}
 
 	#form-data {
