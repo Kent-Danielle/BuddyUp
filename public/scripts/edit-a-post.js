@@ -3,10 +3,10 @@
 document.getElementById("submit").addEventListener("click", async (e) => {
 	e.preventDefault();
 	replaceClass("form-container", "form-style", "on-load-form");
-	document.getElementById("title-box").classList.toggle("hidden");
-	document.getElementById("post-box").classList.toggle("hidden");
-	document.getElementById("add-image").classList.toggle("hidden");
-	document.getElementById("buttons").classList.toggle("hidden");
+	document.getElementById("title-box").classList.add("hidden");
+	document.getElementById("post-box").classList.add("hidden");
+	document.getElementById("add-image").classList.add("hidden");
+	document.getElementById("buttons").classList.add("hidden");
 	// document.getElementById("loadingMsg").innerHTML = "loading...";
 	let form = document.getElementById("form-container");
 	let formData = new FormData(form);
@@ -29,10 +29,10 @@ document.getElementById("submit").addEventListener("click", async (e) => {
 				window.location.replace("/user/profile");
 			} else {
 				replaceClass("form-container", "on-load-form", "form-style");
-				document.getElementById("title-box").classList.toggle("hidden");
-				document.getElementById("post-box").classList.toggle("hidden");
-				document.getElementById("add-image").classList.toggle("hidden");
-				document.getElementById("buttons").classList.toggle("hidden");
+				document.getElementById("title-box").classList.remove("hidden");
+				document.getElementById("post-box").classList.remove("hidden");
+				document.getElementById("add-image").classList.remove("hidden");
+				document.getElementById("buttons").classList.remove("hidden");
 				document.getElementById("errorMsg").innerHTML = result.message;
 				document.getElementsByClassName("tox")[0].style.border = "none";
 				if (result.type != null && result.type != undefined) {

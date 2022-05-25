@@ -629,6 +629,8 @@ router.get("/info", async function (req, res) {
 	}
 });
 
+
+
 // updates the users information after editing and then redirects them back to their profile page
 router.post("/edit/submit", upload.single("image"), async function (req, res) {
 	try {

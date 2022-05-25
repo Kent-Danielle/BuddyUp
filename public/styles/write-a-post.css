@@ -11,11 +11,9 @@
 	--text-black: rgb(0, 0, 0);
 }
 
-#form-logo {
-	display: flex;
-	justify-content: center;
-	height: 5rem;
-	margin-top: 1rem;
+
+form {
+	padding: 1.3rem;
 }
 
 body {
@@ -122,6 +120,12 @@ h3 {
 #submit,
 #cancelBtn {
 	width: clamp(100px, 25%, 200px) !important;
+	margin: 1rem 1rem;
+}
+
+#buttons {
+	display: flex;
+	justify-content: center;
 }
 
 /*----------------
@@ -133,9 +137,16 @@ h3 {
 		height: 0.1vh;
 	}
 
-	.form-style {
-		width: 95% !important;
+	.form-style,
+	.on-load-form {
+		width: 100% !important;
+		height: 100% !important;
+		border-radius: 0;
+		border: 0;
+		box-shadow: none;
+		backdrop-filter: none;
 		overflow-y: scroll;
+		box-sizing: border-box !important;
 	}
 }
 
@@ -144,7 +155,8 @@ h3 {
  *----------------
  */
 @media only screen and (min-width: 845px) {
-	.form-style {
+	.form-style,
+	.on-load-form {
 		width: 75% !important;
 	}
 }

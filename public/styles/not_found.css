@@ -1,0 +1,93 @@
+/*----------------
+ * Color palette
+ *----------------
+ */
+ :root {
+	--primary-light: #ffffff;
+	--secondary-light: #1664d6;
+	--accent-light: #dd375b;
+	--primary-dark: #262322;
+	--neutral-color: #797979;
+}
+
+/*----------------
+ * Element styling 
+ *----------------
+ */
+ body {
+	background: rgb(63, 200, 251);
+	background: linear-gradient(50deg,
+			rgba(63, 200, 251, 1) 0%,
+			rgba(252, 70, 215, 1) 50%,
+			rgba(252, 225, 70, 1) 100%);
+	animation: gradient 30s ease infinite;
+	background-size: 300% 300%;
+}
+
+@keyframes gradient {
+	0% {
+		background-position: bottom left;
+	}
+
+	25% {
+		background-position: top left;
+	}
+
+	50% {
+		background-position: top right;
+	}
+
+	75% {
+		background-position: bottom right;
+	}
+
+	100% {
+		background-position: bottom left;
+	}
+}
+
+h1 {
+  font-weight: bold;
+  width: 300px !important;
+  cursor: default;
+  text-align: center;
+}
+
+#grid-container {
+  display: grid;
+  width: 100%;
+  min-height: 100vh !important;
+}
+
+#content {
+  position: relative;
+  grid-area: main;
+}
+
+#return-button {
+  position: center;
+	background: rgba(22, 100, 214, 0.91);
+  border-radius: 25px;
+  height: 125px;
+  width: 300px;
+  background-color: var(--secondary-light);
+  color: var(--primary-dark);
+  font-size: 125%;
+}
+
+#return-button:hover {
+  background-color: var(--primary-dark);
+  color: var(--primary-light);
+}
+
+/*----------------
+ * Mobile layout
+ *----------------
+ */
+ @media only screen and (max-width: 844px) {
+  
+	#return-button {
+    width: 200px;
+    margin-left: 50px;
+  }
+}

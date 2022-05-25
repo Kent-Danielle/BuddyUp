@@ -185,10 +185,10 @@ body {
 	background: linear-gradient(
 		245deg,
 		rgba(216, 216, 216, 0.75) 45%,
-		rgba(251, 251, 251, 0.65) 50%,
+		rgba(255, 255, 255, 0.95) 50%,
 		rgba(216, 216, 216, 0.75) 55%
 	);
-	animation: load 3s ease infinite;
+	animation: load 2.5s ease infinite;
 	background-size: 300% 300%;
 	box-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.37);
 	backdrop-filter: blur(3px);
