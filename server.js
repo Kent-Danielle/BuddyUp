@@ -16,6 +16,7 @@ const path = require('path');
 const session = require('express-session');
 const cookieParser = require("cookie-parser");
 const User = require("./models/user");
+const fs = require("fs");
 
 exports.server = server;
 exports.io = io;
@@ -83,3 +84,8 @@ db.on('error', error => {
 app.use('/', indexRouter);
 app.use('/user', userRouter);
 app.use('/match', matchRouter);
+
+app.get('/*', function(req, res) {
+    let notFoundDoc = fs.readFileSync("./public/html/not_found.html", "utf-8");
+    res.send(notFoundDoc);
+});

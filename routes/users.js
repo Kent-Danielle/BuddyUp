@@ -629,6 +629,13 @@ router.get("/info", async function (req, res) {
 	}
 });
 
+// returns if the user is logged in or not
+router.get("/logged-in", function(req, res) {
+	const loggedIn = req.body.loggedIn;
+	console.log(loggedIn);
+	console.log("test");
+});
+
 // updates the users information after editing and then redirects them back to their profile page
 router.post("/edit/submit", upload.single("image"), async function (req, res) {
 	try {
