@@ -180,6 +180,36 @@ body {
 	overflow-y: hidden;
 }
 
+.on-load-modal {
+	background: rgb(181, 181, 181);
+	background: linear-gradient(
+		245deg,
+		rgba(216, 216, 216, 0.75) 45%,
+		rgba(251, 251, 251, 0.65) 50%,
+		rgba(216, 216, 216, 0.75) 55%
+	);
+	animation: load 3s ease infinite;
+	background-size: 300% 300%;
+	box-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.37);
+	backdrop-filter: blur(3px);
+	-webkit-backdrop-filter: blur(3px);
+	border-radius: 10px;
+	border: 1px solid rgba(255, 255, 255, 0.18);
+	height: 95% !important;
+	overflow-y: hidden;
+}
+
+@keyframes load {
+	0% {
+		background-position: bottom left;
+	}
+	100% {
+		background-position: top right;
+	}
+}
+
+
+
 /* profile */
 #profile-container {
 	height: 85%;
@@ -258,7 +288,7 @@ body {
  *----------------
  */
 @media only screen and (max-width: 844px) {
-	.modal-content {
+	#modal-body {
 		width: 95% !important;
 	}
 	.message-bubble {
@@ -280,7 +310,7 @@ body {
  *----------------
  */
 @media only screen and (min-width: 845px) {
-	.modal-content {
+	#modal-body {
 		width: 844px;
 	}
 	.your-message {

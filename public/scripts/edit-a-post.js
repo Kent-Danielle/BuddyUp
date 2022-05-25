@@ -1,21 +1,26 @@
-'use strict';
+"use strict";
 
 document.getElementById("submit").addEventListener("click", async (e) => {
 	e.preventDefault();
-	document.getElementById("loadingMsg").innerHTML = "loading...";
-	let form = document.getElementById("input-container");
+	replaceClass("form-container", "form-style", "on-load-form");
+	document.getElementById("title-box").classList.toggle("hidden");
+	document.getElementById("post-box").classList.toggle("hidden");
+	document.getElementById("add-image").classList.toggle("hidden");
+	document.getElementById("buttons").classList.toggle("hidden");
+	// document.getElementById("loadingMsg").innerHTML = "loading...";
+	let form = document.getElementById("form-container");
 	let formData = new FormData(form);
 	formData.set(
 		"content",
 		tinymce.get("tinytext").getContent({
-			format: "raw"
+			format: "raw",
 		})
 	);
 	formData.set("id", document.getElementById("postID").innerHTML);
 	fetch("/user/editPost", {
-			method: "POST",
-			body: formData,
-		})
+		method: "POST",
+		body: formData,
+	})
 		.then(function (result) {
 			return result.json();
 		})
@@ -23,17 +28,27 @@ document.getElementById("submit").addEventListener("click", async (e) => {
 			if (result.success == "true") {
 				window.location.replace("/user/profile");
 			} else {
+				replaceClass("form-container", "on-load-form", "form-style");
+				document.getElementById("title-box").classList.toggle("hidden");
+				document.getElementById("post-box").classList.toggle("hidden");
+				document.getElementById("add-image").classList.toggle("hidden");
+				document.getElementById("buttons").classList.toggle("hidden");
 				document.getElementById("errorMsg").innerHTML = result.message;
-				document.getElementsByClassName("tox")[0].style.border = 'none';
+				document.getElementsByClassName("tox")[0].style.border = "none";
 				if (result.type != null && result.type != undefined) {
 					let inputs = document.querySelectorAll(".inputFields");
-					inputs.forEach((input) => input.style.backgroundColor = "rgba(255, 255, 255, 0)");
+					inputs.forEach(
+						(input) => (input.style.backgroundColor = "rgba(255, 255, 255, 0)")
+					);
 					if (result.type == "title") {
-						document.getElementById("title").style.backgroundColor = 'var(--accent-light)';
+						document.getElementById("title").style.backgroundColor =
+							"var(--accent-light)";
 					} else if (result.type == "pfp") {
-						document.getElementById("file-container").style.backgroundColor = 'var(--accent-light)';
+						document.getElementById("file-container").style.backgroundColor =
+							"var(--accent-light)";
 					} else if (result.type == "post") {
-						document.getElementsByClassName("tox")[0].style.border = 'solid 5px var(--accent-light)';
+						document.getElementsByClassName("tox")[0].style.border =
+							"solid 5px var(--accent-light)";
 					}
 				}
 				document.getElementById("loadingMsg").innerHTML = "";
@@ -54,15 +69,14 @@ document
 
 document.getElementById("image").addEventListener("change", function () {
 	let count = document.getElementById("image").files.length;
-	count = (count <= 4) ? count : 4;
-	document.getElementById("file-label").innerHTML =
-		count + " files";
+	count = count <= 4 ? count : 4;
+	document.getElementById("file-label").innerHTML = count + " files";
 });
 
-window.onload = function (){
+window.onload = function () {
 	let data = {
-		id: document.getElementById("postID").innerHTML
-	}
+		id: document.getElementById("postID").innerHTML,
+	};
 	fetch("/user/getPost", {
 		method: "POST",
 		headers: {
@@ -70,10 +84,18 @@ window.onload = function (){
 			"Content-Type": "application/json",
 		},
 		body: JSON.stringify(data),
-	}).then((result) => {
-		return result.json();
-	}).then((result) => {
-		document.getElementById("title").setAttribute("value", result.title);
-		tinymce.get("tinytext").setContent(result.post);
-	});
+	})
+		.then((result) => {
+			return result.json();
+		})
+		.then((result) => {
+			document.getElementById("title").setAttribute("value", result.title);
+			tinymce.get("tinytext").setContent(result.post);
+		});
+};
+
+function replaceClass(id, oldClass, newClass) {
+	var elem = document.getElementById(id);
+	elem.classList.remove(oldClass);
+	elem.classList.add(newClass);
 }

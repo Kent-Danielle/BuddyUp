@@ -20,10 +20,12 @@
 
 body {
 	background: rgb(63, 200, 251);
-	background: linear-gradient(50deg,
-			rgba(63, 200, 251, 0.8) 0%,
-			rgba(252, 70, 215, 0.8) 50%,
-			rgba(252, 225, 70, 0.8) 100%);
+	background: linear-gradient(
+		50deg,
+		rgba(63, 200, 251, 0.8) 0%,
+		rgba(252, 70, 215, 0.8) 50%,
+		rgba(252, 225, 70, 0.8) 100%
+	);
 	animation: gradient 180s ease infinite;
 	background-size: 300% 300%;
 }
@@ -40,19 +42,50 @@ body {
 	color: var(--neutral-color);
 	font-style: italic;
 }
+.hidden {
+	visibility: hidden !important;
+}
 
-#form-container {
+.form-style {
 	position: absolute;
 	top: 50%;
 	left: 50%;
 	transform: translate(-50%, -50%);
-	width: 75%;
 	background: rgba(255, 255, 255, 0.456);
 	box-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.37);
 	backdrop-filter: blur(3px);
 	-webkit-backdrop-filter: blur(3px);
 	border-radius: 10px;
 	border: 1px solid rgba(255, 255, 255, 0.18);
+}
+.on-load-form {
+	background: rgb(181, 181, 181);
+	background: linear-gradient(
+		245deg,
+		rgba(216, 216, 216, 0.75) 45%,
+		rgba(251, 251, 251, 0.65) 50%,
+		rgba(216, 216, 216, 0.75) 55%
+	);
+	animation: load 3s ease infinite;
+	background-size: 300% 300%;
+	position: absolute;
+	top: 50%;
+	left: 50%;
+	transform: translate(-50%, -50%);
+	box-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.37);
+	backdrop-filter: blur(3px);
+	-webkit-backdrop-filter: blur(3px);
+	border-radius: 10px;
+	border: 1px solid rgba(255, 255, 255, 0.18);
+}
+
+@keyframes load {
+	0% {
+		background-position: bottom left;
+	}
+	100% {
+		background-position: top right;
+	}
 }
 
 input[type="file"] {
@@ -96,15 +129,11 @@ h3 {
  *----------------
  */
 @media only screen and (max-width: 844px) {
-	#input-container {
-		width: 95% !important;
-	}
-
 	textarea {
 		height: 0.1vh;
 	}
 
-	#form-container {
+	.form-style {
 		width: 95% !important;
 		overflow-y: scroll;
 	}
@@ -115,7 +144,7 @@ h3 {
  *----------------
  */
 @media only screen and (min-width: 845px) {
-	#input-container {
+	.form-style {
 		width: 75% !important;
 	}
 }

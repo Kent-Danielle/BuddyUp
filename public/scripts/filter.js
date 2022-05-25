@@ -137,8 +137,7 @@ submitFilter.addEventListener("click", function (e) {
 	e.preventDefault;
 
 	removeMessage();
-	document.getElementById("profile-container").innerHTML = "Finding...";
-
+	document.getElementById("profile-container").innerHTML = "  ";
 	let data = {};
 	if (gameFilters.length == 0) {
 		data.hasGameFilters = false;
@@ -159,11 +158,13 @@ submitFilter.addEventListener("click", function (e) {
 		document
 			.getElementById("reject-match")
 			.style.setProperty("display", "none", "important");
+		replaceClass("modal-body", "modal-content", "on-load-modal");
 
 		let filters = JSON.stringify(data);
 
 		socket.emit("find-match", filters, async function (result) {
 			if (result.status == "Success") {
+				replaceClass("modal-body", "on-load-modal", "modal-content");
 				document
 					.getElementById("match-filters-container")
 					.style.setProperty("display", "none", "important");
@@ -178,6 +179,7 @@ submitFilter.addEventListener("click", function (e) {
 				//update their status to match
 				socket.emit("update-status", currentUser, true);
 			} else {
+				replaceClass("modal-body", "on-load-modal", "modal-content");
 				document
 					.getElementById("match-filters-container")
 					.style.setProperty("display", "block", "important");
@@ -203,7 +205,8 @@ document
 		let roomID = localStorage.getItem("roomID");
 		let otherUser = document.getElementById("username").innerText;
 		document.getElementById("profile-container").innerHTML =
-			"Waiting for response...";
+			"<h3 class='text-center'> Waiting for Response </h3>";
+		replaceClass("modal-body", "modal-content", "on-load-modal");
 		document.getElementById("accept-match").style.display = "none";
 		document.getElementById("reject-match").style.display = "none";
 		socket.emit(
@@ -213,6 +216,7 @@ document
 			roomID,
 			async function (result) {
 				if (result.success) {
+					replaceClass("modal-body", "on-load-modal", "modal-content");
 					document
 						.getElementById("profile-modal")
 						.style.setProperty("display", "none", "important");
@@ -222,6 +226,7 @@ document
 						.getElementById("exit-chatroom")
 						.style.setProperty("display", "block", "important");
 				} else {
+					replaceClass("modal-body", "on-load-modal", "modal-content");
 					await socket.emit("reject-status", currentUser, roomID);
 
 					document
@@ -232,7 +237,7 @@ document
 						.style.setProperty("display", "none", "important");
 					document.getElementById("send-button").disabled = true;
 					document.getElementById("message-field").disabled = true;
-					document.getElementById("profile-container").innerHTML = "Finding...";
+					document.getElementById("profile-container").innerHTML = "";
 				}
 				document.getElementById("accept-match").style.display = "inline-block";
 				document.getElementById("reject-match").style.display = "inline-block";
@@ -249,7 +254,7 @@ document
 		e.preventDefault();
 		let room = localStorage.getItem("roomID");
 		let otherUser = document.getElementById("username").innerText;
-		document.getElementById("profile-container").innerHTML = "Finding...";
+		document.getElementById("profile-container").innerHTML = "  ";
 
 		await socket.emit("reject-match", currentUser, otherUser, room);
 
@@ -273,7 +278,7 @@ socket.on("rejected", async function () {
 	document.getElementById("send-button").disabled = true;
 	document.getElementById("message-field").disabled = true;
 	displayStatusMessage("You got rejected, nothin' personal Kid");
-	document.getElementById("profile-container").innerHTML = "Finding...";
+	document.getElementById("profile-container").innerHTML = "  ";
 });
 
 /**
@@ -290,7 +295,7 @@ exitMatchingBtn.addEventListener("click", async (e) => {
 		}
 	} catch {}
 
-	await socket.emit("update-status", currentUser, false);
+	await socket.emit("quit-chat", currentUser, false);
 	document
 		.getElementById("match-filters-container")
 		.style.setProperty("display", "block", "important");
@@ -310,4 +315,10 @@ function removeMessage() {
 	container.forEach((element) => {
 		element.remove();
 	});
+}
+
+function replaceClass(id, oldClass, newClass) {
+	var elem = document.getElementById(id);
+	elem.classList.remove(oldClass);
+	elem.classList.add(newClass);
 }

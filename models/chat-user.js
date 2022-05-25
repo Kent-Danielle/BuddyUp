@@ -43,6 +43,10 @@ const chatuserSchema = new mongoose.Schema({
 		type: String,
 		required: false,
 	},
+	cancelled: {
+		type: Boolean,
+		required: false,
+	}
 });
 
 module.exports = mongoose.model("bby09-chat-user", chatuserSchema);

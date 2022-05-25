@@ -55,6 +55,7 @@ router.get("/", async function (req, res) {
 				name: req.session.name,
 				finding: false,
 				response: "wait",
+				cancelled: false,
 			},
 			{
 				upsert: true,
@@ -331,6 +332,7 @@ io.on("connection", (socket) => {
 						filters: filters,
 						finding: true,
 						response: "wait",
+						cancelled: false,
 					},
 					$unset: {
 						room: "",
@@ -347,7 +349,11 @@ io.on("connection", (socket) => {
 			};
 			let i = 0;
 			//double check to make sure that you matched with the right person
-			while (i < 8 && currentUserName != chatUser2.current_match) {
+			while (
+				i < 8 &&
+				currentUserName != chatUser2.current_match &&
+				!chatUser1.cancelled
+			) {
 				chatUser2 = null;
 				/*find another user that is:
 			1) not you, and not the last person you matched with
@@ -356,7 +362,12 @@ io.on("connection", (socket) => {
 			Do this for 5 seconds or until someone found you or u found someone
 			*/
 				let j = 0;
-				while (chatUser2 == null && j < 4 && !chatUser1.matched) {
+				while (
+					!chatUser1.cancelled &&
+					chatUser2 == null &&
+					j < 4 &&
+					!chatUser1.matched
+				) {
 					/*try to find someone,
 				if u did = update them too
 				if u didn't = just find another after 5 seconds
@@ -399,7 +410,7 @@ io.on("connection", (socket) => {
 				}
 
 				//check if someone found you
-				if (chatUser2 == null && chatUser1.matched) {
+				if (!chatUser1.cancelled && chatUser2 == null && chatUser1.matched) {
 					console.log("Someone found " + currentUserName + " first");
 					chatUser2 = await ChatUser.findOne({
 						current_match: currentUserName,
@@ -407,9 +418,15 @@ io.on("connection", (socket) => {
 				}
 
 				//if u didn't find chatuser2, then just find anyone lol
-				if (chatUser2 == null) {
+				if (!chatUser1.cancelled && chatUser2 == null) {
 					j = 0;
-					while (chatUser2 == null && j < 4 && !chatUser1.matched && i > 5) {
+					while (
+						!chatUser1.cancelled &&
+						chatUser2 == null &&
+						j < 4 &&
+						!chatUser1.matched &&
+						i > 5
+					) {
 						/*try to find someone,
 					if u did = update them too
 					if u didn't = just find another after 5 seconds
@@ -449,7 +466,7 @@ io.on("connection", (socket) => {
 				}
 
 				//check if someone found you
-				if (chatUser2 == null && chatUser1.matched) {
+				if (!chatUser1.cancelled && chatUser2 == null && chatUser1.matched) {
 					console.log("Someone found " + currentUserName + " first");
 					chatUser2 = await ChatUser.findOne({
 						current_match: currentUserName,
@@ -457,7 +474,7 @@ io.on("connection", (socket) => {
 				}
 
 				//if u found chatuser2, then do something to check if chatuser2 found you too
-				if (chatUser2 != null) {
+				if (!chatUser1.cancelled && chatUser2 != null) {
 					console.log("Updating " + currentUserName);
 					//add chatuser2 to chatuser1's data
 					chatUser1 = await ChatUser.findOneAndUpdate(
@@ -490,8 +507,7 @@ io.on("connection", (socket) => {
 						current_match: null,
 					};
 				}
-
-				i++;
+				chatUser1.cancelled ? (i = 10) : i++;
 			}
 
 			//Send it depending if u found someone or not
@@ -557,6 +573,26 @@ io.on("connection", (socket) => {
 					matched: match,
 					finding: false,
 					response: "wait",
+				},
+			}
+		);
+	});
+
+	/**
+	 * Function for updating status
+	 *
+	 */
+	socket.on("quit-chat", async (name, match) => {
+		await ChatUser.updateOne(
+			{
+				name: name,
+			},
+			{
+				$set: {
+					matched: match,
+					finding: false,
+					response: "wait",
+					cancelled: true,
 				},
 			}
 		);
