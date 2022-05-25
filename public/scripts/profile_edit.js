@@ -185,6 +185,9 @@ document.getElementById("submit").addEventListener("click", function (e) {
 	if ((email.indexOf("@") > -1) && (email.charAt(0) != "@") && (email.charAt(email.length - 1) != "@")) {
 
 		// If email input is valid then POST
+		let password = document.getElementById("password").value;
+		let confirm = document.getElementById("confirm-password").value;
+		if (password == confirm) {
 		e.preventDefault();
 		document.getElementById("loading").innerHTML = "loading...";
 		let form = document.getElementById("edit-form");
@@ -213,6 +216,9 @@ document.getElementById("submit").addEventListener("click", function (e) {
 						"var(--accent-light)";
 				}
 			});
+		} else {
+			document.getElementById("errorMsg").innerText = "Password does not match.";
+		}
 	} else {
 		document.getElementById("errorMsg").innerText = "Incomplete Email";
 	}

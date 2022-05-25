@@ -192,7 +192,7 @@ function createDeleteListener() {
 			} else {
 				modalText.innerHTML =
 					"Do you want to delete " + deleteBtn[i].value + "'s account?";
-				confirmBtn.addEventListener("click", function(e) {
+				confirmBtn.addEventListener("click", function (e) {
 					window.location.href = "/user/delete/" + deleteBtn[i].value;
 				});
 				confirmBtn.style.setProperty("display", "inline-block", "important");
@@ -287,33 +287,46 @@ document.getElementById("isAdmin").addEventListener("click", function (e) {
 document
 	.getElementById("submitButton")
 	.addEventListener("click", async function (e) {
-		let submitBtn = document.getElementById("submitButton");
-		e.preventDefault();
-		let oldName = await localStorage.getItem("oldName");
-		let form = document.getElementById("userForm");
-		let formData = new FormData(form);
-		formData.append("oldName", oldName);
-		let fetchPath =
-			submitBtn.value == "create account" ?
-			"/user/createAccountAdmin" :
-			"/user/editAccountAdmin";
-		let result = fetch(fetchPath, {
-				method: "POST",
-				body: formData,
-			})
-			.then(function (response) {
-				return response.json();
-			})
-			.then(function (result) {
-				if (result.success) {
-					window.location.replace("/user/admin");
-				} else {
-					let inputs = document.querySelectorAll(".inputFields");
-					inputs.forEach((input) => input.style.backgroundColor = "rgba(255, 255, 255, 0)");
-					document.getElementById("errorMsg").innerText = result.error;
-					document.getElementById(result.type + "Field").style.backgroundColor = 'var(--accent-light)';
-				}
-			});
+		// Check if the email input is valid
+		let email = document.getElementById("emailField").value;
+		if ((email.indexOf("@") > -1) && (email.charAt(0) != "@") && (email.charAt(email.length - 1) != "@")) {
+
+			let password = document.getElementById("password").value;
+			let confirm = document.getElementById("confirm-password").value;
+			if (password == confirm) {
+				let submitBtn = document.getElementById("submitButton");
+				e.preventDefault();
+				let oldName = await localStorage.getItem("oldName");
+				let form = document.getElementById("userForm");
+				let formData = new FormData(form);
+				formData.append("oldName", oldName);
+				let fetchPath =
+					submitBtn.value == "create account" ?
+					"/user/createAccountAdmin" :
+					"/user/editAccountAdmin";
+				let result = fetch(fetchPath, {
+						method: "POST",
+						body: formData,
+					})
+					.then(function (response) {
+						return response.json();
+					})
+					.then(function (result) {
+						if (result.success) {
+							window.location.replace("/user/admin");
+						} else {
+							let inputs = document.querySelectorAll(".inputFields");
+							inputs.forEach((input) => input.style.backgroundColor = "rgba(255, 255, 255, 0)");
+							document.getElementById("errorMsg").innerText = result.error;
+							document.getElementById(result.type + "Field").style.backgroundColor = 'var(--accent-light)';
+						}
+					});
+			} else {
+				document.getElementById("errorMsg").innerText = "Password does not match.";
+			}
+		} else {
+			document.getElementById("errorMsg").innerText = "Incomplete Email";
+		}
 	});
 
 /**

@@ -93,7 +93,7 @@
 			<span class="close"><i id="closeModalButton" class="fa-solid fa-xmark"></i></span>
 			<form id="userForm">
 				<h3>email</h3>
-				<input id="emailField" name="email" type="text" value="" readonly
+				<input id="emailField" name="email" type="email" value="" readonly
 					onfocus="this.removeAttribute('readonly');" class="inputFields" autocomplete="off" />
 				<h3>username</h3>
 				<input id="nameField" type="text" value="" name="name" readonly
@@ -101,6 +101,10 @@
 				<h3>password</h3>
 				<input id="passwordField" name="password" type="password" value="" readonly
 					onfocus="this.removeAttribute('readonly');" autocomplete="off" class="inputFields" />
+				<h3>confirm password<span class="required"> *</span></h3>
+				<input id="confirm-password" name="password" type="password" value="" class="inputFields"
+					placeholder="Confirm password" readonly onfocus="this.removeAttribute('readonly');"
+					autocomplete="off" />
 				<h3>tell us about yourself</h3>
 				<textarea name="about" id="bioField" maxlength="280" readonly
 					onfocus="this.removeAttribute('readonly');" rows="4" autocomplete="off"
