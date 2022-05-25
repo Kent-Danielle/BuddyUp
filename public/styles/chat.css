@@ -225,6 +225,10 @@ body {
 	position: relative;
 }
 
+.message-bubble {
+	padding: 0.4rem 0.8rem;
+}
+
 .your-message {
 	color: white;
 	background: rgba(22, 100, 214, 0.71);
@@ -243,6 +247,9 @@ body {
 	border: 1px solid rgba(255, 255, 255, 0.18);
 }
 #logo {
+	position: absolute;
+	left: 50%;
+	transform: translate(-50%);
 	height: 80% !important;
 }
 
@@ -254,6 +261,18 @@ body {
 	.modal-content {
 		width: 95% !important;
 	}
+	.message-bubble {
+		padding: 0.2rem 0.4rem;
+	}
+	.usernameContainer {
+		display: none;
+	}
+	.your-message {
+		float: right;
+	}
+	.not-your-message {
+		float: left;
+	}
 }
 
 /*----------------
@@ -263,5 +282,11 @@ body {
 @media only screen and (min-width: 845px) {
 	.modal-content {
 		width: 844px;
+	}
+	.your-message {
+		float: left;
+	}
+	.not-your-message {
+		float: left;
 	}
 }

@@ -5,8 +5,8 @@ const socket = io.connect("/");
 /**
  * Socket function for receiving message
  */
-socket.on("receive-message", (message) => {
-	displayMessage(false, message);
+socket.on("receive-message", (message, name) => {
+	displayMessage(false, message, name);
 });
 
 /**
@@ -20,7 +20,7 @@ messageForm.addEventListener("submit", (e) => {
 	const message = messageInput.value;
 
 	if (message === "") return;
-	displayMessage(true, message);
+	displayMessage(true, message, "");
 	//socket function for sending
 	socket.emit("send-message", message, room);
 	messageInput.value = "";
@@ -29,17 +29,22 @@ messageForm.addEventListener("submit", (e) => {
 /**
  * Function for displaying message
  */
-function displayMessage(you, message) {
+function displayMessage(you, message, otherUserName) {
+	let usernameSpan = document.createElement("span");
+	usernameSpan.classList.add(
+		"usernameContainer",
+		you ? "your-username" : "not-your-username"
+	);
+	usernameSpan.innerText = you ? "You: " : otherUserName + ": ";
 	let messageBubble = document.createElement("div");
 	messageBubble.classList.add(
 		"message-bubble",
-		you ? "float-end" : "float-start",
 		you ? "your-message" : "not-your-message",
-		"px-2",
 		"d-inline",
 		"rounded-3"
 	);
 	messageBubble.innerText = message;
+	messageBubble.prepend(usernameSpan);
 	let messageLine = document.createElement("div");
 	messageLine.classList.add(
 		"message-line",
@@ -58,12 +63,14 @@ function displayMessage(you, message) {
 /**
  * deletes all game filters once the delete-all-games button is clicked
  */
- document.getElementById("delete-all-games").addEventListener("click", function(e) {
-	e.preventDefault();
-	gameFilters.length = 0;
-	let gameFiltersContainer = document.getElementById("gameFiltersContainer");
-	gameFiltersContainer.innerHTML = "";
-});
+document
+	.getElementById("delete-all-games")
+	.addEventListener("click", function (e) {
+		e.preventDefault();
+		gameFilters.length = 0;
+		let gameFiltersContainer = document.getElementById("gameFiltersContainer");
+		gameFiltersContainer.innerHTML = "";
+	});
 
 /**
  * Adds the current game as a filter once clicked on the add filter button
@@ -71,22 +78,24 @@ function displayMessage(you, message) {
 /**
  * Adds the current game as a filter once clicked on the add filter button
  */
- document.getElementById("add-filter-button").addEventListener("click", function(e) {
-	e.preventDefault();
-	
-	// only allow a max of 10 game filters
-	if (gameFilters.length >= maxGames) {
-		displayMaxGameFiltersMessage();
-		return;
-	}
+document
+	.getElementById("add-filter-button")
+	.addEventListener("click", function (e) {
+		e.preventDefault();
 
-	if (gameInput.value === "") {
-		return;
-	}
+		// only allow a max of 10 game filters
+		if (gameFilters.length >= maxGames) {
+			displayMaxGameFiltersMessage();
+			return;
+		}
 
-	addGame(gameInput.value);
-	gameInput.value = "";
-});
+		if (gameInput.value === "") {
+			return;
+		}
+
+		addGame(gameInput.value);
+		gameInput.value = "";
+	});
 
 /**
  * Function for getting out of the chatroom
