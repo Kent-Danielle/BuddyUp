@@ -41,13 +41,18 @@ body {
 	font-style: italic;
 }
 
-#input-container {
-	background: rgba(255, 255, 255, 0.2) !important;
-	box-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.37) !important;
-	backdrop-filter: blur(3px) !important;
-	-webkit-backdrop-filter: blur(3px) !important;
-	border-radius: 10px !important;
-	border: 1px solid rgba(255, 255, 255, 0.18) !important;
+#form-container {
+	position: absolute;
+	top: 50%;
+	left: 50%;
+	transform: translate(-50%, -50%);
+	width: 75%;
+	background: rgba(255, 255, 255, 0.456);
+	box-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.37);
+	backdrop-filter: blur(3px);
+	-webkit-backdrop-filter: blur(3px);
+	border-radius: 10px;
+	border: 1px solid rgba(255, 255, 255, 0.18);
 }
 
 input[type="file"] {
@@ -76,6 +81,11 @@ form input[type="text"] {
 	background-color: rgba(255, 255, 255, 0);
 }
 
+h3 {
+	margin: 0.7rem 0 0.1rem !important;
+	font-variant: small-caps !important;
+}
+
 #submit,
 #cancelBtn {
 	width: clamp(100px, 25%, 200px) !important;
@@ -92,6 +102,11 @@ form input[type="text"] {
 
 	textarea {
 		height: 0.1vh;
+	}
+
+	#form-container {
+		width: 95% !important;
+		overflow-y: scroll;
 	}
 }
 

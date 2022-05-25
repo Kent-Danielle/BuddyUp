@@ -213,11 +213,13 @@ form a {
 
 	#form-container {
 		width: 95% !important;
+		overflow-y: scroll;
+		box-sizing: content-box !important;
 	}
 }
 
 /*----------------
- * Mobile layout
+ * Desktop layout
  *----------------
  */
 @media only screen and (min-width: 845px) {
@@ -225,9 +227,5 @@ form a {
 		grid-template-areas: "main";
 		grid-template-rows: 1fr;
 		grid-template-columns: 100%;
-	}
-
-	#form-container {
-		width: 75% !important;
 	}
 }
