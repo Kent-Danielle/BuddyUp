@@ -4,6 +4,9 @@ if (process.env.NODE_ENV !== 'production') {
     require('dotenv').config();
 }
 
+/**
+ * Libraries.
+ */
 const express = require('express');
 const expressLayouts = require('express-ejs-layouts');
 const mongoose = require('mongoose');
@@ -17,6 +20,7 @@ const session = require('express-session');
 const cookieParser = require("cookie-parser");
 const User = require("./models/user");
 const fs = require("fs");
+
 
 exports.server = server;
 exports.io = io;
@@ -38,9 +42,13 @@ app.use(bodyParser.urlencoded({
 app.use(bodyParser.json())
 
 const oneDay = 1000 * 60 * 60 * 24;
+
+/**
+ * Session setup.
+ */
 app.use(session({
     secret: "hvlhjlakdjnclkasjnvjkadfaksdfcnvlchwjjdndsjsjjsj",
-    name: "wazaSessionID",
+    name: "BuddyUpSession",
     resave: false,
     cookie: {
         maxAge: oneDay
@@ -53,27 +61,22 @@ const indexRouter = require('./routes/index');
 const userRouter = require('./routes/users');
 const matchRouter = require('./routes/match');
 
-// // RUN SERVER
+// RUN SERVER
 let port = 8000;
 server.listen(process.env.PORT || port, function () {
     console.log('Listening on port ' + port + '!');
 });
-//
 
-
+/**
+ * Database connection.
+ */
 mongoose.connect(process.env.DATABASE_URL, {
     useNewUrlParser: true,
     useUnifiedTopology: true
 }, async err => {
     console.log('connected to database');
-    await User.updateMany({
-        img: "/images/profile.png"
-    }, {
-        $set: {
-            img: "https://res.cloudinary.com/buddyup-images/image/upload/v1652458876/profile_ek8iwp.png"
-        }
-    });
 });
+
 const db = mongoose.connection;
 
 db.on('error', error => {
@@ -81,10 +84,17 @@ db.on('error', error => {
 });
 
 
+/**
+ * Server routes.
+ */
 app.use('/', indexRouter);
 app.use('/user', userRouter);
 app.use('/match', matchRouter);
 
+
+/**
+ * Redirects to the 404 not found page upon trying to access invalid routes.
+ */
 app.get('/*', function(req, res) {
     let notFoundDoc = fs.readFileSync("./public/html/not_found.html", "utf-8");
     res.send(notFoundDoc);
