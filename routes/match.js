@@ -403,8 +403,6 @@ io.on("connection", (socket) => {
 							new: true,
 						}
 					);
-					console.log(currentUserName + " found " + chatUser2 + j);
-
 					//update existing chatuser1 to see if someone found you
 					chatUser1 = await ChatUser.findOne({
 						name: currentUserName,
@@ -417,7 +415,6 @@ io.on("connection", (socket) => {
 
 				//check if someone found you
 				if (!chatUser1.cancelled && chatUser2 == null && chatUser1.matched) {
-					console.log("Someone found " + currentUserName + " first");
 					chatUser2 = await ChatUser.findOne({
 						current_match: currentUserName,
 					});
@@ -458,8 +455,6 @@ io.on("connection", (socket) => {
 							}
 						);
 
-						console.log(currentUserName + " found " + chatUser2 + j);
-
 						//update existing chatuser1 to see if someone found you
 						chatUser1 = await ChatUser.findOne({
 							name: currentUserName,
@@ -473,7 +468,6 @@ io.on("connection", (socket) => {
 
 				//check if someone found you
 				if (!chatUser1.cancelled && chatUser2 == null && chatUser1.matched) {
-					console.log("Someone found " + currentUserName + " first");
 					chatUser2 = await ChatUser.findOne({
 						current_match: currentUserName,
 					});
@@ -481,7 +475,6 @@ io.on("connection", (socket) => {
 
 				//if u found chatuser2, then do something to check if chatuser2 found you too
 				if (!chatUser1.cancelled && chatUser2 != null) {
-					console.log("Updating " + currentUserName);
 					//add chatuser2 to chatuser1's data
 					chatUser1 = await ChatUser.findOneAndUpdate(
 						{
@@ -498,7 +491,6 @@ io.on("connection", (socket) => {
 						}
 					);
 
-					console.log(currentUserName + " is now... " + chatUser1);
 					//if chatuser2 doesnt have any name for current match, then just wait for 5 seconds
 					let k = 0;
 					while (chatUser2.current_match == null && k < 20) {
@@ -522,7 +514,6 @@ io.on("connection", (socket) => {
 				chatUser2.current_match != null &&
 				chatUser1.finding
 			) {
-				console.log(chatUser2);
 				await ChatUser.updateMany(
 					{
 						$or: [

@@ -45,7 +45,6 @@ document.getElementById("submit").addEventListener("click", async (e) => {
 	e.preventDefault();
 	
 	let email = document.getElementById("email").value;
-	console.log(ValidateEmail(email));
 	if (ValidateEmail(email) == true) {
 		// If email input is valid then POST
 		let password = document.getElementById("password").value;

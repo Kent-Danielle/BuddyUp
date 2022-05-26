@@ -8,7 +8,7 @@ document.getElementById("edit-form").onkeypress = function (e) {
 };
 
 // display the error message noting that you cannot add any more games for a few seconds
-let errorMessageTimer = null;
+let errorMessageTimer2 = null;
 
 const maxGames = 10;
 const enterKey = 13;
@@ -35,7 +35,7 @@ function createGameSpan(gameFilter) {
 function displayMaxGameFiltersMessage() {
 	document.getElementById("error-msg").innerText =
 		"You can only have a max of 10 games";
-	errorMessageTimer = setTimeout(() => {
+	errorMessageTimer2 = setTimeout(() => {
 		document.getElementById("error-msg").innerText = "";
 	}, 2000);
 }
@@ -173,6 +173,7 @@ async function loadUserData() {
 	document.getElementById("email").setAttribute("value", userInfo.email);
 	document.getElementById("about").innerText = userInfo.about;
 	document.getElementById("password").value = userInfo.password;
+	document.getElementById("confirm-password").value = userInfo.password;
 
 	// add game filters
 	if (userInfo.games != null) {

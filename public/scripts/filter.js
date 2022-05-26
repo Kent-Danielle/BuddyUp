@@ -1,7 +1,5 @@
 "use strict";
 
-
-
 // display the error message noting that you cannot add any more games for a few seconds
 let errorMessageTimer = null;
 

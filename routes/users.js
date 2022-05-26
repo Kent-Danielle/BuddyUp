@@ -1,14 +1,17 @@
 "use strict";
 
+//connect to our cloudinary image host
 var cloudinary = require("cloudinary");
 cloudinary.config({
 	cloud_name: "buddyup-images",
 	api_key: "673686844465421",
-	api_secret: "cxk0wwxInP62OzGTo26z2TZSnDU",
+	api_secret: process.env.IMAGE_KEY,
 });
 
+//import everything we need
 const express = require("express");
 const router = express.Router();
+//these are the mongodb schemas for all our collections
 const User = require("../models/user");
 const AdminRequest = require("../models/admin-request");
 const Timeline = require("../models/user-timeline");
@@ -83,6 +86,7 @@ router.get("/profile/", async function (req, res) {
 		} catch (error) {
 			return;
 		}
+		//formatting options for the date on the post
 		let dateOptions = {
 			weekday: "long",
 			timeZone: "PST",
@@ -439,26 +443,9 @@ router.post("/createAccount", upload.single("pfp"), async function (req, res) {
 			//set the default image to our default pfp in case the user doesn't set their own.
 			let url =
 				"https://res.cloudinary.com/buddyup-images/image/upload/v1652458876/profile_ek8iwp.png";
+			//upload the image if a new one was set
 			if (req.file != undefined) {
-				//upload the profile picture to cloudinary
-				let upload = await cloudinary.v2.uploader.upload(
-					"./public/images/" + req.file.filename,
-					function (error) {
-						if (error) {
-							res.send({
-								success: "false",
-								message: "Failed to upload profile picture",
-							});
-							return;
-						}
-					}
-				);
-				//since we are done uploading the image we can delete the local version of it
-				fs.unlink(
-					"./public/images/" + req.file.filename,
-					function (err) {}
-				);
-				url = upload.secure_url;
+				url = await uploadImage("./public/images/" + req.file.filename, res, url);
 			}
 			//make sure all the fields are not to long.
 			if (req.body.name.length > 100) {
@@ -517,7 +504,6 @@ router.post("/createAccount", upload.single("pfp"), async function (req, res) {
 			}
 		}
 	} catch (err) {
-		console.log(err)
 		res.send({
 			success: "false",
 			type: "name",
@@ -642,27 +628,9 @@ router.post("/edit/submit", upload.single("image"), async function (req, res) {
 				});
 				return;
 			}
-			let url;
+			let url = hasSameEmail.img;
 			if (req.file != undefined) {
-				//if they have a new pfp, upload it to cloudinary
-				let upload = await cloudinary.v2.uploader.upload(
-					"./public/images/" + req.file.filename,
-					function (error) {
-						if (error) {
-							res.send({
-								success: false,
-								message: "failed to upload profile picture",
-							});
-							return;
-						}
-					}
-				);
-				//delete the old local image when it is done uploading
-				fs.unlink(
-					"./public/images/" + req.file.filename,
-					function (err) {}
-				);
-				url = upload.secure_url;
+				url = await uploadImage("./public/images/" + req.file.filename, res, url);
 			}
 
 			//update the posts the user made to thier new name
@@ -677,32 +645,19 @@ router.post("/edit/submit", upload.single("image"), async function (req, res) {
 			} catch (error) {}
 
 			//if there is a new pfp, update it, otherwise update everything else
-			if (url != null) {
-				await User.updateOne({
-					email: req.session.email,
-				}, {
-					$set: {
-						img: url,
-						name: req.body.name.trim(),
-						about: req.body.about,
-						email: userEmail,
-						password: req.body.password,
-						games: filters,
-					},
-				});
-			} else {
-				await User.updateOne({
-					email: req.session.email,
-				}, {
-					$set: {
-						name: req.body.name.trim(),
-						about: req.body.about,
-						email: userEmail,
-						password: req.body.password,
-						games: filters,
-					},
-				});
-			}
+			await User.updateOne({
+				email: req.session.email,
+			}, {
+				$set: {
+					img: url,
+					name: req.body.name.trim(),
+					about: req.body.about,
+					email: userEmail,
+					password: req.body.password,
+					games: filters,
+				},
+			});
+
 			//update the session to match the new name and email
 			req.session.email = userEmail;
 			req.session.name = req.body.name;
@@ -855,23 +810,7 @@ router.post(
 		let url =
 			"https://res.cloudinary.com/buddyup-images/image/upload/v1652458876/profile_ek8iwp.png";
 		if (req.file != undefined) {
-			let upload = await cloudinary.v2.uploader.upload(
-				"./public/images/" + req.file.filename,
-				function (error) {
-					if (error) {
-						res.send({
-							success: "false",
-							message: "Failed to upload profile picture",
-						});
-						return;
-					}
-				}
-			);
-			await fs.unlink(
-				"./public/images/" + req.file.filename,
-				function (err) {}
-			);
-			url = upload.secure_url;
+			url = await uploadImage("./public/images/" + req.file.filename, res, url);
 		}
 		let adminValue;
 		if (req.body.admin == "on") {
@@ -1000,6 +939,7 @@ router.post(
 			return;
 		}
 		try {
+			//get information of the user before they are changed
 			let oldUser = await User.findOne({
 				name: req.body.oldName,
 			});
@@ -1015,60 +955,12 @@ router.post(
 			let hasSameUsername = await User.findOne({
 				name: req.body.name,
 			});
-
+			//check to make sure email and name aren't already taken
 			if (
 				(hasSameEmail == null || noEmailChange) &&
 				(hasSameUsername == null || noNameChange)
 			) {
-				let url;
-				if (req.file != undefined) {
-					let upload = await cloudinary.v2.uploader.upload(
-						"./public/images/" + req.file.filename,
-						function (error) {
-							if (error) {
-								res.send({
-									success: false,
-									type: "name",
-									message: "Failed to upload profile picture",
-								});
-								return;
-							}
-						}
-					);
-					await fs.unlink(
-						"./public/images/" + req.file.filename,
-						function (err) {}
-					);
-					url = upload.secure_url;
-				}
-
-				let adminValue;
-				if (req.body.admin == "on") {
-					adminValue = true;
-					await AdminRequest.deleteOne({
-						email: oldUser.email,
-					});
-				} else {
-					if (oldUser.email != req.session.email) {
-						adminValue = false;
-					}
-				}
-				try {
-					await Timeline.updateMany({
-						author: oldUser.name,
-					}, {
-						$set: {
-							author: req.body.name.trim(),
-						},
-					});
-				} catch (error) {
-					//add log here
-				}
-				//check if the user has an admin request
-				let userRequest = await AdminRequest.findOne({
-					email: oldUser.email,
-				});
-
+				//first check if everything is not too long
 				if (req.body.name.length > 100) {
 					res.send({
 						success: false,
@@ -1093,34 +985,54 @@ router.post(
 					});
 					return;
 				}
-				if (url != null) {
-					await User.updateOne({
+
+				//if there is a new pfp, then upload it
+				let url = oldUser.img;
+
+				if (req.file != undefined) {
+					url = await uploadImage("./public/images/" + req.file.filename, res, url);
+				}
+
+				let adminValue;
+				if (req.body.admin == "on") {
+					adminValue = true;
+					await AdminRequest.deleteOne({
 						email: oldUser.email,
-					}, {
-						$set: {
-							img: url,
-							name: req.body.name.trim(),
-							about: req.body.about,
-							email: userEmail,
-							admin: adminValue,
-							promotion: userRequest != null ? true : false,
-							password: req.body.password,
-						},
 					});
 				} else {
-					await User.updateOne({
-						email: oldUser.email,
+					//double check to make sure they aren't demoting themselves
+					if (oldUser.email != req.session.email) {
+						adminValue = false;
+					}
+				}
+				//update their name for the timeline posts
+				try {
+					await Timeline.updateMany({
+						author: oldUser.name,
 					}, {
 						$set: {
-							name: req.body.name.trim(),
-							about: req.body.about,
-							email: userEmail,
-							admin: adminValue,
-							promotion: userRequest != null ? true : false,
-							password: req.body.password,
+							author: req.body.name.trim(),
 						},
 					});
-				}
+				} catch (error) {}
+				//check if the user has an admin request
+				let userRequest = await AdminRequest.findOne({
+					email: oldUser.email,
+				});
+
+				await User.updateOne({
+					email: oldUser.email,
+				}, {
+					$set: {
+						img: url,
+						name: req.body.name.trim(),
+						about: req.body.about,
+						email: userEmail,
+						admin: adminValue,
+						promotion: userRequest != null ? true : false,
+						password: req.body.password,
+					},
+				});
 				res.send({
 					success: true,
 				});
@@ -1149,6 +1061,35 @@ router.post(
 	}
 );
 
+/**
+ * Function for uploading images to cloudinary
+ * @param {*} path path for the file
+ * @param {*} res the response to send if it didn't work
+ * @param {*} url the url for the old image
+ * @returns url for the new image
+ */
+async function uploadImage(path, res, url) {
+	let upload = await cloudinary.v2.uploader.upload(
+		path,
+		function (error) {
+			if (error) {
+				res.send({
+					success: false,
+					type: "name",
+					message: "Failed to upload profile picture",
+				});
+				//if it didn't work, just return the old one
+				return url;
+			}
+		}
+	);
+	//delete the image locally when done being uploaded to the cloud
+	await fs.unlink(
+		path,
+		function (err) {}
+	);
+	return upload.secure_url;
+}
 /**
  * function for loading the user information for the edit profile modal
  */
@@ -1229,6 +1170,9 @@ var uploadPost = multer({
 	storage: storagePost,
 });
 
+/**
+ * path for creating a post. Allow multiple images to be uploaded. If you upload more then 4, it just won't do anything with them.
+ */
 router.post(
 	"/write",
 	uploadPost.array("post-image"),
