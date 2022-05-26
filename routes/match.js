@@ -6,11 +6,6 @@ const express = require("express");
 //socket.io
 var Server = require("../server");
 const io = Server.io;
-// require("socket.io")(3000, {
-// 	cors: {
-// 		origin: ["https://buddy-up-comp2800.herokuapp.com/"],
-// 	},
-// });
 
 //router
 const router = express.Router();

@@ -59,7 +59,7 @@ function createGameFilterDeleteButton(gameSpan, gameFilter) {
 
 // adds the game filter to be displayed
 function addGame(name) {
-	let gameFilter = name.toLowerCase().substring(0, 50);
+	let gameFilter = name.substring(0, 50);
 	gameFilters.push(gameFilter);
 
 	// add the game filter to be displayed
@@ -79,10 +79,10 @@ gameInput.addEventListener("keypress", function (e) {
 	var key = e.which || e.keyCode;
 
 	// if we press enter and don't have an empty string for our filter then try and add it
-	if (key == enterKey && gameInput.value != "") {
+	if (key == enterKey && gameInput.value.trim() != "") {
 		e.preventDefault();
 		// if we don't already have this game filter, then proceed
-		if (gameFilters.indexOf(gameInput.value.toLowerCase()) != -1) {
+		if (gameFilters.indexOf(gameInput.value.toLowerCase().trim()) != -1) {
 			return;
 		}
 
@@ -92,7 +92,7 @@ gameInput.addEventListener("keypress", function (e) {
 			return;
 		}
 
-		addGame(gameInput.value);
+		addGame(gameInput.value.toLowerCase().trim());
 		gameInput.value = "";
 	}
 });
@@ -119,11 +119,16 @@ document.getElementById("add-filter-button").addEventListener("click", function 
 		return;
 	}
 
-	if (gameInput.value === "") {
+	if (gameInput.value.toLowerCase().trim() === "") {
 		return;
 	}
 
-	addGame(gameInput.value);
+	// if we don't already have this game filter, then proceed
+	if (gameFilters.indexOf(gameInput.value.toLowerCase().trim()) != -1) {
+		return;
+	}
+
+	addGame(gameInput.value.toLowerCase().trim());
 	gameInput.value = "";
 });
 

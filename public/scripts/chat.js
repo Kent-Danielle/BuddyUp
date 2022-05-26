@@ -72,9 +72,7 @@ document
 		gameFiltersContainer.innerHTML = "";
 	});
 
-/**
- * Adds the current game as a filter once clicked on the add filter button
- */
+
 /**
  * Adds the current game as a filter once clicked on the add filter button
  */
@@ -93,7 +91,12 @@ document
 			return;
 		}
 
-		addGame(gameInput.value);
+		// if we don't already have this game filter, then proceed
+		if (gameFilters.indexOf(gameInput.value.toLowerCase().trim()) != -1) {
+			return;
+		}
+
+		addGame(gameInput.value.toLowerCase());
 		gameInput.value = "";
 	});
 

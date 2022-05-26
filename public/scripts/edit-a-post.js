@@ -8,7 +8,6 @@ document.getElementById("submit").addEventListener("click", async (e) => {
 	document.getElementById("post-box").classList.add("hidden");
 	document.getElementById("add-image").classList.add("hidden");
 	document.getElementById("buttons").classList.add("hidden");
-	// document.getElementById("loadingMsg").innerHTML = "loading...";
 	let form = document.getElementById("form-container");
 	let formData = new FormData(form);
 	formData.set(

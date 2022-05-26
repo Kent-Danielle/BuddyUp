@@ -1,6 +1,5 @@
 "use strict";
-//const modalText = document.getElementById("modalText");
-//const loggedInName = document.getElementById("name").innerText;
+
 
 // load the user's games onto their profile
 async function loadGames() {
@@ -14,8 +13,6 @@ async function loadGames() {
 
 	const gamesContainer = document.getElementById("games-container");
 
-	// console.log(data);
-	// console.log(data.games);
 	if (data != null && data.games != null) {
 		if (data.games.length > 0) {
 			gamesContainer.innerHTML = "";
@@ -101,7 +98,6 @@ createListener();
 if (document.getElementById("bio-text").innerHTML == "jeb_") {
 	let sound = new Audio("https://www.sndup.net/smzs/d");
 	sound.play();
-	// document.body.style.setProperty('background', 'rgb(0, 255, 0)')
 	document.body.style.background =
 		"linear-gradient(50deg, rgba(100, 100, 255) 0%, rgb(255, 100, 100) 50%, rgba(100, 255, 100) 100%)";
 	document.body.style.animation = "gradient 0.5s ease infinite";

@@ -144,11 +144,11 @@ requestFilterButton.addEventListener("change", (event) => {
 	}
 });
 
+createListener();
+
 /**
  * Function for collapsible table
  */
-createListener();
-
 function createListener() {
 	const expandBtn = document.querySelectorAll("#more-info");
 	for (let i = 0; i < expandBtn.length; i++) {
@@ -171,11 +171,11 @@ function createListener() {
 	}
 }
 
+createDeleteListener();
+
 /**
  * Function for delete button
  */
-createDeleteListener();
-
 function createDeleteListener() {
 	const modalText = document.getElementById("modalText");
 	const loggedInName = document.getElementById("name").innerText;
@@ -206,11 +206,11 @@ function createDeleteListener() {
 	});
 }
 
+createEditListener();
+
 /**
  * Function for edit button
  */
-createEditListener();
-
 function createEditListener() {
 	const loggedInName = document.getElementById("name").innerText;
 	let isAdminLabel = document.getElementById("isAdminLabel");
@@ -280,6 +280,11 @@ function createEditListener() {
 	});
 }
 
+/**
+ * Function that makes sure the email has valid characters and is in the proper format
+ * @param {The email string to be checked} mail 
+ * @returns true if the email is valid, false otherwise
+ */
 function ValidateEmail(mail) 
 {
  if (/^\w+([.-]?\w+)@\w+([.-]?\w+)(.\w{2,3})+$/.test(mail))
@@ -350,6 +355,9 @@ document
  */
 const textarea = document.querySelector("textarea");
 
+/**
+ * A listener for the text area to show how many characters are remaining that the user can enter
+ */
 textarea.addEventListener("input", ({
 	currentTarget: target
 }) => {

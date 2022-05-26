@@ -1,7 +1,6 @@
 "use strict";
 
-// used for the id of each filter
-let count = 0;
+
 
 // display the error message noting that you cannot add any more games for a few seconds
 let errorMessageTimer = null;
@@ -23,8 +22,6 @@ function createGameSpan(gameFilter) {
 		"d-inline-block",
 		"rounded-pill"
 	);
-	count++;
-	gameSpan.id = "gamefilter" + count;
 	gameSpan.innerText = gameFilter;
 	return gameSpan;
 }
@@ -32,7 +29,7 @@ function createGameSpan(gameFilter) {
 // helper function to display a message saying that the max amount of game filters has been reached
 function displayMaxGameFiltersMessage() {
 	document.getElementById("error-msg").innerText =
-		"You can only have a max of 10 games";
+		"You can only have a max of " + maxGames + " games";
 	errorMessageTimer = setTimeout(() => {
 		document.getElementById("error-msg").innerText = "";
 	}, 2000);
@@ -50,7 +47,6 @@ function createGameFilterDeleteButton(gameSpan, gameFilter) {
 			gameFilters.splice(index, 1);
 		}
 		gameSpan.remove();
-		count--;
 		document.getElementById("error-msg").innerText = "";
 	});
 	return deleteButton;
@@ -67,8 +63,8 @@ gameInput.addEventListener("keypress", function (e) {
 			return;
 		}
 
-		// only allow a max of 10 game filters
-		if (count >= maxGames) {
+		// set a maximum to game filters
+		if (gameFilters.length >= maxGames) {
 			displayMaxGameFiltersMessage();
 			return;
 		}
@@ -118,7 +114,9 @@ async function getUserData() {
 	return data;
 }
 
-// auto fill each game from the user as a filter
+/**
+ * auto fill each game from the user as a filter
+ */
 async function autoFillFilters() {
 	let data = await getUserData();
 	if (Array.isArray(data.games) && data.games.length) {

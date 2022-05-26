@@ -2,6 +2,9 @@
 
 const textarea = document.querySelector("textarea");
 
+/**
+ * This listener lets the user know how many characters they have left to enter in the text field.
+ */
 textarea.addEventListener("input", ({
 	currentTarget: target
 }) => {
@@ -26,13 +29,15 @@ document.getElementById("pfp").addEventListener("change", function () {
 		document.getElementById("pfp").files[0].name;
 });
 
-function ValidateEmail(mail) 
-{
- if (/^\w+([.-]?\w+)@\w+([.-]?\w+)(.\w{2,3})+$/.test(mail))
-  {
-    return (true)
-  }
-    return (false)
+
+/**
+ * This function makes sure that the email has valid characters and has a proper format.
+ * 
+ * @param {checks for valid email characters} mail 
+ * @returns true if valid, false otherwise
+ */
+function ValidateEmail(mail) {
+ 	return /^\w+([.-]?\w+)@\w+([.-]?\w+)(.\w{2,3})+$/.test(mail);
 }
 
 document.getElementById("submit").addEventListener("click", async (e) => {

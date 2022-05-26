@@ -1,5 +1,8 @@
 'use strict';
 
+/**
+ * Json setup for the tiny editor for the write-a-post feature
+ */
 tinymce.init({
     selector: '#tinytext',
     menu: {
