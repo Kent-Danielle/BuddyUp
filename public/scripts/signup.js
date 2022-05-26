@@ -26,12 +26,22 @@ document.getElementById("pfp").addEventListener("change", function () {
 		document.getElementById("pfp").files[0].name;
 });
 
+function ValidateEmail(mail) 
+{
+ if (/^\w+([.-]?\w+)@\w+([.-]?\w+)(.\w{2,3})+$/.test(mail))
+  {
+    return (true)
+  }
+    return (false)
+}
+
 document.getElementById("submit").addEventListener("click", async (e) => {
 	// Check if the email input is valid
 	e.preventDefault();
+	
 	let email = document.getElementById("email").value;
-	if ((email.indexOf("@") > -1) && (email.charAt(0) != "@") && (email.charAt(email.length - 1) != "@")) {
-
+	console.log(ValidateEmail(email));
+	if (ValidateEmail(email) == true) {
 		// If email input is valid then POST
 		let password = document.getElementById("password").value;
 		let confirm = document.getElementById("confirm-password").value;

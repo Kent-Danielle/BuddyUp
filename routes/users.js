@@ -102,6 +102,7 @@ router.get("/profile/:name", async function (req, res) {
 		}
 		let dateOptions = {
 			weekday: "long",
+			timeZone: "PST",
 			year: "numeric",
 			month: "long",
 			day: "numeric",
@@ -488,13 +489,13 @@ var upload = multer({
 });
 
 router.post("/createAccount", upload.single("pfp"), async function (req, res) {
-	let userEmail = req.body.email.toLowerCase();
+	let userEmail = req.body.email.toLowerCase().trim();
 	try {
 		let hasSameEmail = await User.findOne({
 			email: userEmail,
 		});
 		let hasSameUsername = await User.findOne({
-			name: req.body.name,
+			name: req.body.name.trim(),
 		});
 		if (hasSameEmail == null && hasSameUsername == null) {
 			let url =
@@ -543,7 +544,7 @@ router.post("/createAccount", upload.single("pfp"), async function (req, res) {
 				return;
 			}
 			const user = new User({
-				name: req.body.name,
+				name: req.body.name.trim(),
 				email: userEmail,
 				password: req.body.password,
 				about: req.body.about,
@@ -637,10 +638,11 @@ router.get("/info", async function (req, res) {
 // updates the users information after editing and then redirects them back to their profile page
 router.post("/edit/submit", upload.single("image"), async function (req, res) {
 	try {
-		let userEmail = req.body.email.toLowerCase();
+		let userEmail = req.body.email.toLowerCase().trim();
 		let filters = req.body.filters;
 		if (filters != " " && filters != "") {
 			filters = req.body.filters.split(",");
+			filters = shortingGame(filters);
 		} else {
 			filters = null;
 		}
@@ -724,7 +726,7 @@ router.post("/edit/submit", upload.single("image"), async function (req, res) {
 				}, {
 					$set: {
 						img: url,
-						name: req.body.name,
+						name: req.body.name.trim(),
 						about: req.body.about,
 						email: userEmail,
 						password: req.body.password,
@@ -736,7 +738,7 @@ router.post("/edit/submit", upload.single("image"), async function (req, res) {
 					email: req.session.email,
 				}, {
 					$set: {
-						name: req.body.name,
+						name: req.body.name.trim(),
 						about: req.body.about,
 						email: userEmail,
 						password: req.body.password,
@@ -771,6 +773,16 @@ router.post("/edit/submit", upload.single("image"), async function (req, res) {
 		});
 	}
 });
+
+function shortingGame(games) {
+	if (games != null && Array.isArray(games)) {
+		games.forEach((game) => {
+			game = game.substring(0, 50);
+		});
+	}
+	
+	return games;
+}
 
 module.exports = router;
 
@@ -864,7 +876,7 @@ router.post(
 	"/createAccountAdmin",
 	upload.single("pfp"),
 	async function (req, res) {
-		let userEmail = req.body.email.toLowerCase();
+		let userEmail = req.body.email.toLowerCase().trim();
 		if (
 			(await User.findOne({
 				email: req.session.email,
@@ -925,7 +937,7 @@ router.post(
 			return;
 		}
 		const user = new User({
-			name: req.body.name,
+			name: req.body.name.trim(),
 			email: userEmail,
 			password: req.body.password,
 			about: req.body.about,
@@ -1011,7 +1023,7 @@ router.post(
 	"/editAccountAdmin",
 	upload.single("pfp"),
 	async function (req, res) {
-		let userEmail = req.body.email.toLowerCase();
+		let userEmail = req.body.email.toLowerCase().trim();
 		if (
 			(await User.findOne({
 				email: req.session.email,
@@ -1079,7 +1091,7 @@ router.post(
 						author: oldUser.name,
 					}, {
 						$set: {
-							author: req.body.name,
+							author: req.body.name.trim(),
 						},
 					});
 				} catch (error) {
@@ -1120,7 +1132,7 @@ router.post(
 					}, {
 						$set: {
 							img: url,
-							name: req.body.name,
+							name: req.body.name.trim(),
 							about: req.body.about,
 							email: userEmail,
 							admin: adminValue,
@@ -1133,7 +1145,7 @@ router.post(
 						email: oldUser.email,
 					}, {
 						$set: {
-							name: req.body.name,
+							name: req.body.name.trim(),
 							about: req.body.about,
 							email: userEmail,
 							admin: adminValue,

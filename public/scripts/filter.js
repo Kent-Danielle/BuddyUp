@@ -61,9 +61,9 @@ gameInput.addEventListener("keypress", function (e) {
 	var key = e.which || e.keyCode;
 
 	// if we press enter and don't have an empty string for our filter then try and add it
-	if (key == enterKey && gameInput.value !== "") {
+	if (key == enterKey && gameInput.value.trim() !== "") {
 		// if we don't already have this game filter, then proceed
-		if (gameFilters.indexOf(gameInput.value.toLowerCase()) != -1) {
+		if (gameFilters.indexOf(gameInput.value.toLowerCase().trim()) != -1) {
 			return;
 		}
 
@@ -73,7 +73,7 @@ gameInput.addEventListener("keypress", function (e) {
 			return;
 		}
 
-		let gameFilter = gameInput.value;
+		let gameFilter = gameInput.value.trim();
 		gameFilters.push(gameFilter.toLowerCase());
 		gameInput.value = "";
 
@@ -91,7 +91,7 @@ gameInput.addEventListener("keypress", function (e) {
 
 // adds the game filter to be displayed
 function addGame(name) {
-	let gameFilter = name;
+	let gameFilter = name.toLowerCase().substring(0, 50);
 	gameFilters.push(gameFilter.toLowerCase());
 
 	// add the game filter to be displayed

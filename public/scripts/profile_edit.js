@@ -178,11 +178,20 @@ async function loadUserData() {
 }
 loadUserData();
 
+function ValidateEmail(mail) 
+{
+ if (/^\w+([.-]?\w+)@\w+([.-]?\w+)(.\w{2,3})+$/.test(mail))
+  {
+    return (true)
+  }
+    return (false)
+}
+
 //use the fetch api to update the user's profile
 document.getElementById("submit").addEventListener("click", function (e) {
 	// Check if the email input is valid
 	let email = document.getElementById("email").value;
-	if ((email.indexOf("@") > -1) && (email.charAt(0) != "@") && (email.charAt(email.length - 1) != "@")) {
+	if (ValidateEmail(email) == true) {
 		e.preventDefault();
 		// If email input is valid then POST
 		let password = document.getElementById("password").value;

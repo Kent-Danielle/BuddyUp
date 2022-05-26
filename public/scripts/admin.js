@@ -249,6 +249,7 @@ function createEditListener() {
 						passwordField.value = result.password;
 						bioField.value = result.about;
 						isAdmin.checked = result.admin;
+						document.getElementById("confirm-password").value = result.password;
 
 						isAdminLabel.innerText = isAdmin.checked ? "Demote to user" : "Promote to admin";
 
@@ -279,6 +280,15 @@ function createEditListener() {
 	});
 }
 
+function ValidateEmail(mail) 
+{
+ if (/^\w+([.-]?\w+)@\w+([.-]?\w+)(.\w{2,3})+$/.test(mail))
+  {
+    return (true)
+  }
+    return (false)
+}
+
 // changes the text for the promote an admin button based on wheither they have been demoted or promoted
 document.getElementById("isAdmin").addEventListener("click", function (e) {
 	isAdminLabel.innerText = isAdmin.checked ? "Demote to user" : "Promote to admin";
@@ -290,7 +300,7 @@ document
 		e.preventDefault();
 		// Check if the email input is valid
 		let email = document.getElementById("emailField").value;
-		if ((email.indexOf("@") > -1) && (email.charAt(0) != "@") && (email.charAt(email.length - 1) != "@")) {
+		if (ValidateEmail(email) == true) {
 
 			let password = document.getElementById("passwordField").value;
 			let confirm = document.getElementById("confirm-password").value;

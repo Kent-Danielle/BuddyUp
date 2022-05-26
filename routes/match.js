@@ -30,6 +30,16 @@ const chatUser = require("../models/chat-user.js");
 
 let name = null;
 
+function shortingGame(games) {
+	if (games != null && Array.isArray(games)) {
+		games.forEach((game) => {
+			game = game.substring(0, 50);
+		});
+	}
+	
+	return games;
+}
+
 /**
  * GET route for sending the chat html page
  */
@@ -314,7 +324,8 @@ io.on("connection", (socket) => {
 				status: "You're already logged in somewhere :C",
 			});
 		} else {
-			let filters = d.gameFilters; //the game filters that the users added
+
+			let filters = shortingGame(d.gameFilters); //the game filters that the users added
 
 			/*get and update the current user's document in MongoDB to signify that the user is:
 		1) Finding someone

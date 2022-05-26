@@ -2,7 +2,7 @@
 
 document.getElementById("submit").addEventListener("click", async (e) => {
 	e.preventDefault();
-	// document.getElementById("loadingMsg").innerHTML = "loading...";
+	document.getElementById("errorMsg").innerHTML = "";
 	replaceClass("form-container", "form-style", "on-load-form");
 	document.getElementById("title-box").classList.add("hidden");
 	document.getElementById("post-box").classList.add("hidden");
@@ -24,7 +24,6 @@ document.getElementById("submit").addEventListener("click", async (e) => {
 			return result.json();
 		})
 		.then(function (result) {
-			document.getElementById("errorMsg").innerHTML = "";
 			if (result.success == "true") {
 				window.location.replace("/user/profile");
 			} else {

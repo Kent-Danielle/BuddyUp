@@ -2,6 +2,7 @@
 
 document.getElementById("submit").addEventListener("click", async (e) => {
 	e.preventDefault();
+	document.getElementById("errorMsg").innerHTML = "";
 	replaceClass("form-container", "form-style", "on-load-form");
 	document.getElementById("title-box").classList.add("hidden");
 	document.getElementById("post-box").classList.add("hidden");

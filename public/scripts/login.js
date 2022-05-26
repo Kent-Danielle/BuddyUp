@@ -1,10 +1,19 @@
 'use strict';
 
+function ValidateEmail(mail) 
+{
+ if (/^\w+([.-]?\w+)@\w+([.-]?\w+)(.\w{2,3})+$/.test(mail))
+  {
+    return (true)
+  }
+    return (false)
+}
+
 document.getElementById("submit").addEventListener("click", (e) => {
 	e.preventDefault();
 	// Check if the email input is valid
 	let email = document.getElementById("email").value;
-	if ((email.indexOf("@") > -1) && (email.charAt(0) != "@") && (email.charAt(email.length - 1) != "@")) {
+	if (ValidateEmail(email) == true) {
 		// If email input is valid then POST
 		let form = document.getElementById("userForm");
 		let data = {
