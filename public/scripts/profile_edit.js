@@ -7,17 +7,17 @@ document.getElementById("edit-form").onkeypress = function (e) {
 	}
 };
 
-// display the error message noting that you cannot add any more games for a few seconds
+// Display the error message noting that you cannot add any more games for a few seconds
 let errorMessageTimer2 = null;
 
 const maxGames = 10;
 const enterKey = 13;
 const gameInput = document.getElementById("game-text");
 
-// list of games entered
+// List of games entered
 let gameFilters = [];
 
-// helper function to create a game filter span field to be displayed on the DOM
+// Helper function to create a game filter span field to be displayed on the DOM
 function createGameSpan(gameFilter) {
 	let gameSpan = document.createElement("span");
 	gameSpan.classList.add(
@@ -31,7 +31,7 @@ function createGameSpan(gameFilter) {
 	return gameSpan;
 }
 
-// helper function to display a message saying that the max amount of game filters has been reached
+// Helper function to display a message saying that the max amount of game filters has been reached
 function displayMaxGameFiltersMessage() {
 	document.getElementById("error-msg").innerText =
 		"You can only have a max of 10 games";
@@ -40,7 +40,7 @@ function displayMaxGameFiltersMessage() {
 	}, 2000);
 }
 
-// helper function to create a delete button for a game filter
+// Helper function to create a delete button for a game filter
 function createGameFilterDeleteButton(gameSpan, gameFilter) {
 	let deleteButton = document.createElement("button");
 	deleteButton.value = gameFilter;
@@ -57,36 +57,36 @@ function createGameFilterDeleteButton(gameSpan, gameFilter) {
 	return deleteButton;
 }
 
-// adds the game filter to be displayed
+// Adds the game filter to be displayed
 function addGame(name) {
 	let gameFilter = name.substring(0, 50);
 	gameFilters.push(gameFilter);
 
-	// add the game filter to be displayed
+	// Add the game filter to be displayed
 	let gameSpan = createGameSpan(gameFilter);
 
-	// add a delete button to the game filter
+	// Add a delete button to the game filter
 	let deleteButton = createGameFilterDeleteButton(gameSpan, gameFilter);
 	gameSpan.appendChild(deleteButton);
 
-	// add the game filter to the DOM
+	// Add the game filter to the DOM
 	const gameFiltersDiv = document.getElementById("gameFiltersContainer");
 	gameFiltersDiv.appendChild(gameSpan);
 }
 
-// adds a game filter with the text entered
+// Adds a game filter with the text entered
 gameInput.addEventListener("keypress", function (e) {
 	var key = e.which || e.keyCode;
 
-	// if we press enter and don't have an empty string for our filter then try and add it
+	// If we press enter and don't have an empty string for our filter then try and add it
 	if (key == enterKey && gameInput.value.trim() != "") {
 		e.preventDefault();
-		// if we don't already have this game filter, then proceed
+		// If we don't already have this game filter, then proceed
 		if (gameFilters.indexOf(gameInput.value.toLowerCase().trim()) != -1) {
 			return;
 		}
 
-		// only allow a max of 10 game filters
+		// Only allow a max of 10 game filters
 		if (gameFilters.length >= maxGames) {
 			displayMaxGameFiltersMessage();
 			return;
@@ -98,7 +98,7 @@ gameInput.addEventListener("keypress", function (e) {
 });
 
 /**
- * deletes all game filters once the delete-all-games button is clicked
+ * Deletes all game filters once the delete-all-games button is clicked
  */
 document.getElementById("delete-all-games").addEventListener("click", function (e) {
 	e.preventDefault();
@@ -113,7 +113,7 @@ document.getElementById("delete-all-games").addEventListener("click", function (
 document.getElementById("add-filter-button").addEventListener("click", function (e) {
 	e.preventDefault();
 
-	// only allow a max of 10 game filters
+	// Only allow a max of 10 game filters
 	if (gameFilters.length >= maxGames) {
 		displayMaxGameFiltersMessage();
 		return;
@@ -123,7 +123,7 @@ document.getElementById("add-filter-button").addEventListener("click", function 
 		return;
 	}
 
-	// if we don't already have this game filter, then proceed
+	// If we don't already have this game filter, then proceed
 	if (gameFilters.indexOf(gameInput.value.toLowerCase().trim()) != -1) {
 		return;
 	}
@@ -152,7 +152,7 @@ textarea.addEventListener("input", ({
 		maxLength - currentLength + " characters left";
 });
 
-// gets the user's information from mongodb on the server
+// Gets the user's information from mongodb on the server
 function getUserData() {
 	let data = fetch("/user/info")
 		.then(function (response) {
@@ -164,18 +164,18 @@ function getUserData() {
 	return data;
 }
 
-// loads the user's data into the edit fields by default
+// Loads the user's data into the edit fields by default
 async function loadUserData() {
 	let userInfo = await getUserData();
 
-	// add personal information
+	// Add personal information
 	document.getElementById("name").value = userInfo.name;
 	document.getElementById("email").setAttribute("value", userInfo.email);
 	document.getElementById("about").innerText = userInfo.about;
 	document.getElementById("password").value = userInfo.password;
 	document.getElementById("confirm-password").value = userInfo.password;
 
-	// add game filters
+	// Add game filters
 	if (userInfo.games != null) {
 		userInfo.games.forEach((game) => {
 			addGame(game);
@@ -193,7 +193,7 @@ function ValidateEmail(mail)
     return (false)
 }
 
-//use the fetch api to update the user's profile
+// Use the fetch api to update the user's profile
 document.getElementById("submit").addEventListener("click", function (e) {
 	// Check if the email input is valid
 	let email = document.getElementById("email").value;

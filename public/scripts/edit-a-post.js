@@ -1,5 +1,8 @@
 "use strict";
 
+/**
+ * Function to edit post when they submit.
+ */
 document.getElementById("submit").addEventListener("click", async (e) => {
 	e.preventDefault();
 	document.getElementById("errorMsg").innerHTML = "";
@@ -18,9 +21,9 @@ document.getElementById("submit").addEventListener("click", async (e) => {
 	);
 	formData.set("id", document.getElementById("postID").innerHTML);
 	fetch("/user/editPost", {
-		method: "POST",
-		body: formData,
-	})
+			method: "POST",
+			body: formData,
+		})
 		.then(function (result) {
 			return result.json();
 		})
@@ -56,16 +59,21 @@ document.getElementById("submit").addEventListener("click", async (e) => {
 		});
 });
 
+/**
+ * Function to cancel the edit post to redirect back to profile page.
+ */
 document.getElementById("cancelBtn").addEventListener("click", (e) => {
 	e.preventDefault();
 	window.location.replace("/user/profile");
 });
 
-document
-	.getElementById("file-container")
-	.addEventListener("click", function () {
-		document.getElementById("image").click();
-	});
+/**
+ * Function to upload an image.
+ */
+document.getElementById("file-container").addEventListener("click", function () {
+	document.getElementById("image").click();
+});
+
 
 document.getElementById("image").addEventListener("change", function () {
 	let count = document.getElementById("image").files.length;
@@ -78,13 +86,13 @@ window.onload = function () {
 		id: document.getElementById("postID").innerHTML,
 	};
 	fetch("/user/getPost", {
-		method: "POST",
-		headers: {
-			Accept: "application/json",
-			"Content-Type": "application/json",
-		},
-		body: JSON.stringify(data),
-	})
+			method: "POST",
+			headers: {
+				Accept: "application/json",
+				"Content-Type": "application/json",
+			},
+			body: JSON.stringify(data),
+		})
 		.then((result) => {
 			return result.json();
 		})

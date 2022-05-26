@@ -1,5 +1,6 @@
 "use strict";
 
+// A function to send the story post to the server side.
 document.getElementById("submit").addEventListener("click", async (e) => {
 	e.preventDefault();
 	document.getElementById("errorMsg").innerHTML = "";

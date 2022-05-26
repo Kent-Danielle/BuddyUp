@@ -1090,8 +1090,9 @@ async function uploadImage(path, res, url) {
 	);
 	return upload.secure_url;
 }
+ 
 /**
- * function for loading the user information for the edit profile modal
+ * Function for loading the user information for the edit profile modal
  */
 router.post(
 	"/loadEditModal",
@@ -1137,6 +1138,7 @@ router.post(
 		}
 	}
 );
+
 /**
  * redirect the user to the write a post page
  */
@@ -1171,7 +1173,7 @@ var uploadPost = multer({
 });
 
 /**
- * path for creating a post. Allow multiple images to be uploaded. If you upload more then 4, it just won't do anything with them.
+ * Path for creating a post. Allow multiple images to be uploaded. If you upload more then 4, it just won't do anything with them.
  */
 router.post(
 	"/write",
@@ -1243,7 +1245,7 @@ router.post(
 );
 
 /**
- * route for deleting a post.
+ * Route for deleting a post.
  */
 router.post("/deletePost", async function (req, res) {
 	if (!req.session.loggedIn) {
@@ -1262,7 +1264,7 @@ router.post("/deletePost", async function (req, res) {
 });
 
 /**
- * route for editing a post. takes the id and saves it in the html so it can be accessed whenever
+ * Route for editing a post. takes the id and saves it in the html so it can be accessed whenever
  */
 router.get("/editPost/:id", async function (req, res) {
 	var postID = req.params["id"];

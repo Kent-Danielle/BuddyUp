@@ -1,5 +1,11 @@
 'use strict';
 
+/**
+ * This function makes sure that the email has valid characters and has a proper format.
+ * 
+ * @param {checks for valid email characters} mail 
+ * @returns true if valid, false otherwise
+ */
 function ValidateEmail(mail) 
 {
  if (/^\w+([.-]?\w+)@\w+([.-]?\w+)(.\w{2,3})+$/.test(mail))
@@ -9,6 +15,9 @@ function ValidateEmail(mail)
     return (false)
 }
 
+/**
+ * Submit the 
+ */
 document.getElementById("submit").addEventListener("click", (e) => {
 	e.preventDefault();
 	// Check if the email input is valid

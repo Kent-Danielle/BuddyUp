@@ -1,16 +1,16 @@
 "use strict";
 
-// display the error message noting that you cannot add any more games for a few seconds
+// Display the error message noting that you cannot add any more games for a few seconds
 let errorMessageTimer = null;
 
 const maxGames = 10;
 const enterKey = 13;
 const gameInput = document.getElementById("game-text");
 
-// list of games entered
+// List of games entered
 let gameFilters = [];
 
-// helper function to create a game filter span field to be displayed on the DOM
+// Helper function to create a game filter span field to be displayed on the DOM
 function createGameSpan(gameFilter) {
 	let gameSpan = document.createElement("span");
 	gameSpan.classList.add(
@@ -24,7 +24,7 @@ function createGameSpan(gameFilter) {
 	return gameSpan;
 }
 
-// helper function to display a message saying that the max amount of game filters has been reached
+// Helper function to display a message saying that the max amount of game filters has been reached
 function displayMaxGameFiltersMessage() {
 	document.getElementById("error-msg").innerText =
 		"You can only have a max of " + maxGames + " games";
@@ -33,7 +33,7 @@ function displayMaxGameFiltersMessage() {
 	}, 2000);
 }
 
-// helper function to create a delete button for a game filter
+// Helper function to create a delete button for a game filter
 function createGameFilterDeleteButton(gameSpan, gameFilter) {
 	let deleteButton = document.createElement("button");
 	deleteButton.value = gameFilter;
@@ -50,18 +50,18 @@ function createGameFilterDeleteButton(gameSpan, gameFilter) {
 	return deleteButton;
 }
 
-// adds a game
+// Adds a game
 gameInput.addEventListener("keypress", function (e) {
 	var key = e.which || e.keyCode;
 
-	// if we press enter and don't have an empty string for our filter then try and add it
+	// If we press enter and don't have an empty string for our filter then try and add it
 	if (key == enterKey && gameInput.value.trim() !== "") {
-		// if we don't already have this game filter, then proceed
+		// If we don't already have this game filter, then proceed
 		if (gameFilters.indexOf(gameInput.value.toLowerCase().trim()) != -1) {
 			return;
 		}
 
-		// set a maximum to game filters
+		// Set a maximum to game filters
 		if (gameFilters.length >= maxGames) {
 			displayMaxGameFiltersMessage();
 			return;
@@ -71,36 +71,36 @@ gameInput.addEventListener("keypress", function (e) {
 		gameFilters.push(gameFilter.toLowerCase());
 		gameInput.value = "";
 
-		// add the game filter to be displayed
+		// Add the game filter to be displayed
 		let gameSpan = createGameSpan(gameFilter);
 
-		// add a delete button to the game filter
+		// Add a delete button to the game filter
 		let deleteButton = createGameFilterDeleteButton(gameSpan, gameFilter);
 		gameSpan.appendChild(deleteButton);
 
-		// add the game filter to the DOM
+		// Add the game filter to the DOM
 		document.getElementById("gameFiltersContainer").appendChild(gameSpan);
 	}
 });
 
-// adds the game filter to be displayed
+// Adds the game filter to be displayed
 function addGame(name) {
 	let gameFilter = name.toLowerCase().substring(0, 50);
 	gameFilters.push(gameFilter.toLowerCase());
 
-	// add the game filter to be displayed
+	// Add the game filter to be displayed
 	let gameSpan = createGameSpan(gameFilter);
 
-	// add a delete button to the game filter
+	// Add a delete button to the game filter
 	let deleteButton = createGameFilterDeleteButton(gameSpan, gameFilter);
 	gameSpan.appendChild(deleteButton);
 
-	// add the game filter to the DOM
+	// Add the game filter to the DOM
 	const gameFiltersDiv = document.getElementById("gameFiltersContainer");
 	gameFiltersDiv.appendChild(gameSpan);
 }
 
-// get the user's data from the server
+// Get the user's data from the server
 async function getUserData() {
 	let data = fetch("/user/info")
 		.then(function (response) {
@@ -113,7 +113,7 @@ async function getUserData() {
 }
 
 /**
- * auto fill each game from the user as a filter
+ * Auto fill each game from the user as a filter
  */
 async function autoFillFilters() {
 	let data = await getUserData();

@@ -1,7 +1,6 @@
 'use strict';
 
 let nestedTable = document.getElementById("nested");
-
 const searchButton = document.getElementById("search-button");
 const search = document.getElementById("search");
 const adminFilterButton = document.getElementById("adminFilter");
