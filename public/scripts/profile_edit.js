@@ -212,7 +212,7 @@ document.getElementById("submit").addEventListener("click", function (e) {
 				.then(function (result) {
 					document.getElementById("loading").innerHTML = "";
 					if (result.success) {
-						window.location.replace("/user/profile/self");
+						window.location.replace("/user/profile");
 					} else {
 						console.log("did not successfully update profile");
 						let inputs = document.querySelectorAll(".inputFields");

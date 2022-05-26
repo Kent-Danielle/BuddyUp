@@ -13,6 +13,7 @@ const requestFilterButton = document.getElementById("requestFilter");
 searchButton.addEventListener("click", (event) => {
 	let data = {
 		input: search.value,
+		type: "search",
 	};
 	let result = fetch("/user/adminSearch", {
 			method: "POST",
@@ -43,8 +44,9 @@ adminFilterButton.addEventListener("change", (event) => {
 		requestFilterButton.checked = false;
 		let data = {
 			input: adminFilterButton.checked,
+			type: "admin",
 		};
-		let result = fetch("/user/adminFilter", {
+		let result = fetch("/user/adminSearch", {
 				method: "POST",
 				headers: {
 					Accept: "application/json",
@@ -66,6 +68,7 @@ adminFilterButton.addEventListener("change", (event) => {
 	} else {
 		let data = {
 			input: "",
+			type: "search",
 		};
 		let result = fetch("/user/adminSearch", {
 				method: "POST",
@@ -98,8 +101,9 @@ requestFilterButton.addEventListener("change", (event) => {
 		adminFilterButton.checked = false;
 		let data = {
 			input: requestFilterButton.checked,
+			type: "request",
 		};
-		let result = fetch("/user/promotionFilter", {
+		let result = fetch("/user/adminSearch", {
 				method: "POST",
 				headers: {
 					Accept: "application/json",
@@ -121,6 +125,7 @@ requestFilterButton.addEventListener("change", (event) => {
 	} else {
 		let data = {
 			input: "",
+			type: "search"
 		};
 		let result = fetch("/user/adminSearch", {
 				method: "POST",

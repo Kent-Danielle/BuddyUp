@@ -19,7 +19,7 @@ const {
 	JSDOM
 } = require("jsdom");
 
-//get all users
+//the default path for /users: if your logged in to to profile otherwise login
 router.get("/", function (req, res) {
 	if (req.session.loggedIn) {
 		res.redirect("/user/profile");
@@ -28,21 +28,18 @@ router.get("/", function (req, res) {
 	}
 });
 
+//get the profile of the current logged in user
 router.get("/profile/", async function (req, res) {
-	res.redirect("/user/profile/self");
-});
-
-router.get("/profile/:name", async function (req, res) {
-	var profileName = req.params["name"];
 	if (!req.session.loggedIn) {
 		res.redirect("/user/login");
 	} else {
-		let currentUser;
+		let currentUser = null;
 		let isAdmin;
 		try {
 			currentUser = await User.findOne({
 				email: req.session.email,
 			});
+			//check if the user is an admin
 			isAdmin = await User.findOne({
 				email: req.session.email,
 				admin: true,
@@ -50,31 +47,16 @@ router.get("/profile/:name", async function (req, res) {
 		} catch (error) {
 			return;
 		}
-		if (profileName == "self") {
-			if (isAdmin) {
-				res.redirect("/user/admin");
-				return;
-			}
-		} else {
-			try {
-				if (isAdmin) {
-					currentUser = await User.findOne({
-						name: profileName,
-					});
-				} else {
-					res.redirect("/user/profile/self");
-					return;
-				}
-			} catch (error) {
-				return;
-			}
+		//redirect to admin panel if admin
+		if (isAdmin) {
+			res.redirect("/user/admin");
+			return;
 		}
-
+		//update the users chatroom information, so they don't get matched with anyone
 		await ChatUser.updateOne({
 			name: req.session.name
 		}, {
 			$set: {
-				last_match: null,
 				finding: false,
 				matched: false
 			}
@@ -84,6 +66,7 @@ router.get("/profile/:name", async function (req, res) {
 			currentUser.about = "";
 		}
 
+		//set the profile information before sending to client
 		let profile = fs.readFileSync("./public/html/profile.html", "utf-8");
 		let profileDOM = new JSDOM(profile);
 		profileDOM.window.document.getElementById("username").innerHTML =
@@ -110,6 +93,7 @@ router.get("/profile/:name", async function (req, res) {
 			minute: "numeric",
 		};
 		let stories = "";
+		//build the HTML for each post the user has
 		for (let i = allPosts.length - 1; i >= 0; i--) {
 			stories +=
 				'<div class="story rounded-3 py-1 px-3 my-3">' +
@@ -159,7 +143,7 @@ router.get("/profile/:name", async function (req, res) {
 		profileDOM.window.document.getElementById(
 			"lg-stories-container"
 		).innerHTML += stories;
-		//profileDOM.window.document.getElementById("stories-container").innerHTML += stories;
+		//dont allow the user to click back to get here
 		res.header(
 			"Cache-Control",
 			"no-cache, private, no-store, must-revalidate, max-stale=0, post-check=0, pre-check=0"
@@ -184,6 +168,7 @@ router.get("/login", function (req, res) {
 	}
 });
 
+//function to build the list of users for the admin panel.
 function tableHTMLBuilder(result, i) {
 	var table =
 		"<tr>" +
@@ -252,6 +237,9 @@ function tableHTMLBuilder(result, i) {
 	return table;
 }
 
+/**
+ * Code for loading the admin panel
+ */
 router.get("/admin", function (req, res) {
 	if (req.session.loggedIn) {
 		try {
@@ -259,6 +247,7 @@ router.get("/admin", function (req, res) {
 				email: req.session.email,
 				admin: true,
 			}).then((isAdmin) => {
+				//if an admin with the session email exists, then send the page
 				let adminPage = fs.readFileSync("./public/html/admin.html", "utf-8");
 				let adminPageDOM = new JSDOM(adminPage);
 				if (isAdmin == null) {
@@ -269,6 +258,7 @@ router.get("/admin", function (req, res) {
 							adminPageDOM.window.document.getElementById("error").innerHTML =
 								"Error finding all users";
 						} else {
+							//set data for admin page
 							adminPageDOM.window.document.getElementById("name").innerHTML =
 								req.session.name;
 							const tableDiv =
@@ -294,9 +284,10 @@ router.get("/admin", function (req, res) {
 });
 
 /**
- * Function for searching in the dashboard
+ * Function for searching in the dashboard and using the filters
  */
 router.post("/adminSearch", async function (req, res) {
+	//first check if they are admin
 	if (
 		(await User.findOne({
 			email: req.session.email,
@@ -307,10 +298,19 @@ router.post("/adminSearch", async function (req, res) {
 	}
 	res.setHeader("Content-Type", "application/json");
 	let searchOptions = {};
-	if (req.body.input != null || req.body.input != "") {
-		searchOptions.name = new RegExp(req.body.input, "i");
+	if (req.body.input != null) {
+		//check if its a search or a filter
+		if (req.body.type == "search") {
+			//RegExp is so we can get parts of the names
+			searchOptions.name = new RegExp(req.body.input, "i");
+		} else if (req.body.type == "admin") {
+			searchOptions.admin = req.body.input;
+		} else if (req.body.type == "request") {
+			searchOptions.promotion = req.body.input;
+		}
 	}
 	try {
+		//get all the users and put them in a table
 		await User.find(searchOptions, function (err, result) {
 			if (err) {
 				res.send("Error finding users!");
@@ -332,86 +332,13 @@ router.post("/adminSearch", async function (req, res) {
 });
 
 /**
- * Function for filtering admins in the dashboard
+ * Function for logging in
  */
-router.post("/adminFilter", async function (req, res) {
-	if (
-		(await User.findOne({
-			email: req.session.email,
-			admin: true,
-		})) == null
-	) {
-		return;
-	}
-	res.setHeader("Content-Type", "application/json");
-	let searchOptions = {};
-	if (req.body.input != null) {
-		searchOptions.admin = req.body.input;
-	}
-	try {
-		await User.find(searchOptions, function (err, result) {
-			if (err) {
-				res.send("Error finding users!");
-			} else {
-				let tableDiv = "";
-				for (let i = 0; i < result.length; i++) {
-					tableDiv += tableHTMLBuilder(result[i], i);
-				}
-				if (tableDiv == "") {
-					res.send("No results!");
-				} else {
-					res.send(tableDiv);
-				}
-			}
-		});
-	} catch (error) {
-		return;
-	}
-});
-
-/**
- * Function for filtering admin candidates in the dashboard
- */
-router.post("/promotionFilter", async function (req, res) {
-	if (
-		(await User.findOne({
-			email: req.session.email,
-			admin: true,
-		})) == null
-	) {
-		return;
-	}
-	res.setHeader("Content-Type", "application/json");
-	let searchOptions = {};
-	if (req.body.input != null) {
-		searchOptions.promotion = req.body.input;
-	}
-	try {
-		await User.find(searchOptions, function (err, result) {
-			if (err) {
-				res.send("Error finding users!");
-			} else {
-				let tableDiv = "";
-				for (let i = 0; i < result.length; i++) {
-					tableDiv += tableHTMLBuilder(result[i], i);
-				}
-				if (tableDiv == "") {
-					res.send("No results!");
-				} else {
-					res.send(tableDiv);
-				}
-			}
-		});
-	} catch (error) {
-		return;
-	}
-});
-
-
 router.post("/login", function (req, res) {
 	let currentUser;
 	let userEmail = req.body.email.toLowerCase();
 	try {
+		//first find an account with the users email
 		currentUser = User.findOne({
 			email: userEmail,
 		});
@@ -423,7 +350,9 @@ router.post("/login", function (req, res) {
 					message: "Account not found",
 				});
 			} else {
+				//next, check if thier passwords match
 				if (result.password == req.body.password) {
+					//update the session information
 					req.session.loggedIn = true;
 					req.session.email = result.email;
 					req.session.name = result.name;
@@ -449,7 +378,9 @@ router.post("/login", function (req, res) {
 	}
 });
 
-//get all users
+/**
+ * get the login page, but redirect if already logged in
+ */
 router.get("/login", function (req, res) {
 	if (req.session.loggedIn == true) {
 		res.redirect("/user/profile");
@@ -459,7 +390,9 @@ router.get("/login", function (req, res) {
 	}
 });
 
-//new user route
+/**
+ * get the register page, but redirect to profile if already logged in
+ */
 router.get("/register", function (req, res) {
 	if (req.session.loggedIn == true) {
 		res.redirect("/user/profile");
@@ -470,11 +403,11 @@ router.get("/register", function (req, res) {
 });
 
 var multer = require("multer");
-const {
-	findOne
-} = require("../models/user");
 const user = require("../models/user");
 
+/**
+ * set up the multer for the profile picture upload system
+ */
 var storage = multer.diskStorage({
 	destination: (req, file, cb) => {
 		cb(null, "./public/images/");
@@ -488,9 +421,14 @@ var upload = multer({
 	storage: storage,
 });
 
+/**
+ * Creates an account. Takes in a single image as well for the profile picture.
+ */
 router.post("/createAccount", upload.single("pfp"), async function (req, res) {
+	//email is lowercased and trimed to prevent errors
 	let userEmail = req.body.email.toLowerCase().trim();
 	try {
+		//check the database for the email and name to see if they are already taken
 		let hasSameEmail = await User.findOne({
 			email: userEmail,
 		});
@@ -498,9 +436,11 @@ router.post("/createAccount", upload.single("pfp"), async function (req, res) {
 			name: req.body.name.trim(),
 		});
 		if (hasSameEmail == null && hasSameUsername == null) {
+			//set the default image to our default pfp in case the user doesn't set their own.
 			let url =
 				"https://res.cloudinary.com/buddyup-images/image/upload/v1652458876/profile_ek8iwp.png";
 			if (req.file != undefined) {
+				//upload the profile picture to cloudinary
 				let upload = await cloudinary.v2.uploader.upload(
 					"./public/images/" + req.file.filename,
 					function (error) {
@@ -513,12 +453,14 @@ router.post("/createAccount", upload.single("pfp"), async function (req, res) {
 						}
 					}
 				);
-				await fs.unlink(
+				//since we are done uploading the image we can delete the local version of it
+				fs.unlink(
 					"./public/images/" + req.file.filename,
 					function (err) {}
 				);
 				url = upload.secure_url;
 			}
+			//make sure all the fields are not to long.
 			if (req.body.name.length > 100) {
 				res.send({
 					success: "false",
@@ -553,6 +495,7 @@ router.post("/createAccount", upload.single("pfp"), async function (req, res) {
 				promotion: false,
 				img: url,
 			});
+			//upload the new user to mongoDB
 			const newUser = await user.save();
 			res.send({
 				success: "true",
@@ -583,12 +526,16 @@ router.post("/createAccount", upload.single("pfp"), async function (req, res) {
 	}
 });
 
+/**
+ * Route for loggin out the user
+ */
 router.get("/logout", async function (req, res) {
 	if (req.session) {
+
 		let user = await ChatUser.findOne({
 			name: req.session.name
 		});
-
+		//if the user is active in the chatroom, then delete them from the online users collection
 		if (user != null) {
 			if (!user.finding && !user.matched) {
 				await ChatUser.deleteMany({
@@ -596,20 +543,21 @@ router.get("/logout", async function (req, res) {
 				});
 			}
 		}
-
+		//destroy the current session when logged out
 		req.session.destroy(function (error) {
 			if (error) {
-				res.status(400).send("Unable to log out");
+				res.send("Unable to log out");
 			} else {
 				// session deleted, redirect to home
-
 				res.redirect("/");
 			}
 		});
 	}
 });
 
-// redirects the user to the edit profile page
+/**
+ * redirects the user to the edit profile page
+ */
 router.get("/edit", function (req, res) {
 	if (req.session.loggedIn == true) {
 		let profileEdit = fs.readFileSync("./public/html/profile_edit.html");
@@ -620,22 +568,27 @@ router.get("/edit", function (req, res) {
 		res.redirect("/user/login");
 	}
 });
-
-// sends the logged in user's information over to the client side
+/**
+ * sends the logged in user's information over to the client side
+ */
 router.get("/info", async function (req, res) {
-	try {
-		let currentUser = await User.findOne({
-			email: req.session.email,
-		});
-		res.send(currentUser);
-	} catch (error) {
-		return;
+	if (req.session.loggedIn) {
+		try {
+			let currentUser = await User.findOne({
+				email: req.session.email,
+			});
+			res.send(currentUser);
+		} catch (error) {
+			return;
+		}
 	}
 });
 
 
-
-// updates the users information after editing and then redirects them back to their profile page
+/**
+ * updates the users information after editing and then redirects them back to their profile page
+ * takes a single image in case they changed thier pfp
+ */
 router.post("/edit/submit", upload.single("image"), async function (req, res) {
 	try {
 		let userEmail = req.body.email.toLowerCase().trim();
@@ -647,6 +600,7 @@ router.post("/edit/submit", upload.single("image"), async function (req, res) {
 			filters = null;
 		}
 
+		//checks if they changed thier email or username
 		let noEmailChange = userEmail === req.session.email;
 
 		let hasSameEmail = await User.findOne({
@@ -663,6 +617,7 @@ router.post("/edit/submit", upload.single("image"), async function (req, res) {
 			(hasSameEmail == null || noEmailChange) &&
 			(hasSameUsername == null || noNameChange)
 		) {
+			//check if their name email and bio are not to long
 			if (req.body.name.length > 100) {
 				res.send({
 					success: false,
@@ -689,6 +644,7 @@ router.post("/edit/submit", upload.single("image"), async function (req, res) {
 			}
 			let url;
 			if (req.file != undefined) {
+				//if they have a new pfp, upload it to cloudinary
 				let upload = await cloudinary.v2.uploader.upload(
 					"./public/images/" + req.file.filename,
 					function (error) {
@@ -701,13 +657,15 @@ router.post("/edit/submit", upload.single("image"), async function (req, res) {
 						}
 					}
 				);
-				await fs.unlink(
+				//delete the old local image when it is done uploading
+				fs.unlink(
 					"./public/images/" + req.file.filename,
 					function (err) {}
 				);
 				url = upload.secure_url;
 			}
 
+			//update the posts the user made to thier new name
 			try {
 				await Timeline.updateMany({
 					author: req.session.name,
@@ -716,10 +674,9 @@ router.post("/edit/submit", upload.single("image"), async function (req, res) {
 						author: req.body.name,
 					},
 				});
-			} catch (error) {
-				//add log here
-			}
+			} catch (error) {}
 
+			//if there is a new pfp, update it, otherwise update everything else
 			if (url != null) {
 				await User.updateOne({
 					email: req.session.email,
@@ -746,12 +703,14 @@ router.post("/edit/submit", upload.single("image"), async function (req, res) {
 					},
 				});
 			}
+			//update the session to match the new name and email
 			req.session.email = userEmail;
 			req.session.name = req.body.name;
 			res.send({
 				success: true,
 			});
 		} else {
+			//checks if email and username is already taken
 			if (hasSameEmail != null && !noEmailChange) {
 				res.send({
 					success: false,
@@ -774,32 +733,39 @@ router.post("/edit/submit", upload.single("image"), async function (req, res) {
 	}
 });
 
+/**
+ * function to trim the games and get rid of empty filters
+ */
 function shortingGame(games) {
+	let newGames = [];
 	if (games != null && Array.isArray(games)) {
 		games.forEach((game) => {
-			game = game.substring(0, 50);
+			game = game.substring(0, 50).trim();
+			if (game != null && game != '') {
+				newGames.push(game);
+			}
 		});
 	}
-	
-	return games;
+	return newGames;
 }
 
-module.exports = router;
-
+/**
+ * Route for submitting an admin request
+ */
 router.post("/adminPromotion", async function (req, res) {
 	const adminReq = new AdminRequest({
 		name: req.body.username,
 		email: req.body.email,
 		reason: req.body.reason,
 	});
-	if(req.body.reason == null || req.body.reason.trim() == ""){
+	if (req.body.reason == null || req.body.reason.trim() == "") {
 		res.send({
 			success: "false",
 			type: "reason",
 			reason: "Reason can't be blank"
 		});
 		return;
-	} else if (req.body.reason.length > 5000){
+	} else if (req.body.reason.length > 5000) {
 		res.send({
 			success: "false",
 			type: "reason",
@@ -808,6 +774,7 @@ router.post("/adminPromotion", async function (req, res) {
 		return;
 	}
 	try {
+		//check to see if the email and username match before request is submitted
 		let hasSameEmail = await User.findOne({
 			email: req.body.email,
 		});
@@ -1017,7 +984,7 @@ router.get("/delete/:name", async function (req, res) {
 });
 
 /**
- * Function for creating a new user from the admin dashboard
+ * Function for editing users from the admin dashboard
  */
 router.post(
 	"/editAccountAdmin",
@@ -1182,9 +1149,11 @@ router.post(
 	}
 );
 
+/**
+ * function for loading the user information for the edit profile modal
+ */
 router.post(
 	"/loadEditModal",
-	upload.single("image"),
 	async function (req, res) {
 		if (
 			(await User.findOne({
@@ -1227,6 +1196,9 @@ router.post(
 		}
 	}
 );
+/**
+ * redirect the user to the write a post page
+ */
 router.get("/write", async function (req, res) {
 	if (!req.session.loggedIn) {
 		res.redirect("/user/login");
@@ -1236,6 +1208,9 @@ router.get("/write", async function (req, res) {
 	}
 });
 
+/**
+ * set up multer for the create a post page, allowing multiple images
+ */
 var storagePost = multer.diskStorage({
 	destination: (req, file, cb) => {
 		cb(null, "./public/images/");
@@ -1259,6 +1234,7 @@ router.post(
 	uploadPost.array("post-image"),
 	async function (req, res) {
 		let upload = [];
+		//check if the post is too long
 		if (req.body.title.length > 200) {
 			res.send({
 				success: "false",
@@ -1279,13 +1255,15 @@ router.post(
 			try {
 				for (let i = 0; i < req.files.length; i++) {
 					if (i < 4) {
+						//if there are 4 or less images, upload each image
 						let image = await cloudinary.v2.uploader.upload(
 							"./public/images/" + req.files[i].filename,
 							function (error) {}
 						);
 						upload[i] = image.secure_url;
 					}
-					await fs.unlink(
+					//delete local images when done uploading
+					fs.unlink(
 						"./public/images/" + req.files[i].filename,
 						function (err) {}
 					);
@@ -1320,6 +1298,9 @@ router.post(
 	}
 );
 
+/**
+ * route for deleting a post.
+ */
 router.post("/deletePost", async function (req, res) {
 	if (!req.session.loggedIn) {
 		res.redirect("/user/login");
@@ -1336,6 +1317,9 @@ router.post("/deletePost", async function (req, res) {
 	}
 });
 
+/**
+ * route for editing a post. takes the id and saves it in the html so it can be accessed whenever
+ */
 router.get("/editPost/:id", async function (req, res) {
 	var postID = req.params["id"];
 	if (!req.session.loggedIn) {
@@ -1355,6 +1339,9 @@ router.get("/editPost/:id", async function (req, res) {
 	}
 });
 
+/**
+ * get a post to load it to the edit page
+ */
 router.post("/getPost", async function (req, res) {
 	if (!req.session.loggedIn) {
 		res.redirect("/user/login");
@@ -1368,6 +1355,9 @@ router.post("/getPost", async function (req, res) {
 	}
 });
 
+/**
+ * route for submitting a post that was edited
+ */
 router.post(
 	"/editPost",
 	uploadPost.array("post-image"),
@@ -1375,6 +1365,7 @@ router.post(
 		let post = await Timeline.findOne({
 			_id: req.body.id,
 		});
+		//make sure its not too long
 		if (req.body.title.length > 200) {
 			res.send({
 				success: "false",
@@ -1397,13 +1388,14 @@ router.post(
 				try {
 					for (let i = 0; i < req.files.length; i++) {
 						if (i < 4) {
+							//upload new images if there are any
 							let image = await cloudinary.v2.uploader.upload(
 								"./public/images/" + req.files[i].filename,
 								function (error) {}
 							);
 							upload[i] = image.secure_url;
 						}
-						await fs.unlink(
+						fs.unlink(
 							"./public/images/" + req.files[i].filename,
 							function (err) {}
 						);

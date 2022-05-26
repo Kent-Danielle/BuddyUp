@@ -59,7 +59,7 @@ document.getElementById("submit").addEventListener("click", async (e) => {
 
 document.getElementById("cancelBtn").addEventListener("click", (e) => {
 	e.preventDefault();
-	window.location.replace("/user/profile/self");
+	window.location.replace("/user/profile");
 });
 
 document
