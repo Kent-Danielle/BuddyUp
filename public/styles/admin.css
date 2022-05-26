@@ -182,6 +182,10 @@ th {
 	width: clamp(75px, 35%, 250px);
 }
 
+#user-list{
+	width: 100% !important;
+}
+
 #confirmModal {
 	color: var(--accent-light);
 	background: none;
