@@ -103,7 +103,10 @@ if (document.getElementById("bio-text").innerHTML == "jeb_") {
 	document.body.style.animation = "gradient 0.5s ease infinite";
 	document.body.style.backgroundSize = "300% 300%";
 }
+
+// herobrine easter egg
 let keys = "";
+
 document.addEventListener("keydown", (e) => {
 	keys += e.key;
 	if (keys.substring(keys.length - 9, keys.length) == "herobrine") {
@@ -111,7 +114,7 @@ document.addEventListener("keydown", (e) => {
 			"https://res.cloudinary.com/buddyup-images/image/upload/v1652833585/latest-2212249643_wqmxgc.jpg";
 	}
 });
-//herobrine
+
 
 /**
  * Store name in local storage

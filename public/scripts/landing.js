@@ -2,6 +2,9 @@
 
 const textarea = document.querySelector("textarea");
 
+/**
+ * A function to add a limit to number of characters inside the textarea.
+ */
 textarea.addEventListener("input", ({
   currentTarget: target
 }) => {
@@ -15,6 +18,9 @@ textarea.addEventListener("input", ({
   document.getElementById("textarea_remaining_char").innerText = (maxLength - currentLength) + " characters left";
 });
 
+/**
+ * A function to fetch the form and send to server.
+ */
 document.getElementById("submit").addEventListener("click", (e) => {
     e.preventDefault();
     let form = document.getElementById("requestForm");

@@ -72,7 +72,6 @@ document
 		gameFiltersContainer.innerHTML = "";
 	});
 
-
 /**
  * Adds the current game as a filter once clicked on the add filter button
  */
@@ -143,6 +142,9 @@ socket.on("ghosted", (message) => {
 	displayStatusMessage(message);
 });
 
+/**
+ * Function to display the status message.
+ */
 async function displayStatusMessage(message) {
 	let messageBubble = document.createElement("div");
 	messageBubble.id = "exit-status";
