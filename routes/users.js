@@ -319,7 +319,7 @@ router.post("/adminSearch", async function (req, res) {
 					tableDiv += tableHTMLBuilder(result[i], i);
 				}
 				if (tableDiv == "") {
-					res.send("no results");
+					res.send("No results!");
 				} else {
 					res.send(tableDiv);
 				}
@@ -357,7 +357,7 @@ router.post("/adminFilter", async function (req, res) {
 					tableDiv += tableHTMLBuilder(result[i], i);
 				}
 				if (tableDiv == "") {
-					res.send("no results");
+					res.send("No results!");
 				} else {
 					res.send(tableDiv);
 				}
@@ -395,7 +395,7 @@ router.post("/promotionFilter", async function (req, res) {
 					tableDiv += tableHTMLBuilder(result[i], i);
 				}
 				if (tableDiv == "") {
-					res.send("no results");
+					res.send("No results!");
 				} else {
 					res.send(tableDiv);
 				}
@@ -419,7 +419,7 @@ router.post("/login", function (req, res) {
 				res.send({
 					success: "false",
 					type: "email",
-					message: "account not found",
+					message: "Account not found",
 				});
 			} else {
 				if (result.password == req.body.password) {
@@ -428,13 +428,13 @@ router.post("/login", function (req, res) {
 					req.session.name = result.name;
 					res.send({
 						success: "true",
-						message: "logged in.",
+						message: "Logged in",
 					});
 				} else {
 					res.send({
 						success: "false",
 						type: "password",
-						message: "incorrect password",
+						message: "Incorrect password",
 					});
 				}
 			}
@@ -442,7 +442,8 @@ router.post("/login", function (req, res) {
 	} catch (error) {
 		res.send({
 			success: "false",
-			message: "login error",
+			type: "name",
+			message: "Login error!",
 		});
 	}
 });
@@ -505,7 +506,7 @@ router.post("/createAccount", upload.single("pfp"), async function (req, res) {
 						if (error) {
 							res.send({
 								success: "false",
-								message: "failed to upload profile picture",
+								message: "Failed to upload profile picture",
 							});
 							return;
 						}
@@ -520,7 +521,7 @@ router.post("/createAccount", upload.single("pfp"), async function (req, res) {
 			if (req.body.name.length > 100) {
 				res.send({
 					success: "false",
-					message: "name must be less then 100 characters",
+					message: "Name must be less then 100 characters",
 					type: "name",
 				});
 				return;
@@ -528,7 +529,7 @@ router.post("/createAccount", upload.single("pfp"), async function (req, res) {
 			if (req.body.email.length > 100) {
 				res.send({
 					success: "false",
-					message: "email must be less then 100 characters",
+					message: "Email must be less then 100 characters",
 					type: "email",
 				});
 				return;
@@ -536,7 +537,7 @@ router.post("/createAccount", upload.single("pfp"), async function (req, res) {
 			if (req.body.about.length > 280) {
 				res.send({
 					success: "false",
-					message: "bio is too long",
+					message: "Bio is too long",
 					type: "about",
 				});
 				return;
@@ -554,27 +555,29 @@ router.post("/createAccount", upload.single("pfp"), async function (req, res) {
 			const newUser = await user.save();
 			res.send({
 				success: "true",
-				message: "created account",
+				message: "Created account",
 			});
 		} else {
 			if (hasSameEmail != null) {
 				res.send({
 					success: "false",
-					message: "email already taken",
+					message: "Email already taken",
 					type: "email",
 				});
 			} else {
 				res.send({
 					success: "false",
-					message: "username already taken",
+					message: "Username already taken",
 					type: "name",
 				});
 			}
 		}
 	} catch (err) {
+		console.log(err)
 		res.send({
 			success: "false",
-			message: "failed to create account",
+			type: "name",
+			message: "Failed to create account",
 		});
 	}
 });
@@ -661,7 +664,7 @@ router.post("/edit/submit", upload.single("image"), async function (req, res) {
 			if (req.body.name.length > 100) {
 				res.send({
 					success: false,
-					message: "name must be less then 100 characters",
+					message: "Name must be less then 100 characters",
 					type: "name",
 				});
 				return;
@@ -669,7 +672,7 @@ router.post("/edit/submit", upload.single("image"), async function (req, res) {
 			if (req.body.email.length > 100) {
 				res.send({
 					success: false,
-					message: "email must be less then 100 characters",
+					message: "Email must be less then 100 characters",
 					type: "email",
 				});
 				return;
@@ -677,7 +680,7 @@ router.post("/edit/submit", upload.single("image"), async function (req, res) {
 			if (req.body.about.length > 280) {
 				res.send({
 					success: false,
-					message: "bio is too long",
+					message: "Bio is too long",
 					type: "about",
 				});
 				return;
@@ -750,13 +753,13 @@ router.post("/edit/submit", upload.single("image"), async function (req, res) {
 			if (hasSameEmail != null && !noEmailChange) {
 				res.send({
 					success: false,
-					error: "email already taken",
+					error: "Email already taken",
 					type: "email",
 				});
 			} else if (hasSameUsername && !noNameChange) {
 				res.send({
 					success: false,
-					error: "username already taken",
+					error: "Username already taken",
 					type: "name",
 				});
 			}
@@ -764,7 +767,7 @@ router.post("/edit/submit", upload.single("image"), async function (req, res) {
 	} catch (e) {
 		res.send({
 			success: "false",
-			message: "failed to update account. Error: " + e,
+			message: "Failed to update account",
 		});
 	}
 });
@@ -781,14 +784,14 @@ router.post("/adminPromotion", async function (req, res) {
 		res.send({
 			success: "false",
 			type: "reason",
-			reason: "reason can't be blank"
+			reason: "Reason can't be blank"
 		});
 		return;
 	} else if (req.body.reason.length > 5000){
 		res.send({
 			success: "false",
 			type: "reason",
-			reason: "reason is too long"
+			reason: "Reason is too long"
 		});
 		return;
 	}
@@ -803,19 +806,19 @@ router.post("/adminPromotion", async function (req, res) {
 			res.send({
 				success: "false",
 				type: "email",
-				reason: "email doesn't exist"
+				reason: "Email doesn't exist"
 			});
 		} else if (hasSameUsername == null) {
 			res.send({
 				success: "false",
 				type: "username",
-				reason: "username doesn't exist"
+				reason: "Username doesn't exist"
 			});
 		} else if (hasSameEmail.name != hasSameUsername.name) {
 			res.send({
 				success: "false",
 				type: "username",
-				reason: "username and email don't match"
+				reason: "Username and email don't match"
 			});
 		} else {
 			const newAdminReq = await adminReq.save();
@@ -834,7 +837,7 @@ router.post("/adminPromotion", async function (req, res) {
 	} catch (err) {
 		res.send({
 			success: "false",
-			reason: "failed to make request"
+			reason: "Failed to make request"
 		});
 	}
 });
@@ -879,7 +882,7 @@ router.post(
 					if (error) {
 						res.send({
 							success: "false",
-							message: "failed to upload profile picture",
+							message: "Failed to upload profile picture",
 						});
 						return;
 					}
@@ -900,7 +903,7 @@ router.post(
 		if (req.body.name.length > 100) {
 			res.send({
 				success: false,
-				error: "name must be less then 100 characters",
+				error: "Name must be less then 100 characters",
 				type: "name",
 			});
 			return;
@@ -908,7 +911,7 @@ router.post(
 		if (req.body.email.length > 100) {
 			res.send({
 				success: false,
-				error: "email must be less then 100 characters",
+				error: "Email must be less then 100 characters",
 				type: "email",
 			});
 			return;
@@ -916,7 +919,7 @@ router.post(
 		if (req.body.about.length > 280) {
 			res.send({
 				success: false,
-				error: "bio is too long",
+				error: "Bio is too long",
 				type: "about",
 			});
 			return;
@@ -948,13 +951,13 @@ router.post(
 				if (hasSameEmail != null) {
 					res.send({
 						success: false,
-						error: "email already taken",
+						error: "Email already taken",
 						type: "email",
 					});
 				} else {
 					res.send({
 						success: false,
-						error: "username already taken",
+						error: "Username already taken",
 						type: "name",
 					});
 				}
@@ -962,7 +965,7 @@ router.post(
 		} catch (err) {
 			res.send({
 				success: false,
-				error: "failed to update account. Error: " + e,
+				error: "Failed to update account",
 			});
 		}
 	}
@@ -1046,7 +1049,8 @@ router.post(
 							if (error) {
 								res.send({
 									success: false,
-									message: "failed to upload profile picture",
+									type: "name",
+									message: "Failed to upload profile picture",
 								});
 								return;
 							}
@@ -1089,7 +1093,7 @@ router.post(
 				if (req.body.name.length > 100) {
 					res.send({
 						success: false,
-						error: "name must be less then 100 characters",
+						error: "Name must be less then 100 characters",
 						type: "name",
 					});
 					return;
@@ -1097,7 +1101,7 @@ router.post(
 				if (req.body.email.length > 100) {
 					res.send({
 						success: false,
-						error: "email must be less then 100 characters",
+						error: "Email must be less then 100 characters",
 						type: "email",
 					});
 					return;
@@ -1105,7 +1109,7 @@ router.post(
 				if (req.body.about.length > 280) {
 					res.send({
 						success: false,
-						error: "bio is too long",
+						error: "Bio is too long",
 						type: "about",
 					});
 					return;
@@ -1145,13 +1149,13 @@ router.post(
 				if (hasSameEmail != null) {
 					res.send({
 						success: false,
-						error: "email already taken",
+						error: "Email already taken",
 						type: "email",
 					});
 				} else {
 					res.send({
 						success: false,
-						error: "name already taken",
+						error: "Name already taken",
 						type: "name",
 					});
 				}
@@ -1159,7 +1163,8 @@ router.post(
 		} catch (e) {
 			res.send({
 				success: false,
-				error: "failed to update account. Error: " + e,
+				type: "name",
+				error: "Failed to update account",
 			});
 		}
 	}
@@ -1205,7 +1210,7 @@ router.post(
 		} catch (e) {
 			res.send({
 				success: false,
-				error: "failed to update account. Error: " + e,
+				error: "Failed to update account.",
 			});
 		}
 	}
@@ -1245,7 +1250,7 @@ router.post(
 		if (req.body.title.length > 200) {
 			res.send({
 				success: "false",
-				message: "title is too long",
+				message: "Title is too long",
 				type: "title",
 			});
 			return;
@@ -1253,7 +1258,7 @@ router.post(
 		if (req.body.content.length > 10000) {
 			res.send({
 				success: "false",
-				message: "post is too long",
+				message: "Post is too long",
 				type: "post",
 			});
 			return;
@@ -1277,7 +1282,7 @@ router.post(
 				res.send({
 					success: "false",
 					type: "pfp",
-					message: "failed to upload profile picture",
+					message: "Failed to upload images",
 				});
 				return;
 			}
@@ -1292,12 +1297,12 @@ router.post(
 			await storytimeline.save();
 			res.send({
 				success: "true",
-				message: "failed to upload profile picture",
+				message: "success",
 			});
 		} catch (err) {
 			res.send({
 				success: "false",
-				message: "failed to create a post",
+				message: "Failed to create a post",
 			});
 		}
 	}
@@ -1361,7 +1366,7 @@ router.post(
 		if (req.body.title.length > 200) {
 			res.send({
 				success: "false",
-				message: "title is too long",
+				message: "Title is too long",
 				type: "title",
 			});
 			return;
@@ -1369,7 +1374,7 @@ router.post(
 		if (req.body.content.length > 10000) {
 			res.send({
 				success: "false",
-				message: "post is too long",
+				message: "Post is too long",
 				type: "post",
 			});
 			return;
@@ -1394,8 +1399,8 @@ router.post(
 				} catch (error) {
 					res.send({
 						success: "false",
-						type: "pfp",
-						message: "failed to upload profile picture; error: " + error,
+						type: "image",
+						message: "Failed to upload images",
 					});
 					return;
 				}
@@ -1412,18 +1417,18 @@ router.post(
 
 				res.send({
 					success: "true",
-					message: "failed to upload profile picture",
+					message: "success",
 				});
 			} catch (err) {
 				res.send({
 					success: "false",
-					message: "failed to create a post",
+					message: "Failed to create a post",
 				});
 			}
 		} else {
 			res.send({
 				success: "false",
-				message: "failed to create a post (bad id)",
+				message: "Failed to create a post (bad id)",
 			});
 		}
 	}

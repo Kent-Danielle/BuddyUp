@@ -16,34 +16,34 @@ textarea.addEventListener("input", ({
 });
 
 document.getElementById("submit").addEventListener("click", (e) => {
-    // e.preventDefault();
-    // let form = document.getElementById("requestForm");
-    // let data = {
-    //   email: form.email.value,
-    //   username: form.username.value,
-    //   reason: form.reason.value
-    // };
-    // fetch("/user/adminPromotion", {
-    //     method: "POST",
-    //     headers: {
-    //       Accept: "application/json",
-    //       "Content-Type": "application/json",
-    //     },
-    //     body: JSON.stringify(data),
-    //   })
-    //   .then(function (result) {
-    //     return result.json();
-    //   })
-    //   .then(function (result) {
-    //     if (result.success == "true") {
-    //       window.location.replace("/user/login");
-    //     } else {
-    //       let inputs = document.querySelectorAll(".inputFields");
-    //       inputs.forEach((input) => input.style.backgroundColor = "rgba(255, 255, 255, 0)");
-    //       document.getElementById("errorMsg").innerText = result.reason;
-    //       if (result.type != null) {
-    //         document.getElementById(result.type).style.backgroundColor = 'var(--accent-light)';
-    //       }
-    //     }
-    //   });
+    e.preventDefault();
+    let form = document.getElementById("requestForm");
+    let data = {
+      email: form.email.value,
+      username: form.username.value,
+      reason: form.reason.value
+    };
+    fetch("/user/adminPromotion", {
+        method: "POST",
+        headers: {
+          Accept: "application/json",
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(data),
+      })
+      .then(function (result) {
+        return result.json();
+      })
+      .then(function (result) {
+        if (result.success == "true") {
+          window.location.replace("/user/login");
+        } else {
+          let inputs = document.querySelectorAll(".inputFields");
+          inputs.forEach((input) => input.style.backgroundColor = "rgba(255, 255, 255, 0)");
+          document.getElementById("errorMsg").innerText = result.reason;
+          if (result.type != null) {
+            document.getElementById(result.type).style.backgroundColor = 'var(--accent-light)';
+          }
+        }
+      });
 });

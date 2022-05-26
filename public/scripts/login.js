@@ -1,12 +1,11 @@
 'use strict';
 
 document.getElementById("submit").addEventListener("click", (e) => {
+	e.preventDefault();
 	// Check if the email input is valid
 	let email = document.getElementById("email").value;
 	if ((email.indexOf("@") > -1) && (email.charAt(0) != "@") && (email.charAt(email.length - 1) != "@")) {
-
 		// If email input is valid then POST
-		e.preventDefault();
 		let form = document.getElementById("userForm");
 		let data = {
 			email: form.email.value,

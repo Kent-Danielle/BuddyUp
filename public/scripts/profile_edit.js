@@ -183,44 +183,49 @@ document.getElementById("submit").addEventListener("click", function (e) {
 	// Check if the email input is valid
 	let email = document.getElementById("email").value;
 	if ((email.indexOf("@") > -1) && (email.charAt(0) != "@") && (email.charAt(email.length - 1) != "@")) {
-
+		e.preventDefault();
 		// If email input is valid then POST
 		let password = document.getElementById("password").value;
 		let confirm = document.getElementById("confirm-password").value;
 		if (password == confirm) {
-		e.preventDefault();
-		document.getElementById("loading").innerHTML = "loading...";
-		let form = document.getElementById("edit-form");
-		let formData = new FormData(form);
-		formData.append("filters", gameFilters);
+			document.getElementById("loading").innerHTML = "loading...";
+			let form = document.getElementById("edit-form");
+			let formData = new FormData(form);
+			formData.append("filters", gameFilters);
 
-		fetch("/user/edit/submit", {
-				method: "POST",
-				body: formData,
-			})
-			.then(function (response) {
-				return response.json();
-			})
-			.then(function (result) {
-				document.getElementById("loading").innerHTML = "";
-				if (result.success) {
-					window.location.replace("/user/profile/self");
-				} else {
-					console.log("did not successfully update profile");
-					let inputs = document.querySelectorAll(".inputFields");
-					inputs.forEach(
-						(input) => (input.style.backgroundColor = "rgba(255, 255, 255, 0)")
-					);
-					document.getElementById("errorMsg").innerText = result.message;
-					document.getElementById(result.type).style.backgroundColor =
-						"var(--accent-light)";
-				}
-			});
+			fetch("/user/edit/submit", {
+					method: "POST",
+					body: formData,
+				})
+				.then(function (response) {
+					return response.json();
+				})
+				.then(function (result) {
+					document.getElementById("loading").innerHTML = "";
+					if (result.success) {
+						window.location.replace("/user/profile/self");
+					} else {
+						console.log("did not successfully update profile");
+						let inputs = document.querySelectorAll(".inputFields");
+						inputs.forEach(
+							(input) => (input.style.backgroundColor = "rgba(255, 255, 255, 0)")
+						);
+						document.getElementById("errorMsg").innerText = result.message;
+						document.getElementById(result.type).style.backgroundColor =
+							"var(--accent-light)";
+					}
+				});
 		} else {
 			document.getElementById("errorMsg").innerText = "Password does not match.";
+			let inputs = document.querySelectorAll(".inputFields");
+			inputs.forEach((input) => input.style.backgroundColor = "rgba(255, 255, 255, 0)");
+			document.getElementById("password").style.backgroundColor = 'var(--accent-light)';
 		}
 	} else {
 		document.getElementById("errorMsg").innerText = "Incomplete Email";
+		let inputs = document.querySelectorAll(".inputFields");
+		inputs.forEach((input) => input.style.backgroundColor = "rgba(255, 255, 255, 0)");
+		document.getElementById("email").style.backgroundColor = 'var(--accent-light)';
 	}
 });
 

@@ -287,15 +287,15 @@ document.getElementById("isAdmin").addEventListener("click", function (e) {
 document
 	.getElementById("submitButton")
 	.addEventListener("click", async function (e) {
+		e.preventDefault();
 		// Check if the email input is valid
 		let email = document.getElementById("emailField").value;
 		if ((email.indexOf("@") > -1) && (email.charAt(0) != "@") && (email.charAt(email.length - 1) != "@")) {
 
-			let password = document.getElementById("password").value;
+			let password = document.getElementById("passwordField").value;
 			let confirm = document.getElementById("confirm-password").value;
 			if (password == confirm) {
 				let submitBtn = document.getElementById("submitButton");
-				e.preventDefault();
 				let oldName = await localStorage.getItem("oldName");
 				let form = document.getElementById("userForm");
 				let formData = new FormData(form);
@@ -323,9 +323,15 @@ document
 					});
 			} else {
 				document.getElementById("errorMsg").innerText = "Password does not match.";
+				let inputs = document.querySelectorAll(".inputFields");
+				inputs.forEach((input) => input.style.backgroundColor = "rgba(255, 255, 255, 0)");
+				document.getElementById("passwordField").style.backgroundColor = 'var(--accent-light)';
 			}
 		} else {
 			document.getElementById("errorMsg").innerText = "Incomplete Email";
+			let inputs = document.querySelectorAll(".inputFields");
+			inputs.forEach((input) => input.style.backgroundColor = "rgba(255, 255, 255, 0)");
+			document.getElementById("emailField").style.backgroundColor = 'var(--accent-light)';
 		}
 	});
 
