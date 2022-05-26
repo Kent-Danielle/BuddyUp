@@ -120,6 +120,9 @@ h3 {
 #submit,
 #cancelBtn {
 	width: clamp(100px, 25%, 200px) !important;
+	box-sizing: border-box;
+	padding: 0.4rem;
+	font-variant: small-caps;
 	margin: 1rem 1rem;
 }
 
