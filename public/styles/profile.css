@@ -58,12 +58,6 @@ body {
 	right: 0.5rem;
 	font-size: 0.7rem;
 	padding: 0.3rem;
-	background: rgba(221, 55, 91, 0.66);
-	color: white;
-	box-shadow: 0 4px 30px rgba(0, 0, 0, 0.1);
-	backdrop-filter: blur(1.7px);
-	-webkit-backdrop-filter: blur(1.7px);
-	border: 1px solid rgba(221, 55, 91, 0.3);
 }
 
 #pfp-container {
@@ -131,6 +125,8 @@ body {
 	border: 1px solid rgba(255, 255, 255, 0.18);
 }
 
+
+
 .game {
 	color: white;
 	background: rgba(22, 100, 214, 0.71);
@@ -165,6 +161,36 @@ p:hover {
 	cursor: default;
 }
 
+/* The Modal (background) */
+.modal {
+	display: none !important; /* Hidden by default */
+	position: fixed; /* Stay in place */
+	z-index: 1; /* Sit on top */
+	left: 0;
+	top: 0;
+	width: 100%; /* Full width */
+	height: 100%; /* Full height */
+	overflow: auto; /* Enable scroll if needed */
+	background-color: rgba(0, 0, 0, 0.4); /* Black w/ opacity */
+}
+
+/* Modal Content/Box */
+.modal-content {
+	background: rgba(255, 255, 255, 0.66);
+	box-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.37);
+	backdrop-filter: blur(3px);
+	-webkit-backdrop-filter: blur(3px);
+	border-radius: 10px;
+	border: 1px solid rgba(255, 255, 255, 0.18);
+
+	width: clamp(200px, 45%, 650px);
+}
+
+#yesBtn,
+#noBtn {
+	width: clamp(75px, 35%, 250px);
+}
+
 /*----------------
  * Mobile layout
  *----------------
@@ -181,6 +207,10 @@ p:hover {
 	}
 	#bottomSpace {
 		height: 8rem;
+	}
+
+	.modal-content {
+		width: 80% !important;
 	}
 }
 

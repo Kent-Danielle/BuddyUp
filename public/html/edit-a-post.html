@@ -1,88 +1,123 @@
 <!DOCTYPE html>
 <html lang="en">
+	<head>
+		<title>BuddyUp</title>
+		<meta name="buddyup template" content="BuddyUp" />
+		<link rel="icon" type="image/x-icon" href="/images/favicon.png" />
 
-<head>
-	<title>BuddyUp</title>
-	<meta name="buddyup template" content="BuddyUp" />
-	<link rel="icon" type="image/x-icon" href="/images/favicon.png" />
+		<!------------------------>
+		<!-- Required meta tags -->
+		<!------------------------>
+		<meta charset="utf-8" />
+		<meta name="viewport" content="width=device-width, initial-scale=1" />
 
-	<!------------------------>
-	<!-- Required meta tags -->
-	<!------------------------>
-	<meta charset="utf-8" />
-	<meta name="viewport" content="width=device-width, initial-scale=1" />
+		<!--------------------->
+		<!-- Other libraries -->
+		<!--------------------->
+		<script
+			src="https://cdn.tiny.cloud/1/awp7bj8gxjha4ff2rlvqz1jfazon1egp5odsewbabgi86odk/tinymce/6/tinymce.min.js"
+			referrerpolicy="origin"
+		></script>
 
-	<!--------------------->
-	<!-- Other libraries -->
-	<!--------------------->
-	<script src="https://cdn.tiny.cloud/1/awp7bj8gxjha4ff2rlvqz1jfazon1egp5odsewbabgi86odk/tinymce/6/tinymce.min.js"
-		referrerpolicy="origin"></script>
+		<!-- Bootstrap -->
+		<link
+			href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css"
+			rel="stylesheet"
+			integrity="sha384-EVSTQN3/azprG1Anm3QDgpJLIm9Nao0Yz1ztcQTwFspd3yD65VohhpuuCOmLASjC"
+			crossorigin="anonymous"
+		/>
+		<script
+			src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js"
+			integrity="sha384-MrcW6ZMFYlzcLA8Nl+NtUVF0sA7MsXsP1UyJoMp4YLEuNSfAP+JcXn/tWtIaxVXM"
+			crossorigin="anonymous"
+		></script>
+		<!-- Material Icons -->
+		<link
+			href="https://fonts.googleapis.com/icon?family=Material+Icons"
+			rel="stylesheet"
+		/>
+		<!-- Fontawesome -->
+		<script
+			src="https://kit.fontawesome.com/542cfc8e1c.js"
+			crossorigin="anonymous"
+		></script>
+		<!-- Jquery -->
+		<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
 
-	<!-- Bootstrap -->
-	<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet"
-		integrity="sha384-EVSTQN3/azprG1Anm3QDgpJLIm9Nao0Yz1ztcQTwFspd3yD65VohhpuuCOmLASjC" crossorigin="anonymous" />
-	<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js"
-		integrity="sha384-MrcW6ZMFYlzcLA8Nl+NtUVF0sA7MsXsP1UyJoMp4YLEuNSfAP+JcXn/tWtIaxVXM" crossorigin="anonymous">
-	</script>
-	<!-- Material Icons -->
-	<link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet" />
-	<!-- Fontawesome -->
-	<script src="https://kit.fontawesome.com/542cfc8e1c.js" crossorigin="anonymous"></script>
-	<!-- Jquery -->
-	<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+		<!------------------------>
+		<!-- styles of your own -->
+		<!------------------------>
+		<link rel="stylesheet" type="text/css" href="/styles/styles.css" />
+		<link rel="stylesheet" type="text/css" href="/styles/write-a-post.css" />
+	</head>
 
-	<!------------------------>
-	<!-- styles of your own -->
-	<!------------------------>
-	<link rel="stylesheet" type="text/css" href="/styles/styles.css" />
-	<link rel="stylesheet" type="text/css" href="/styles/write-a-post.css" />
-</head>
-
-<body>
-	<div id="grid-container">
-		<div id="navbar"></div>
-
-		<div id="content" class="p-2">
-			<div id="form-logo" class="mb-5">
-				<img id="logo" src="/images/logo.png" alt="" />
-			</div>
-			<form id="input-container" class="p-4 m-auto">
-				<div id="title-box" class="form-group mb-3">
-					<label for="title" class="col-form-label">Title</label>
-					<input id="title" class="form-control" type="text" value="" name="title"
-						placeholder="Enter Title" />
-				</div>
-				<div id="post-box" class="mb-3 form-group">
-					<label for="post">Post</label>
-					<textarea name="content" class="form-control" id="tinytext" rows="9"></textarea>
-				</div>
-
-				<div id="add-image" class="form-group mb-3">
-					<p>Add Images (Max 4)</p>
-					<div id="file-container">
-						<span id="file-label">choose file...</span>
-						<input type="file" name="post-image" id="image" accept="image/*" multiple="multiple" />
+	<body>
+		<div id="grid-container">
+			<div id="content" class="px-3 on-page-load">
+				<form
+					id="form-container"
+					class="form-style p-4 m-auto"
+					onkeypress="return event.keyCode != 13;"
+				>
+					<div id="title-box" class="form-group mb-3">
+						<h3>title</h3>
+						<input
+							id="title"
+							class="form-control inputFields"
+							type="text"
+							value=""
+							name="title"
+							placeholder="Enter Title"
+						/>
 					</div>
-				</div>
 
-				<div id="buttons" class="d-flex justify-content-center">
-					<input id="submit" class="btn btn-primary mx-2" type="submit" value="Post" />
-					<button id="cancelBtn" class="btn btn-danger mx-2">Cancel</button>
-				</div>
-				<div id="postID"></div>
-				<h4 id="errorMsg" class="d-flex justify-content-center"></h4>
-				<h4 id="loadingMsg" class="d-flex justify-content-center"></h4>
-			</form>
+					<div id="post-box" class="mb-3 form-group">
+						<h3>post</h3>
+						<textarea
+							name="content"
+							class="form-control"
+							id="tinytext"
+							rows="9"
+						></textarea>
+					</div>
+
+					<div id="add-image" class="form-group mb-3">
+						<h3>add images (max <small>4</small>)</h3>
+						<div id="file-container">
+							<span id="file-label">choose file...</span>
+							<input
+								type="file"
+								name="post-image"
+								id="image"
+								accept="image/*"
+								multiple="multiple"
+								class="inputFields"
+							/>
+						</div>
+					</div>
+
+					<div id="buttons" class="d-flex justify-content-center">
+						<button id="cancelBtn" class="btn-red rounded-3 mx-4">
+							Cancel
+						</button>
+						<input
+							id="submit"
+							class="btn-blue rounded-3 mx-3"
+							type="submit"
+							value="Post"
+						/>
+					</div>
+					<div id="postID"></div>
+					<h4 id="errorMsg" class="d-flex justify-content-center"></h4>
+					<h4 id="loadingMsg" class="d-flex justify-content-center"></h4>
+				</form>
+			</div>
 		</div>
 
-		<div id="tabbar"></div>
-	</div>
-
-	<!---------------------------->
-	<!-- Client-side Javascript -->
-	<!---------------------------->
-	<script src="/scripts/tiny-editor.js"></script>
-	<script src="/scripts/edit-a-post.js"></script>
-</body>
-
+		<!---------------------------->
+		<!-- Client-side Javascript -->
+		<!---------------------------->
+		<script src="/scripts/tiny-editor.js"></script>
+		<script src="/scripts/edit-a-post.js"></script>
+	</body>
 </html>

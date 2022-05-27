@@ -19,12 +19,14 @@ input[type="file"] {
 }
 
 #file-container {
+	box-sizing: border-box;
+	color: #ffffff;
+	background: #797979;
+	box-shadow: 0 4px 30px rgba(0, 0, 0, 0.1);
+	padding: 0.4rem;
 	width: 100%;
-	resize: none;
-	background-color: rgba(255, 255, 255, 0);
-	border: 2px solid var(--accent-light);
+	font-variant: small-caps;
 	border-radius: 0.5rem;
-	padding: 0.3rem;
 	cursor: pointer;
 }
 #logout {
@@ -33,12 +35,6 @@ input[type="file"] {
 	right: 0.5rem;
 	font-size: 0.7rem;
 	padding: 0.3rem;
-	background: rgba(221, 55, 91, 0.66);
-	color: white;
-	box-shadow: 0 4px 30px rgba(0, 0, 0, 0.1);
-	backdrop-filter: blur(1.7px);
-	-webkit-backdrop-filter: blur(1.7px);
-	border: 1px solid rgba(221, 55, 91, 0.3);
 }
 
 body {
@@ -97,10 +93,8 @@ table {
 
 input[type="text"] {
 	background: rgba(255, 255, 255, 0.2);
-	box-shadow: 0 3px 15px 0 rgba(31, 38, 135, 0.37);
 	backdrop-filter: blur(3px);
 	-webkit-backdrop-filter: blur(3px);
-	border-radius: 10px;
 	border: 1px solid rgba(255, 255, 255, 0.18);
 }
 #filter-btns > label {
@@ -109,15 +103,6 @@ input[type="text"] {
 	border-radius: 2rem !important;
 }
 .btn-check:checked + .btn-outline-primary {
-	color: white !important;
-	background: rgba(22, 100, 214, 0.41);
-	border-radius: 16px;
-	box-shadow: 0 4px 30px rgba(0, 0, 0, 0.1);
-	backdrop-filter: blur(2px);
-	-webkit-backdrop-filter: blur(5px);
-	border: 1px solid rgba(22, 100, 214, 0.3);
-}
-#addUserButton {
 	color: white !important;
 	background: rgba(22, 100, 214, 0.41);
 	border-radius: 16px;
@@ -188,6 +173,17 @@ th {
 	-webkit-backdrop-filter: blur(3px);
 	border-radius: 10px;
 	border: 1px solid rgba(255, 255, 255, 0.18);
+
+	width: clamp(200px, 45%, 650px);
+}
+
+#yesBtn,
+#noBtn {
+	width: clamp(75px, 35%, 250px);
+}
+
+#user-list{
+	width: 100% !important;
 }
 
 #confirmModal {
@@ -228,6 +224,7 @@ form > h3 {
 	font-variant: small-caps;
 }
 form > input[type="text"],
+form > input[type="email"],
 form > input[type="password"] {
 	box-sizing: border-box;
 	border: none;
@@ -273,6 +270,10 @@ form a {
 	color: var(--primary-dark);
 }
 
+.required {
+	color: red;
+}
+
 /*----------------
  * Mobile layout
  *----------------
@@ -299,6 +300,10 @@ form a {
 	#addUserButton {
 		width: 100%;
 		font-size: 0.8rem;
+	}
+
+	.modal-content {
+		width: 80% !important;
 	}
 }
 

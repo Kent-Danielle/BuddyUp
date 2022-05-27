@@ -43,10 +43,9 @@
 </head>
 
 <body>
-	
-	<div id="grid-container" class="container p-3">
+	<div id="grid-container" class="container p-3 on-page-load">
 		<div id="top-profile" class="mb-4 mt-4">
-			<a class="btn rounded-3" href="/user/logout" id="logout" role="button">LOGOUT</a>
+			<a class="btn btn-red rounded-3" href="/user/logout" id="logout" role="button">LOGOUT</a>
 			<h2 id="name">Username</h2>
 		</div>
 
@@ -59,14 +58,14 @@
 				</button>
 			</div>
 			<div id="filter-btns" class="btn-group mb-2" role="group" aria-label="Basic checkbox toggle button group">
-				<input type="checkbox" class="btn-check" id="adminFilter" autocomplete="off" />
+				<input type="checkbox" class="btn-check" id="adminFilter" />
 				<label class="btn btn-outline-primary" for="adminFilter">Show Admins</label>
 
-				<input type="checkbox" class="btn-check" id="requestFilter" autocomplete="off" />
+				<input type="checkbox" class="btn-check" id="requestFilter" />
 				<label class="btn btn-outline-primary" for="requestFilter">Show Admin Candidates</label>
 			</div>
 			<div class="" id="newUser">
-				<button id="addUserButton" class="btn rounded-3 m-0 mb-3">
+				<button id="addUserButton" class="btn-blue py-1 rounded-3 m-0 mb-3">
 					Add a New User
 				</button>
 			</div>
@@ -93,14 +92,23 @@
 		<div class="modal-content w-80 p-3 h-auto align-self-center">
 			<span class="close"><i id="closeModalButton" class="fa-solid fa-xmark"></i></span>
 			<form id="userForm">
-				<h3>username</h3>
-				<input id="nameField" type="text" value="" name="name" autocomplete="off" class="inputFields"/>
-				<h3>email</h3>
-				<input id="emailField" name="email" type="text" value="" class="inputFields"/>
-				<h3>password</h3>
-				<input id="passwordField" name="password" type="password" value="" autocomplete="off" class="inputFields"/>
+				<h3>email<span class="required"> *</span></h3>
+				<input id="emailField" name="email" type="email" value="" readonly placeholder="Enter an email"
+					onfocus="this.removeAttribute('readonly');" class="inputFields" autocomplete="off" />
+				<h3>username<span class="required"> *</span></h3>
+				<input id="nameField" type="text" value="" name="name" readonly placeholder="Enter a username"
+					onfocus="this.removeAttribute('readonly');" class="inputFields" autocomplete="off" />
+				<h3>password<span class="required"> *</span></h3>
+				<input id="passwordField" name="password" type="password" value="" readonly placeholder="Enter a password"
+					onfocus="this.removeAttribute('readonly');" autocomplete="off" class="inputFields" />
+				<h3>confirm password<span class="required"> *</span></h3>
+				<input id="confirm-password" name="" type="password" value="" class="inputFields"
+					placeholder="Confirm password" readonly onfocus="this.removeAttribute('readonly');"
+					autocomplete="off" />
 				<h3>tell us about yourself</h3>
-				<textarea name="about" id="bioField" maxlength="280" rows="4"class="inputFields"></textarea>
+				<textarea name="about" id="bioField" maxlength="280" readonly placeholder="Write about them"
+					onfocus="this.removeAttribute('readonly');" rows="4" autocomplete="off"
+					class="inputFields"></textarea>
 				<p id="textarea_remaining_char">280 characters left</p>
 				<h3>profile picture</h3>
 				<div id="file-container" class="mt-2">
@@ -108,13 +116,14 @@
 					<input type="file" name="pfp" id="pfp" accept="image/*" />
 				</div>
 				<h3 id="promotionHeading">privileges</h3>
-				<input type="checkbox" name="admin" class="btn-check" id="isAdmin" autocomplete="off" />
+				<input type="checkbox" name="admin" class="btn-check" id="isAdmin"/>
 				<label class="btn btn-outline-primary" id="isAdminLabel" for="isAdmin">Promote to Admin</label>
 				<h3 id="reasonTitle"></h3>
 				<div id="reason"></div>
 				<div id="submit-container">
 					<input id="submitButton" type="submit" value="create account" />
 				</div>
+				<div id="errorMsg"></div>
 			</form>
 		</div>
 	</div>
@@ -122,16 +131,17 @@
 	<!-- The Confirm Delete Modal -->
 	<div id="confirmDeleteModal" class="modal d-flex justify-content-center">
 		<!-- Modal content -->
-		<div class="modal-content w-75 p-3 py-4 h-auto align-self-center">
+		<div class="modal-content p-3 py-4 h-auto align-self-center">
 			<h3 id="modalText" class="text-center">
-				Do you want to delete user's account?
+				Are you sure you want to delete this post?
 			</h3>
 			<div class="d-flex justify-content-evenly mt-3">
-				<button id="noBtn" class="btn btn-outline-danger d-inline-block w-25">
-					<i class="fa-solid fa-xmark"></i>
+				<button id="noBtn" class="btn-gray rounded-3 d-inline-block">
+					Cancel
 				</button>
-				<a id="yesBtn" class="btn btn-primary d-inline-block w-25" href="" role="button"><i
-						class="fa-solid fa-check"></i></a>
+				<button id="yesBtn" class="btn-red rounded-3 d-inline-block">
+					Delete
+				</button>
 			</div>
 		</div>
 	</div>

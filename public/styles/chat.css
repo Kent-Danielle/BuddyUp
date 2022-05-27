@@ -93,6 +93,10 @@ body {
 	font-size: 1.4rem;
 }
 
+.fa-circle-arrow-up {
+	font-size: 1.4rem;
+}
+
 #stop-matching-button {
 	padding: 0;
 	border: none;
@@ -176,6 +180,36 @@ body {
 	overflow-y: hidden;
 }
 
+.on-load-modal {
+	background: rgb(181, 181, 181);
+	background: linear-gradient(
+		245deg,
+		rgba(216, 216, 216, 0.75) 45%,
+		rgba(255, 255, 255, 0.95) 50%,
+		rgba(216, 216, 216, 0.75) 55%
+	);
+	animation: load 2.5s ease infinite;
+	background-size: 300% 300%;
+	box-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.37);
+	backdrop-filter: blur(3px);
+	-webkit-backdrop-filter: blur(3px);
+	border-radius: 10px;
+	border: 1px solid rgba(255, 255, 255, 0.18);
+	height: 95% !important;
+	overflow-y: hidden;
+}
+
+@keyframes load {
+	0% {
+		background-position: bottom left;
+	}
+	100% {
+		background-position: top right;
+	}
+}
+
+
+
 /* profile */
 #profile-container {
 	height: 85%;
@@ -221,6 +255,10 @@ body {
 	position: relative;
 }
 
+.message-bubble {
+	padding: 0.4rem 0.8rem;
+}
+
 .your-message {
 	color: white;
 	background: rgba(22, 100, 214, 0.71);
@@ -238,15 +276,32 @@ body {
 	border-radius: 1rem;
 	border: 1px solid rgba(255, 255, 255, 0.18);
 }
-
+#logo {
+	position: absolute;
+	left: 50%;
+	transform: translate(-50%);
+	height: 80% !important;
+}
 
 /*----------------
  * Mobile layout
  *----------------
  */
 @media only screen and (max-width: 844px) {
-	.modal-content {
+	#modal-body {
 		width: 95% !important;
+	}
+	.message-bubble {
+		padding: 0.2rem 0.4rem;
+	}
+	.usernameContainer {
+		display: none;
+	}
+	.your-message {
+		float: right;
+	}
+	.not-your-message {
+		float: left;
 	}
 }
 
@@ -255,7 +310,13 @@ body {
  *----------------
  */
 @media only screen and (min-width: 845px) {
-	.modal-content {
+	#modal-body {
 		width: 844px;
+	}
+	.your-message {
+		float: left;
+	}
+	.not-your-message {
+		float: left;
 	}
 }

@@ -1,23 +1,28 @@
 "use strict";
 
+//connect to our cloudinary image host
 var cloudinary = require("cloudinary");
 cloudinary.config({
 	cloud_name: "buddyup-images",
 	api_key: "673686844465421",
-	api_secret: "cxk0wwxInP62OzGTo26z2TZSnDU",
+	api_secret: process.env.IMAGE_KEY,
 });
 
+//import everything we need
 const express = require("express");
 const router = express.Router();
+//these are the mongodb schemas for all our collections
 const User = require("../models/user");
 const AdminRequest = require("../models/admin-request");
 const Timeline = require("../models/user-timeline");
 const ChatUser = require("../models/chat-user.js");
 const path = require("path");
 const fs = require("fs");
-const { JSDOM } = require("jsdom");
+const {
+	JSDOM
+} = require("jsdom");
 
-//get all users
+//the default path for /users: if your logged in to to profile otherwise login
 router.get("/", function (req, res) {
 	if (req.session.loggedIn) {
 		res.redirect("/user/profile");
@@ -26,21 +31,18 @@ router.get("/", function (req, res) {
 	}
 });
 
+//get the profile of the current logged in user
 router.get("/profile/", async function (req, res) {
-	res.redirect("/user/profile/self");
-});
-
-router.get("/profile/:name", async function (req, res) {
-	var profileName = req.params["name"];
 	if (!req.session.loggedIn) {
 		res.redirect("/user/login");
 	} else {
-		let currentUser;
+		let currentUser = null;
 		let isAdmin;
 		try {
 			currentUser = await User.findOne({
 				email: req.session.email,
 			});
+			//check if the user is an admin
 			isAdmin = await User.findOne({
 				email: req.session.email,
 				admin: true,
@@ -48,35 +50,26 @@ router.get("/profile/:name", async function (req, res) {
 		} catch (error) {
 			return;
 		}
-		if (profileName == "self") {
-			if (isAdmin) {
-				res.redirect("/user/admin");
-				return;
-			}
-		} else {
-			try {
-				if (isAdmin) {
-					currentUser = await User.findOne({
-						name: profileName,
-					});
-				} else {
-					res.redirect("/user/profile/self");
-					return;
-				}
-			} catch (error) {
-				return;
-			}
+		//redirect to admin panel if admin
+		if (isAdmin) {
+			res.redirect("/user/admin");
+			return;
 		}
-
-		await ChatUser.updateOne(
-			{ name: req.session.name },
-			{ $set: { last_match: null, finding: false, matched: false } }
-		);
+		//update the users chatroom information, so they don't get matched with anyone
+		await ChatUser.updateOne({
+			name: req.session.name
+		}, {
+			$set: {
+				finding: false,
+				matched: false
+			}
+		});
 
 		if (currentUser.about == null) {
 			currentUser.about = "";
 		}
 
+		//set the profile information before sending to client
 		let profile = fs.readFileSync("./public/html/profile.html", "utf-8");
 		let profileDOM = new JSDOM(profile);
 		profileDOM.window.document.getElementById("username").innerHTML =
@@ -93,8 +86,10 @@ router.get("/profile/:name", async function (req, res) {
 		} catch (error) {
 			return;
 		}
+		//formatting options for the date on the post
 		let dateOptions = {
 			weekday: "long",
+			timeZone: "PST",
 			year: "numeric",
 			month: "long",
 			day: "numeric",
@@ -102,6 +97,7 @@ router.get("/profile/:name", async function (req, res) {
 			minute: "numeric",
 		};
 		let stories = "";
+		//build the HTML for each post the user has
 		for (let i = allPosts.length - 1; i >= 0; i--) {
 			stories +=
 				'<div class="story rounded-3 py-1 px-3 my-3">' +
@@ -151,7 +147,7 @@ router.get("/profile/:name", async function (req, res) {
 		profileDOM.window.document.getElementById(
 			"lg-stories-container"
 		).innerHTML += stories;
-		//profileDOM.window.document.getElementById("stories-container").innerHTML += stories;
+		//dont allow the user to click back to get here
 		res.header(
 			"Cache-Control",
 			"no-cache, private, no-store, must-revalidate, max-stale=0, post-check=0, pre-check=0"
@@ -176,6 +172,7 @@ router.get("/login", function (req, res) {
 	}
 });
 
+//function to build the list of users for the admin panel.
 function tableHTMLBuilder(result, i) {
 	var table =
 		"<tr>" +
@@ -194,14 +191,14 @@ function tableHTMLBuilder(result, i) {
 		result.email +
 		//ADMIN COL
 		"</td><td class='admin-column text-center'>" +
-		(result.admin
-			? "<i class='fa-solid fa-check'></i>"
-			: "<i class='fa-solid fa-xmark'></i>") +
+		(result.admin ?
+			"<i class='fa-solid fa-check'></i>" :
+			"<i class='fa-solid fa-xmark'></i>") +
 		//PROMOTON COL
 		"</td><td class='promotion-column text-center'>" +
-		(result.promotion
-			? "<i class='fa-solid fa-check'></i>"
-			: "<i class='fa-solid fa-xmark'></i>") +
+		(result.promotion ?
+			"<i class='fa-solid fa-check'></i>" :
+			"<i class='fa-solid fa-xmark'></i>") +
 		//EDIT BTNS COL
 		"</td><td class='edit-column text-center'>" +
 		"<button id='editModalButton' value='" +
@@ -244,6 +241,9 @@ function tableHTMLBuilder(result, i) {
 	return table;
 }
 
+/**
+ * Code for loading the admin panel
+ */
 router.get("/admin", function (req, res) {
 	if (req.session.loggedIn) {
 		try {
@@ -251,6 +251,7 @@ router.get("/admin", function (req, res) {
 				email: req.session.email,
 				admin: true,
 			}).then((isAdmin) => {
+				//if an admin with the session email exists, then send the page
 				let adminPage = fs.readFileSync("./public/html/admin.html", "utf-8");
 				let adminPageDOM = new JSDOM(adminPage);
 				if (isAdmin == null) {
@@ -261,6 +262,7 @@ router.get("/admin", function (req, res) {
 							adminPageDOM.window.document.getElementById("error").innerHTML =
 								"Error finding all users";
 						} else {
+							//set data for admin page
 							adminPageDOM.window.document.getElementById("name").innerHTML =
 								req.session.name;
 							const tableDiv =
@@ -286,47 +288,10 @@ router.get("/admin", function (req, res) {
 });
 
 /**
- * Function for searching in the dashboard
+ * Function for searching in the dashboard and using the filters
  */
 router.post("/adminSearch", async function (req, res) {
-	if (
-		(await User.findOne({
-			email: req.session.email,
-			admin: true,
-		})) == null
-	) {
-		return;
-	}
-	res.setHeader("Content-Type", "application/json");
-	let searchOptions = {};
-	if (req.body.input != null || req.body.input != "") {
-		searchOptions.name = new RegExp(req.body.input, "i");
-	}
-	try {
-		await User.find(searchOptions, function (err, result) {
-			if (err) {
-				res.send("Error finding users!");
-			} else {
-				let tableDiv = "";
-				for (let i = 0; i < result.length; i++) {
-					tableDiv += tableHTMLBuilder(result[i], i);
-				}
-				if (tableDiv == "") {
-					res.send("no results");
-				} else {
-					res.send(tableDiv);
-				}
-			}
-		});
-	} catch (error) {
-		return;
-	}
-});
-
-/**
- * Function for filtering admins in the dashboard
- */
-router.post("/adminFilter", async function (req, res) {
+	//first check if they are admin
 	if (
 		(await User.findOne({
 			email: req.session.email,
@@ -338,9 +303,18 @@ router.post("/adminFilter", async function (req, res) {
 	res.setHeader("Content-Type", "application/json");
 	let searchOptions = {};
 	if (req.body.input != null) {
-		searchOptions.admin = req.body.input;
+		//check if its a search or a filter
+		if (req.body.type == "search") {
+			//RegExp is so we can get parts of the names
+			searchOptions.name = new RegExp(req.body.input, "i");
+		} else if (req.body.type == "admin") {
+			searchOptions.admin = req.body.input;
+		} else if (req.body.type == "request") {
+			searchOptions.promotion = req.body.input;
+		}
 	}
 	try {
+		//get all the users and put them in a table
 		await User.find(searchOptions, function (err, result) {
 			if (err) {
 				res.send("Error finding users!");
@@ -350,7 +324,7 @@ router.post("/adminFilter", async function (req, res) {
 					tableDiv += tableHTMLBuilder(result[i], i);
 				}
 				if (tableDiv == "") {
-					res.send("no results");
+					res.send("No results!");
 				} else {
 					res.send(tableDiv);
 				}
@@ -362,72 +336,39 @@ router.post("/adminFilter", async function (req, res) {
 });
 
 /**
- * Function for filtering admin candidates in the dashboard
+ * Function for logging in
  */
-router.post("/promotionFilter", async function (req, res) {
-	if (
-		(await User.findOne({
-			email: req.session.email,
-			admin: true,
-		})) == null
-	) {
-		return;
-	}
-	res.setHeader("Content-Type", "application/json");
-	let searchOptions = {};
-	if (req.body.input != null) {
-		searchOptions.promotion = req.body.input;
-	}
-	try {
-		await User.find(searchOptions, function (err, result) {
-			if (err) {
-				res.send("Error finding users!");
-			} else {
-				let tableDiv = "";
-				for (let i = 0; i < result.length; i++) {
-					tableDiv += tableHTMLBuilder(result[i], i);
-				}
-				if (tableDiv == "") {
-					res.send("no results");
-				} else {
-					res.send(tableDiv);
-				}
-			}
-		});
-	} catch (error) {
-		return;
-	}
-});
-
-router.post("/banUser", function (req, res) {
-	res.setHeader("Content-Type", "application/json");
-});
-
 router.post("/login", function (req, res) {
 	let currentUser;
+	let userEmail = req.body.email.toLowerCase();
 	try {
+		//first find an account with the users email
 		currentUser = User.findOne({
-			email: req.body.email,
+			email: userEmail,
 		});
 		currentUser.then((result) => {
 			if (result == null) {
 				res.send({
 					success: "false",
-					message: "account not found",
+					type: "email",
+					message: "Account not found",
 				});
 			} else {
+				//next, check if thier passwords match
 				if (result.password == req.body.password) {
+					//update the session information
 					req.session.loggedIn = true;
 					req.session.email = result.email;
 					req.session.name = result.name;
 					res.send({
 						success: "true",
-						message: "logged in.",
+						message: "Logged in",
 					});
 				} else {
 					res.send({
 						success: "false",
-						message: "incorrect password",
+						type: "password",
+						message: "Incorrect password",
 					});
 				}
 			}
@@ -435,12 +376,15 @@ router.post("/login", function (req, res) {
 	} catch (error) {
 		res.send({
 			success: "false",
-			message: "login error",
+			type: "name",
+			message: "Login error!",
 		});
 	}
 });
 
-//get all users
+/**
+ * get the login page, but redirect if already logged in
+ */
 router.get("/login", function (req, res) {
 	if (req.session.loggedIn == true) {
 		res.redirect("/user/profile");
@@ -450,7 +394,9 @@ router.get("/login", function (req, res) {
 	}
 });
 
-//new user route
+/**
+ * get the register page, but redirect to profile if already logged in
+ */
 router.get("/register", function (req, res) {
 	if (req.session.loggedIn == true) {
 		res.redirect("/user/profile");
@@ -461,8 +407,11 @@ router.get("/register", function (req, res) {
 });
 
 var multer = require("multer");
-const { findOne } = require("../models/user");
+const user = require("../models/user");
 
+/**
+ * set up the multer for the profile picture upload system
+ */
 var storage = multer.diskStorage({
 	destination: (req, file, cb) => {
 		cb(null, "./public/images/");
@@ -476,40 +425,33 @@ var upload = multer({
 	storage: storage,
 });
 
+/**
+ * Creates an account. Takes in a single image as well for the profile picture.
+ */
 router.post("/createAccount", upload.single("pfp"), async function (req, res) {
+	//email is lowercased and trimed to prevent errors
+	let userEmail = req.body.email.toLowerCase().trim();
 	try {
+		//check the database for the email and name to see if they are already taken
 		let hasSameEmail = await User.findOne({
-			email: req.body.email,
+			email: userEmail,
 		});
 		let hasSameUsername = await User.findOne({
-			name: req.body.name,
+			name: req.body.name.trim(),
 		});
 		if (hasSameEmail == null && hasSameUsername == null) {
+			//set the default image to our default pfp in case the user doesn't set their own.
 			let url =
 				"https://res.cloudinary.com/buddyup-images/image/upload/v1652458876/profile_ek8iwp.png";
+			//upload the image if a new one was set
 			if (req.file != undefined) {
-				let upload = await cloudinary.v2.uploader.upload(
-					"./public/images/" + req.file.filename,
-					function (error) {
-						if (error) {
-							res.send({
-								success: "false",
-								message: "failed to upload profile picture",
-							});
-							return;
-						}
-					}
-				);
-				await fs.unlink(
-					"./public/images/" + req.file.filename,
-					function (err) {}
-				);
-				url = upload.secure_url;
+				url = await uploadImage("./public/images/" + req.file.filename, res, url);
 			}
+			//make sure all the fields are not to long.
 			if (req.body.name.length > 100) {
 				res.send({
 					success: "false",
-					message: "name must be less then 100 characters",
+					message: "Name must be less then 100 characters",
 					type: "name",
 				});
 				return;
@@ -517,7 +459,7 @@ router.post("/createAccount", upload.single("pfp"), async function (req, res) {
 			if (req.body.email.length > 100) {
 				res.send({
 					success: "false",
-					message: "email must be less then 100 characters",
+					message: "Email must be less then 100 characters",
 					type: "email",
 				});
 				return;
@@ -525,14 +467,14 @@ router.post("/createAccount", upload.single("pfp"), async function (req, res) {
 			if (req.body.about.length > 280) {
 				res.send({
 					success: "false",
-					message: "bio is too long",
+					message: "Bio is too long",
 					type: "about",
 				});
 				return;
 			}
 			const user = new User({
-				name: req.body.name,
-				email: req.body.email,
+				name: req.body.name.trim(),
+				email: userEmail,
 				password: req.body.password,
 				about: req.body.about,
 				admin: false,
@@ -540,22 +482,23 @@ router.post("/createAccount", upload.single("pfp"), async function (req, res) {
 				promotion: false,
 				img: url,
 			});
+			//upload the new user to mongoDB
 			const newUser = await user.save();
 			res.send({
 				success: "true",
-				message: "created account",
+				message: "Created account",
 			});
 		} else {
 			if (hasSameEmail != null) {
 				res.send({
 					success: "false",
-					message: "email already taken",
+					message: "Email already taken",
 					type: "email",
 				});
 			} else {
 				res.send({
 					success: "false",
-					message: "username already taken",
+					message: "Username already taken",
 					type: "name",
 				});
 			}
@@ -563,27 +506,44 @@ router.post("/createAccount", upload.single("pfp"), async function (req, res) {
 	} catch (err) {
 		res.send({
 			success: "false",
-			message: "failed to create account",
+			type: "name",
+			message: "Failed to create account",
 		});
 	}
 });
 
+/**
+ * Route for loggin out the user
+ */
 router.get("/logout", async function (req, res) {
 	if (req.session) {
-		await ChatUser.deleteMany({ name: req.session.name });
+
+		let user = await ChatUser.findOne({
+			name: req.session.name
+		});
+		//if the user is active in the chatroom, then delete them from the online users collection
+		if (user != null) {
+			if (!user.finding && !user.matched) {
+				await ChatUser.deleteMany({
+					name: req.session.name
+				});
+			}
+		}
+		//destroy the current session when logged out
 		req.session.destroy(function (error) {
 			if (error) {
-				res.status(400).send("Unable to log out");
+				res.send("Unable to log out");
 			} else {
 				// session deleted, redirect to home
-
 				res.redirect("/");
 			}
 		});
 	}
 });
 
-// redirects the user to the edit profile page
+/**
+ * redirects the user to the edit profile page
+ */
 router.get("/edit", function (req, res) {
 	if (req.session.loggedIn == true) {
 		let profileEdit = fs.readFileSync("./public/html/profile_edit.html");
@@ -594,34 +554,43 @@ router.get("/edit", function (req, res) {
 		res.redirect("/user/login");
 	}
 });
-
-// sends the logged in user's information over to the client side
+/**
+ * sends the logged in user's information over to the client side
+ */
 router.get("/info", async function (req, res) {
-	try {
-		let currentUser = await User.findOne({
-			email: req.session.email,
-		});
-		res.send(currentUser);
-	} catch (error) {
-		return;
+	if (req.session.loggedIn) {
+		try {
+			let currentUser = await User.findOne({
+				email: req.session.email,
+			});
+			res.send(currentUser);
+		} catch (error) {
+			return;
+		}
 	}
 });
 
-// updates the users information after editing and then redirects them back to their profile page
+
+/**
+ * updates the users information after editing and then redirects them back to their profile page
+ * takes a single image in case they changed thier pfp
+ */
 router.post("/edit/submit", upload.single("image"), async function (req, res) {
 	try {
-		console.log(req.body.filters);
+		let userEmail = req.body.email.toLowerCase().trim();
 		let filters = req.body.filters;
 		if (filters != " " && filters != "") {
 			filters = req.body.filters.split(",");
+			filters = shortingGame(filters);
 		} else {
 			filters = null;
 		}
 
-		let noEmailChange = req.body.email === req.session.email;
+		//checks if they changed thier email or username
+		let noEmailChange = userEmail === req.session.email;
 
 		let hasSameEmail = await User.findOne({
-			email: req.body.email,
+			email: userEmail,
 		});
 
 		let noNameChange = req.body.name === req.session.name;
@@ -634,10 +603,11 @@ router.post("/edit/submit", upload.single("image"), async function (req, res) {
 			(hasSameEmail == null || noEmailChange) &&
 			(hasSameUsername == null || noNameChange)
 		) {
+			//check if their name email and bio are not to long
 			if (req.body.name.length > 100) {
 				res.send({
 					success: false,
-					message: "name must be less then 100 characters",
+					message: "Name must be less then 100 characters",
 					type: "name",
 				});
 				return;
@@ -645,104 +615,67 @@ router.post("/edit/submit", upload.single("image"), async function (req, res) {
 			if (req.body.email.length > 100) {
 				res.send({
 					success: false,
-					message: "email must be less then 100 characters",
+					message: "Email must be less then 100 characters",
 					type: "email",
 				});
 				return;
 			}
 			if (req.body.about.length > 280) {
-				console.log("bio too big");
 				res.send({
 					success: false,
-					message: "bio is too long",
+					message: "Bio is too long",
 					type: "about",
 				});
 				return;
 			}
-			let url;
+			let url = hasSameEmail.img;
 			if (req.file != undefined) {
-				let upload = await cloudinary.v2.uploader.upload(
-					"./public/images/" + req.file.filename,
-					function (error) {
-						if (error) {
-							res.send({
-								success: false,
-								message: "failed to upload profile picture",
-							});
-							return;
-						}
-					}
-				);
-				await fs.unlink(
-					"./public/images/" + req.file.filename,
-					function (err) {}
-				);
-				url = upload.secure_url;
+				url = await uploadImage("./public/images/" + req.file.filename, res, url);
 			}
 
+			//update the posts the user made to thier new name
 			try {
-				await Timeline.updateMany(
-					{
-						author: req.session.name,
+				await Timeline.updateMany({
+					author: req.session.name,
+				}, {
+					$set: {
+						author: req.body.name,
 					},
-					{
-						$set: {
-							author: req.body.name,
-						},
-					}
-				);
-			} catch (error) {
-				//add log here
-			}
+				});
+			} catch (error) {}
 
-			if (url != null) {
-				await User.updateOne(
-					{
-						email: req.session.email,
-					},
-					{
-						$set: {
-							img: url,
-							name: req.body.name,
-							about: req.body.about,
-							email: req.body.email,
-							password: req.body.password,
-							games: filters,
-						},
-					}
-				);
-			} else {
-				await User.updateOne(
-					{
-						email: req.session.email,
-					},
-					{
-						$set: {
-							name: req.body.name,
-							about: req.body.about,
-							email: req.body.email,
-							password: req.body.password,
-							games: filters,
-						},
-					}
-				);
-			}
-			req.session.email = req.body.email;
+			//if there is a new pfp, update it, otherwise update everything else
+			await User.updateOne({
+				email: req.session.email,
+			}, {
+				$set: {
+					img: url,
+					name: req.body.name.trim(),
+					about: req.body.about,
+					email: userEmail,
+					password: req.body.password,
+					games: filters,
+				},
+			});
+
+			//update the session to match the new name and email
+			req.session.email = userEmail;
 			req.session.name = req.body.name;
 			res.send({
 				success: true,
 			});
 		} else {
+			//checks if email and username is already taken
 			if (hasSameEmail != null && !noEmailChange) {
 				res.send({
 					success: false,
-					error: "email already taken",
+					error: "Email already taken",
 					type: "email",
 				});
 			} else if (hasSameUsername && !noNameChange) {
 				res.send({
 					success: false,
-					error: "username already taken",
+					error: "Username already taken",
 					type: "name",
 				});
 			}
@@ -750,58 +683,96 @@ router.post("/edit/submit", upload.single("image"), async function (req, res) {
 	} catch (e) {
 		res.send({
 			success: "false",
-			message: "failed to update account. Error: " + e,
+			message: "Failed to update account",
 		});
 	}
 });
 
-module.exports = router;
+/**
+ * function to trim the games and get rid of empty filters
+ */
+function shortingGame(games) {
+	let newGames = [];
+	if (games != null && Array.isArray(games)) {
+		games.forEach((game) => {
+			game = game.substring(0, 50).trim();
+			if (game != null && game != '') {
+				newGames.push(game);
+			}
+		});
+	}
+	return newGames;
+}
 
+/**
+ * Route for submitting an admin request
+ */
 router.post("/adminPromotion", async function (req, res) {
 	const adminReq = new AdminRequest({
-		name: req.body.name,
+		name: req.body.username,
 		email: req.body.email,
 		reason: req.body.reason,
 	});
-
-	let login = fs.readFileSync("./public/html/admin_promotion.html", "utf-8");
-	let adminPromotionDOM = new JSDOM(login);
-
+	if (req.body.reason == null || req.body.reason.trim() == "") {
+		res.send({
+			success: "false",
+			type: "reason",
+			reason: "Reason can't be blank"
+		});
+		return;
+	} else if (req.body.reason.length > 5000) {
+		res.send({
+			success: "false",
+			type: "reason",
+			reason: "Reason is too long"
+		});
+		return;
+	}
 	try {
+		//check to see if the email and username match before request is submitted
 		let hasSameEmail = await User.findOne({
 			email: req.body.email,
 		});
 		let hasSameUsername = await User.findOne({
-			name: req.body.name,
+			name: req.body.username,
 		});
-		if (hasSameEmail == null && hasSameUsername == null) {
-			let msg = "";
-			if (hasSameEmail == null) {
-				msg = "Email does not exists!";
-			} else {
-				msg = "Username does not exists!";
-			}
-			adminPromotionDOM.window.document.getElementById("errorMsg").innerHTML =
-				msg;
-			res.send(adminPromotionDOM.serialize());
+		if (hasSameEmail == null) {
+			res.send({
+				success: "false",
+				type: "email",
+				reason: "Email doesn't exist"
+			});
+		} else if (hasSameUsername == null) {
+			res.send({
+				success: "false",
+				type: "username",
+				reason: "Username doesn't exist"
+			});
+		} else if (hasSameEmail.name != hasSameUsername.name) {
+			res.send({
+				success: "false",
+				type: "username",
+				reason: "Username and email don't match"
+			});
 		} else {
 			const newAdminReq = await adminReq.save();
-			await User.updateOne(
-				{
-					email: req.body.email,
+			await User.updateOne({
+				email: req.body.email,
+			}, {
+				$set: {
+					promotion: true,
 				},
-				{
-					$set: {
-						promotion: true,
-					},
-				}
-			);
-			res.redirect("/user/login");
+			});
+			res.send({
+				success: "true",
+				reason: "success"
+			});
 		}
 	} catch (err) {
-		adminPromotionDOM.window.document.getElementById("errorMsg").innerHTML =
-			"Failed to make a request";
-		res.send(adminPromotionDOM.serialize());
+		res.send({
+			success: "false",
+			reason: "Failed to make request"
+		});
 	}
 });
 
@@ -827,6 +798,7 @@ router.post(
 	"/createAccountAdmin",
 	upload.single("pfp"),
 	async function (req, res) {
+		let userEmail = req.body.email.toLowerCase().trim();
 		if (
 			(await User.findOne({
 				email: req.session.email,
@@ -838,23 +810,7 @@ router.post(
 		let url =
 			"https://res.cloudinary.com/buddyup-images/image/upload/v1652458876/profile_ek8iwp.png";
 		if (req.file != undefined) {
-			let upload = await cloudinary.v2.uploader.upload(
-				"./public/images/" + req.file.filename,
-				function (error) {
-					if (error) {
-						res.send({
-							success: "false",
-							message: "failed to upload profile picture",
-						});
-						return;
-					}
-				}
-			);
-			await fs.unlink(
-				"./public/images/" + req.file.filename,
-				function (err) {}
-			);
-			url = upload.secure_url;
+			url = await uploadImage("./public/images/" + req.file.filename, res, url);
 		}
 		let adminValue;
 		if (req.body.admin == "on") {
@@ -865,7 +821,7 @@ router.post(
 		if (req.body.name.length > 100) {
 			res.send({
 				success: false,
-				error: "name must be less then 100 characters",
+				error: "Name must be less then 100 characters",
 				type: "name",
 			});
 			return;
@@ -873,7 +829,7 @@ router.post(
 		if (req.body.email.length > 100) {
 			res.send({
 				success: false,
-				error: "email must be less then 100 characters",
+				error: "Email must be less then 100 characters",
 				type: "email",
 			});
 			return;
@@ -881,14 +837,14 @@ router.post(
 		if (req.body.about.length > 280) {
 			res.send({
 				success: false,
-				error: "bio is too long",
+				error: "Bio is too long",
 				type: "about",
 			});
 			return;
 		}
 		const user = new User({
-			name: req.body.name,
-			email: req.body.email,
+			name: req.body.name.trim(),
+			email: userEmail,
 			password: req.body.password,
 			about: req.body.about,
 			admin: adminValue,
@@ -899,7 +855,7 @@ router.post(
 
 		try {
 			let hasSameEmail = await User.findOne({
-				email: req.body.email,
+				email: userEmail,
 			});
 			let hasSameUsername = await User.findOne({
 				name: req.body.name,
@@ -913,13 +869,13 @@ router.post(
 				if (hasSameEmail != null) {
 					res.send({
 						success: false,
-						error: "email already taken",
+						error: "Email already taken",
 						type: "email",
 					});
 				} else {
 					res.send({
 						success: false,
-						error: "username already taken",
+						error: "Username already taken",
 						type: "name",
 					});
 				}
@@ -927,7 +883,7 @@ router.post(
 		} catch (err) {
 			res.send({
 				success: false,
-				error: "failed to update account. Error: " + e,
+				error: "Failed to update account",
 			});
 		}
 	}
@@ -967,12 +923,13 @@ router.get("/delete/:name", async function (req, res) {
 });
 
 /**
- * Function for creating a new user from the admin dashboard
+ * Function for editing users from the admin dashboard
  */
 router.post(
 	"/editAccountAdmin",
 	upload.single("pfp"),
 	async function (req, res) {
+		let userEmail = req.body.email.toLowerCase().trim();
 		if (
 			(await User.findOne({
 				email: req.session.email,
@@ -982,14 +939,15 @@ router.post(
 			return;
 		}
 		try {
+			//get information of the user before they are changed
 			let oldUser = await User.findOne({
 				name: req.body.oldName,
 			});
 
-			let noEmailChange = req.body.email === oldUser.email;
+			let noEmailChange = userEmail === oldUser.email;
 
 			let hasSameEmail = await User.findOne({
-				email: req.body.email,
+				email: userEmail,
 			});
 
 			let noNameChange = req.body.name === oldUser.name;
@@ -997,30 +955,42 @@ router.post(
 			let hasSameUsername = await User.findOne({
 				name: req.body.name,
 			});
-
+			//check to make sure email and name aren't already taken
 			if (
 				(hasSameEmail == null || noEmailChange) &&
 				(hasSameUsername == null || noNameChange)
 			) {
-				let url;
+				//first check if everything is not too long
+				if (req.body.name.length > 100) {
+					res.send({
+						success: false,
+						error: "Name must be less then 100 characters",
+						type: "name",
+					});
+					return;
+				}
+				if (req.body.email.length > 100) {
+					res.send({
+						success: false,
+						error: "Email must be less then 100 characters",
+						type: "email",
+					});
+					return;
+				}
+				if (req.body.about.length > 280) {
+					res.send({
+						success: false,
+						error: "Bio is too long",
+						type: "about",
+					});
+					return;
+				}
+
+				//if there is a new pfp, then upload it
+				let url = oldUser.img;
+
 				if (req.file != undefined) {
-					let upload = await cloudinary.v2.uploader.upload(
-						"./public/images/" + req.file.filename,
-						function (error) {
-							if (error) {
-								res.send({
-									success: false,
-									message: "failed to upload profile picture",
-								});
-								return;
-							}
-						}
-					);
-					await fs.unlink(
-						"./public/images/" + req.file.filename,
-						function (err) {}
-					);
-					url = upload.secure_url;
+					url = await uploadImage("./public/images/" + req.file.filename, res, url);
 				}
 
 				let adminValue;
@@ -1030,87 +1000,39 @@ router.post(
 						email: oldUser.email,
 					});
 				} else {
+					//double check to make sure they aren't demoting themselves
 					if (oldUser.email != req.session.email) {
 						adminValue = false;
 					}
 				}
+				//update their name for the timeline posts
 				try {
-					await Timeline.updateMany(
-						{
-							author: oldUser.name,
+					await Timeline.updateMany({
+						author: oldUser.name,
+					}, {
+						$set: {
+							author: req.body.name.trim(),
 						},
-						{
-							$set: {
-								author: req.body.name,
-							},
-						}
-					);
-				} catch (error) {
-					//add log here
-				}
+					});
+				} catch (error) {}
 				//check if the user has an admin request
 				let userRequest = await AdminRequest.findOne({
 					email: oldUser.email,
 				});
 
-				if (req.body.name.length > 100) {
-					res.send({
-						success: false,
-						error: "name must be less then 100 characters",
-						type: "name",
-					});
-					return;
-				}
-				if (req.body.email.length > 100) {
-					res.send({
-						success: false,
-						error: "email must be less then 100 characters",
-						type: "email",
-					});
-					return;
-				}
-				if (req.body.about.length > 280) {
-					res.send({
-						success: false,
-						error: "bio is too long",
-						type: "about",
-					});
-					return;
-				}
-				if (url != null) {
-					await User.updateOne(
-						{
-							email: oldUser.email,
-						},
-						{
-							$set: {
-								img: url,
-								name: req.body.name,
-								about: req.body.about,
-								email: req.body.email,
-								admin: adminValue,
-								promotion: userRequest != null ? true : false,
-								password: req.body.password,
-							},
-						}
-					);
-				} else {
-					await User.updateOne(
-						{
-							email: oldUser.email,
-						},
-						{
-							$set: {
-								name: req.body.name,
-								about: req.body.about,
-								email: req.body.email,
-								admin: adminValue,
-								promotion: userRequest != null ? true : false,
-								password: req.body.password,
-							},
-						}
-					);
-				}
+				await User.updateOne({
+					email: oldUser.email,
+				}, {
+					$set: {
+						img: url,
+						name: req.body.name.trim(),
+						about: req.body.about,
+						email: userEmail,
+						admin: adminValue,
+						promotion: userRequest != null ? true : false,
+						password: req.body.password,
+					},
+				});
 				res.send({
 					success: true,
 				});
@@ -1118,13 +1040,13 @@ router.post(
 				if (hasSameEmail != null) {
 					res.send({
 						success: false,
-						error: "email already taken",
+						error: "Email already taken",
 						type: "email",
 					});
 				} else {
 					res.send({
 						success: false,
-						error: "name already taken",
+						error: "Name already taken",
 						type: "name",
 					});
 				}
@@ -1132,15 +1054,48 @@ router.post(
 		} catch (e) {
 			res.send({
 				success: false,
-				error: "failed to update account. Error: " + e,
+				type: "name",
+				error: "Failed to update account",
 			});
 		}
 	}
 );
 
+/**
+ * Function for uploading images to cloudinary
+ * @param {*} path path for the file
+ * @param {*} res the response to send if it didn't work
+ * @param {*} url the url for the old image
+ * @returns url for the new image
+ */
+async function uploadImage(path, res, url) {
+	let upload = await cloudinary.v2.uploader.upload(
+		path,
+		function (error) {
+			if (error) {
+				res.send({
+					success: false,
+					type: "name",
+					message: "Failed to upload profile picture",
+				});
+				//if it didn't work, just return the old one
+				return url;
+			}
+		}
+	);
+	//delete the image locally when done being uploaded to the cloud
+	await fs.unlink(
+		path,
+		function (err) {}
+	);
+	return upload.secure_url;
+}
+ 
+/**
+ * Function for loading the user information for the edit profile modal
+ */
 router.post(
 	"/loadEditModal",
-	upload.single("image"),
 	async function (req, res) {
 		if (
 			(await User.findOne({
@@ -1178,11 +1133,15 @@ router.post(
 		} catch (e) {
 			res.send({
 				success: false,
-				error: "failed to update account. Error: " + e,
+				error: "Failed to update account.",
 			});
 		}
 	}
 );
+
+/**
+ * redirect the user to the write a post page
+ */
 router.get("/write", async function (req, res) {
 	if (!req.session.loggedIn) {
 		res.redirect("/user/login");
@@ -1192,6 +1151,9 @@ router.get("/write", async function (req, res) {
 	}
 });
 
+/**
+ * set up multer for the create a post page, allowing multiple images
+ */
 var storagePost = multer.diskStorage({
 	destination: (req, file, cb) => {
 		cb(null, "./public/images/");
@@ -1200,8 +1162,8 @@ var storagePost = multer.diskStorage({
 		cb(
 			null,
 			Date.now() +
-				Math.floor(Math.random() * 999) +
-				path.extname(file.originalname)
+			Math.floor(Math.random() * 999) +
+			path.extname(file.originalname)
 		);
 	},
 });
@@ -1210,16 +1172,28 @@ var uploadPost = multer({
 	storage: storagePost,
 });
 
+/**
+ * Path for creating a post. Allow multiple images to be uploaded. If you upload more then 4, it just won't do anything with them.
+ */
 router.post(
 	"/write",
 	uploadPost.array("post-image"),
 	async function (req, res) {
 		let upload = [];
+		//check if the post is too long
 		if (req.body.title.length > 200) {
 			res.send({
 				success: "false",
-				message: "title is too long",
+				message: "Title is too long",
 				type: "title",
+			});
+			return;
+		}
+		if (req.body.content.length > 10000) {
+			res.send({
+				success: "false",
+				message: "Post is too long",
+				type: "post",
 			});
 			return;
 		}
@@ -1227,22 +1201,24 @@ router.post(
 			try {
 				for (let i = 0; i < req.files.length; i++) {
 					if (i < 4) {
+						//if there are 4 or less images, upload each image
 						let image = await cloudinary.v2.uploader.upload(
 							"./public/images/" + req.files[i].filename,
 							function (error) {}
 						);
 						upload[i] = image.secure_url;
 					}
-					await fs.unlink(
+					//delete local images when done uploading
+					fs.unlink(
 						"./public/images/" + req.files[i].filename,
 						function (err) {}
 					);
 				}
 			} catch (error) {
-				console.log(error);
 				res.send({
 					success: "false",
-					message: "failed to upload profile picture; error: " + error,
+					type: "pfp",
+					message: "Failed to upload images",
 				});
 				return;
 			}
@@ -1257,17 +1233,20 @@ router.post(
 			await storytimeline.save();
 			res.send({
 				success: "true",
-				message: "failed to upload profile picture",
+				message: "success",
 			});
 		} catch (err) {
 			res.send({
 				success: "false",
-				message: "failed to create a post",
+				message: "Failed to create a post",
 			});
 		}
 	}
 );
 
+/**
+ * Route for deleting a post.
+ */
 router.post("/deletePost", async function (req, res) {
 	if (!req.session.loggedIn) {
 		res.redirect("/user/login");
@@ -1284,6 +1263,9 @@ router.post("/deletePost", async function (req, res) {
 	}
 });
 
+/**
+ * Route for editing a post. takes the id and saves it in the html so it can be accessed whenever
+ */
 router.get("/editPost/:id", async function (req, res) {
 	var postID = req.params["id"];
 	if (!req.session.loggedIn) {
@@ -1303,6 +1285,9 @@ router.get("/editPost/:id", async function (req, res) {
 	}
 });
 
+/**
+ * get a post to load it to the edit page
+ */
 router.post("/getPost", async function (req, res) {
 	if (!req.session.loggedIn) {
 		res.redirect("/user/login");
@@ -1316,6 +1301,9 @@ router.post("/getPost", async function (req, res) {
 	}
 });
 
+/**
+ * route for submitting a post that was edited
+ */
 router.post(
 	"/editPost",
 	uploadPost.array("post-image"),
@@ -1323,11 +1311,20 @@ router.post(
 		let post = await Timeline.findOne({
 			_id: req.body.id,
 		});
+		//make sure its not too long
 		if (req.body.title.length > 200) {
 			res.send({
 				success: "false",
-				message: "title is too long",
+				message: "Title is too long",
 				type: "title",
+			});
+			return;
+		}
+		if (req.body.content.length > 10000) {
+			res.send({
+				success: "false",
+				message: "Post is too long",
+				type: "post",
 			});
 			return;
 		}
@@ -1337,53 +1334,51 @@ router.post(
 				try {
 					for (let i = 0; i < req.files.length; i++) {
 						if (i < 4) {
+							//upload new images if there are any
 							let image = await cloudinary.v2.uploader.upload(
 								"./public/images/" + req.files[i].filename,
 								function (error) {}
 							);
 							upload[i] = image.secure_url;
 						}
-						await fs.unlink(
+						fs.unlink(
 							"./public/images/" + req.files[i].filename,
 							function (err) {}
 						);
 					}
 				} catch (error) {
-					console.log(error);
 					res.send({
 						success: "false",
-						message: "failed to upload profile picture; error: " + error,
+						type: "image",
+						message: "Failed to upload images",
 					});
 					return;
 				}
 
-				await Timeline.updateMany(
-					{
-						_id: req.body.id,
+				await Timeline.updateMany({
+					_id: req.body.id,
+				}, {
+					$set: {
+						title: req.body.title,
+						post: req.body.content,
+						img: upload,
 					},
-					{
-						$set: {
-							title: req.body.title,
-							post: req.body.content,
-							img: upload,
-						},
-					}
-				);
+				});
 
 				res.send({
 					success: "true",
-					message: "failed to upload profile picture",
+					message: "success",
 				});
 			} catch (err) {
 				res.send({
 					success: "false",
-					message: "failed to create a post",
+					message: "Failed to create a post",
 				});
 			}
 		} else {
 			res.send({
 				success: "false",
-				message: "failed to create a post (bad id)",
+				message: "Failed to create a post (bad id)",
 			});
 		}
 	}

@@ -1,19 +1,16 @@
 "use strict";
 
-// used for the id of each filter
-let count = 0;
-
-// display the error message noting that you cannot add any more games for a few seconds
+// Display the error message noting that you cannot add any more games for a few seconds
 let errorMessageTimer = null;
 
 const maxGames = 10;
 const enterKey = 13;
 const gameInput = document.getElementById("game-text");
 
-// list of games entered
+// List of games entered
 let gameFilters = [];
 
-// helper function to create a game filter span field to be displayed on the DOM
+// Helper function to create a game filter span field to be displayed on the DOM
 function createGameSpan(gameFilter) {
 	let gameSpan = document.createElement("span");
 	gameSpan.classList.add(
@@ -23,22 +20,22 @@ function createGameSpan(gameFilter) {
 		"d-inline-block",
 		"rounded-pill"
 	);
-	count++;
-	gameSpan.id = "gamefilter" + count;
 	gameSpan.innerText = gameFilter;
 	return gameSpan;
 }
 
-// helper function to display a message saying that the max amount of game filters has been reached
+const errorMsg = document.getElementById("error-msg");
+const gameFiltersContainer = document.getElementById("gameFiltersContainer");
+
+// Helper function to display a message saying that the max amount of game filters has been reached
 function displayMaxGameFiltersMessage() {
-	document.getElementById("error-msg").innerText =
-		"You can only have a max of 10 games";
+	errorMsg.innerText = "You can only have a max of " + maxGames + " games";
 	errorMessageTimer = setTimeout(() => {
-		document.getElementById("error-msg").innerText = "";
+		errorMsg.innerText = "";
 	}, 2000);
 }
 
-// helper function to create a delete button for a game filter
+// Helper function to create a delete button for a game filter
 function createGameFilterDeleteButton(gameSpan, gameFilter) {
 	let deleteButton = document.createElement("button");
 	deleteButton.value = gameFilter;
@@ -50,63 +47,62 @@ function createGameFilterDeleteButton(gameSpan, gameFilter) {
 			gameFilters.splice(index, 1);
 		}
 		gameSpan.remove();
-		count--;
-		document.getElementById("error-msg").innerText = "";
+		errorMsg.innerText = "";
 	});
 	return deleteButton;
 }
 
-// adds a game
+// Adds a game
 gameInput.addEventListener("keypress", function (e) {
 	var key = e.which || e.keyCode;
 
-	// if we press enter and don't have an empty string for our filter then try and add it
-	if (key == enterKey && gameInput.value !== "") {
-		// if we don't already have this game filter, then proceed
-		if (gameFilters.indexOf(gameInput.value.toLowerCase()) != -1) {
+	// If we press enter and don't have an empty string for our filter then try and add it
+	if (key == enterKey && gameInput.value.trim() !== "") {
+		// If we don't already have this game filter, then proceed
+		if (gameFilters.indexOf(gameInput.value.toLowerCase().trim()) != -1) {
 			return;
 		}
 
-		// only allow a max of 10 game filters
-		if (count >= maxGames) {
+		// Set a maximum to game filters
+		if (gameFilters.length >= maxGames) {
 			displayMaxGameFiltersMessage();
 			return;
 		}
 
-		let gameFilter = gameInput.value;
+		let gameFilter = gameInput.value.trim();
 		gameFilters.push(gameFilter.toLowerCase());
 		gameInput.value = "";
 
-		// add the game filter to be displayed
+		// Add the game filter to be displayed
 		let gameSpan = createGameSpan(gameFilter);
 
-		// add a delete button to the game filter
+		// Add a delete button to the game filter
 		let deleteButton = createGameFilterDeleteButton(gameSpan, gameFilter);
 		gameSpan.appendChild(deleteButton);
 
-		// add the game filter to the DOM
-		document.getElementById("gameFiltersContainer").appendChild(gameSpan);
+		// Add the game filter to the DOM
+		gameFiltersContainer.appendChild(gameSpan);
 	}
 });
 
-// adds the game filter to be displayed
+// Adds the game filter to be displayed
 function addGame(name) {
-	let gameFilter = name;
+	let gameFilter = name.toLowerCase().substring(0, 50);
 	gameFilters.push(gameFilter.toLowerCase());
 
-	// add the game filter to be displayed
+	// Add the game filter to be displayed
 	let gameSpan = createGameSpan(gameFilter);
 
-	// add a delete button to the game filter
+	// Add a delete button to the game filter
 	let deleteButton = createGameFilterDeleteButton(gameSpan, gameFilter);
 	gameSpan.appendChild(deleteButton);
 
-	// add the game filter to the DOM
-	const gameFiltersDiv = document.getElementById("gameFiltersContainer");
+	// Add the game filter to the DOM
+	const gameFiltersDiv = gameFiltersContainer;
 	gameFiltersDiv.appendChild(gameSpan);
 }
 
-// get the user's data from the server
+// Get the user's data from the server
 async function getUserData() {
 	let data = fetch("/user/info")
 		.then(function (response) {
@@ -118,16 +114,30 @@ async function getUserData() {
 	return data;
 }
 
-// auto fill each game from the user as a filter
+/**
+ * Auto fill each game from the user as a filter
+ */
 async function autoFillFilters() {
 	let data = await getUserData();
-	data.games.forEach((game) => {
-		addGame(game);
-	});
+	if (Array.isArray(data.games) && data.games.length) {
+		data.games.forEach((game) => {
+			addGame(game);
+		});
+	}
 }
 autoFillFilters();
 
 let currentUser = localStorage.getItem("loggedInName");
+
+const profileContainer = document.getElementById("profile-container");
+const profileModal = document.getElementById("profile-modal");
+const matchFiltersContainer = document.getElementById(
+	"match-filters-container"
+);
+const acceptMatchBtn = document.getElementById("accept-match");
+const rejectMatchBtn = document.getElementById("reject-match");
+const sendMsgBtn = document.getElementById("send-button");
+const msgField = document.getElementById("message-field");
 
 // submit the data to the server and find a match
 const submitFilter = document.getElementById("submit");
@@ -135,8 +145,7 @@ submitFilter.addEventListener("click", function (e) {
 	e.preventDefault;
 
 	removeMessage();
-	document.getElementById("profile-container").innerHTML = "Finding...";
-
+	profileContainer.innerHTML = "  ";
 	let data = {};
 	if (gameFilters.length == 0) {
 		data.hasGameFilters = false;
@@ -145,45 +154,42 @@ submitFilter.addEventListener("click", function (e) {
 		data.gameFilters = gameFilters;
 		data.currentUser = currentUser;
 
-		document
-			.getElementById("profile-modal")
-			.style.setProperty("display", "flex", "important");
-		document
-			.getElementById("match-filters-container")
-			.style.setProperty("display", "none", "important");
-		document
-			.getElementById("accept-match")
-			.style.setProperty("display", "none", "important");
-		document
-			.getElementById("reject-match")
-			.style.setProperty("display", "none", "important");
+		profileModal.style.setProperty("display", "flex", "important");
+		matchFiltersContainer.style.setProperty("display", "none", "important");
+		acceptMatchBtn.style.setProperty("display", "none", "important");
+		rejectMatchBtn.style.setProperty("display", "none", "important");
+		replaceClass("modal-body", "modal-content", "on-load-modal");
 
 		let filters = JSON.stringify(data);
 
 		socket.emit("find-match", filters, async function (result) {
 			if (result.status == "Success") {
-				document
-					.getElementById("match-filters-container")
-					.style.setProperty("display", "none", "important");
-				document
-					.getElementById("accept-match")
-					.style.setProperty("display", "inline-block", "important");
-				document
-					.getElementById("reject-match")
-					.style.setProperty("display", "inline-block", "important");
-				document.getElementById("profile-container").innerHTML = result.profile;
+				replaceClass("modal-body", "on-load-modal", "modal-content");
+				matchFiltersContainer.style.setProperty("display", "none", "important");
+				acceptMatchBtn.style.setProperty(
+					"display",
+					"inline-block",
+					"important"
+				);
+				rejectMatchBtn.style.setProperty(
+					"display",
+					"inline-block",
+					"important"
+				);
+				profileContainer.innerHTML = result.profile;
 				localStorage.setItem("roomID", result.roomID);
 				//update their status to match
 				socket.emit("update-status", currentUser, true);
 			} else {
-				document
-					.getElementById("match-filters-container")
-					.style.setProperty("display", "block", "important");
-				document
-					.getElementById("profile-modal")
-					.style.setProperty("display", "none", "important");
-				document.getElementById("send-button").disabled = true;
-				document.getElementById("message-field").disabled = true;
+				replaceClass("modal-body", "on-load-modal", "modal-content");
+				matchFiltersContainer.style.setProperty(
+					"display",
+					"block",
+					"important"
+				);
+				profileModal.style.setProperty("display", "none", "important");
+				sendMsgBtn.disabled = true;
+				msgField.disabled = true;
 				displayStatusMessage(result.status);
 				socket.emit("update-status", currentUser, false);
 				// socket.emit("no-match-status", currentUser);
@@ -195,65 +201,63 @@ submitFilter.addEventListener("click", function (e) {
 /**
  * Accept the match
  */
-document
-	.getElementById("accept-match")
-	.addEventListener("click", async function (e) {
-		let roomID = localStorage.getItem("roomID");
-		let otherUser = document.getElementById("username").innerText;
-		document.getElementById("profile-container").innerHTML =
-			"Waiting for response...";
-		document.getElementById("accept-match").style.display = "none";
-		document.getElementById("reject-match").style.display = "none";
-		socket.emit(
-			"accept-match",
-			currentUser,
-			otherUser,
-			roomID,
-			async function (result) {
-				if (result.success) {
-					document
-						.getElementById("profile-modal")
-						.style.setProperty("display", "none", "important");
-					document.getElementById("send-button").disabled = false;
-					document.getElementById("message-field").disabled = false;
-					document
-						.getElementById("exit-chatroom")
-						.style.setProperty("display", "block", "important");
-				} else {
-					await socket.emit("reject-status", currentUser, roomID);
+acceptMatchBtn.addEventListener("click", async function (e) {
+	let roomID = localStorage.getItem("roomID");
+	let otherUser = document.getElementById("username").innerText;
+	profileContainer.innerHTML =
+		"<h3 class='text-center'> Waiting for Response </h3>";
+	replaceClass("modal-body", "modal-content", "on-load-modal");
+	acceptMatchBtn.style.display = "none";
+	rejectMatchBtn.style.display = "none";
 
-					document
-						.getElementById("match-filters-container")
-						.style.setProperty("display", "block", "important");
-					document
-						.getElementById("profile-modal")
-						.style.setProperty("display", "none", "important");
-					document.getElementById("send-button").disabled = true;
-					document.getElementById("message-field").disabled = true;
-					document.getElementById("profile-container").innerHTML = "Finding...";
-				}
-				document.getElementById("accept-match").style.display = "inline-block";
-				document.getElementById("reject-match").style.display = "inline-block";
+	socket.emit(
+		"accept-match",
+		currentUser,
+		otherUser,
+		roomID,
+		async function (result) {
+			if (result.success) {
+				replaceClass("modal-body", "on-load-modal", "modal-content");
+				profileModal.style.setProperty("display", "none", "important");
+				sendMsgBtn.disabled = false;
+				msgField.disabled = false;
+				document
+					.getElementById("exit-chatroom")
+					.style.setProperty("display", "block", "important");
+			} else {
+				replaceClass("modal-body", "on-load-modal", "modal-content");
+				await socket.emit("reject-status", currentUser, roomID);
+
+				matchFiltersContainer.style.setProperty(
+					"display",
+					"block",
+					"important"
+				);
+				profileModal.style.setProperty("display", "none", "important");
+				sendMsgBtn.disabled = true;
+				msgField.disabled = true;
+				profileContainer.innerHTML = "";
 			}
-		);
-	});
+			acceptMatchBtn.style.display = "inline-block";
+			rejectMatchBtn.style.display = "inline-block";
+		}
+	);
+});
 
 /**
  * Reject the match
  */
-document
-	.getElementById("reject-match")
-	.addEventListener("click", async function (e) {
-		e.preventDefault();
-		let room = localStorage.getItem("roomID");
-		let otherUser = document.getElementById("username").innerText;
-		document.getElementById("profile-container").innerHTML = "Finding...";
+rejectMatchBtn.addEventListener("click", async function (e) {
+	e.preventDefault();
+	let room = localStorage.getItem("roomID");
+	let otherUser = document.getElementById("username").innerText;
+	profileContainer.innerHTML = "  ";
 
-		await socket.emit("reject-match", currentUser, otherUser, room);
+	await socket.emit("reject-match", currentUser, otherUser, room);
 
-		await sleep(300);
-		submitFilter.click();
-	});
+	await sleep(300);
+	submitFilter.click();
+});
 
 /**
  * Listen for rejection
@@ -262,16 +266,12 @@ socket.on("rejected", async function () {
 	let roomID = localStorage.getItem("roomID");
 	await socket.emit("reject-status", currentUser, roomID);
 
-	document
-		.getElementById("match-filters-container")
-		.style.setProperty("display", "block", "important");
-	document
-		.getElementById("profile-modal")
-		.style.setProperty("display", "none", "important");
-	document.getElementById("send-button").disabled = true;
-	document.getElementById("message-field").disabled = true;
+	matchFiltersContainer.style.setProperty("display", "block", "important");
+	profileModal.style.setProperty("display", "none", "important");
+	sendMsgBtn.disabled = true;
+	msgField.disabled = true;
 	displayStatusMessage("You got rejected, nothin' personal Kid");
-	document.getElementById("profile-container").innerHTML = "Finding...";
+	profileContainer.innerHTML = "  ";
 });
 
 /**
@@ -288,15 +288,11 @@ exitMatchingBtn.addEventListener("click", async (e) => {
 		}
 	} catch {}
 
-	await socket.emit("update-status", currentUser, false);
-	document
-		.getElementById("match-filters-container")
-		.style.setProperty("display", "block", "important");
-	document
-		.getElementById("profile-modal")
-		.style.setProperty("display", "none", "important");
-	document.getElementById("send-button").disabled = true;
-	document.getElementById("message-field").disabled = true;
+	await socket.emit("quit-chat", currentUser, false);
+	matchFiltersContainer.style.setProperty("display", "block", "important");
+	profileModal.style.setProperty("display", "none", "important");
+	sendMsgBtn.disabled = true;
+	msgField.disabled = true;
 });
 
 function sleep(ms) {
@@ -308,4 +304,10 @@ function removeMessage() {
 	container.forEach((element) => {
 		element.remove();
 	});
+}
+
+function replaceClass(id, oldClass, newClass) {
+	var elem = document.getElementById(id);
+	elem.classList.remove(oldClass);
+	elem.classList.add(newClass);
 }

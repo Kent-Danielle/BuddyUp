@@ -102,17 +102,20 @@ input[type="file"] {
 }
 
 #file-container {
+	box-sizing: border-box;
+	color: #ffffff;
+	background: #797979;
+	box-shadow: 0 4px 30px rgba(0, 0, 0, 0.1);
+	padding: 0.4rem;
 	width: 100%;
-	resize: none;
-	background-color: rgba(255, 255, 255, 0);
-	border: 2px solid var(--accent-light);
+	font-variant: small-caps;
 	border-radius: 0.5rem;
-	padding: 0.3rem;
 	cursor: pointer;
 }
 
 form>input[type="text"],
-form>input[type="password"] {
+form>input[type="password"],
+form>input[type="email"] {
 	box-sizing: border-box;
 	border: none;
 	border-bottom: 2px solid var(--accent-light);
@@ -137,12 +140,6 @@ form>#submit-container {
 
 #submit {
 	box-sizing: border-box;
-	color: white;
-	background: rgba(22, 100, 214, 0.91);
-	box-shadow: 0 4px 30px rgba(0, 0, 0, 0.1);
-	backdrop-filter: blur(2px);
-	-webkit-backdrop-filter: blur(5px);
-	border: 1px solid rgba(22, 100, 214, 0.3);
 	padding: 0.4rem;
 	width: 100%;
 	font-variant: small-caps;
@@ -199,6 +196,10 @@ form a {
 	border: none;
 }
 
+.required {
+	color: red;
+}
+
 /*----------------
  * Mobile layout
  *----------------
@@ -209,13 +210,23 @@ form a {
 		grid-template-rows: 1fr;
 		grid-template-columns: 100%;
 	}
+
 	#form-container {
-		width: 95% !important;
+		display: grid;
+		align-items: center;
+		width: 100% !important;
+		height: 100% !important;
+		border-radius: 0;
+		border: 0;
+		box-shadow: none;
+		backdrop-filter: none;
+		overflow-y: scroll;
+		box-sizing: content-box !important;
 	}
 }
 
 /*----------------
- * Mobile layout
+ * Desktop layout
  *----------------
  */
 @media only screen and (min-width: 845px) {
@@ -223,8 +234,5 @@ form a {
 		grid-template-areas: "main";
 		grid-template-rows: 1fr;
 		grid-template-columns: 100%;
-	}
-	#form-container {
-		width: 75% !important;
 	}
 }

@@ -86,7 +86,8 @@ form > h3 {
 	font-variant: small-caps;
 }
 form > input[type="text"],
-form > input[type="password"] {
+form > input[type="password"],
+form > input[type="email"] {
 	box-sizing: border-box;
 	border: none;
 	border-bottom: 2px solid var(--accent-light);
@@ -108,12 +109,6 @@ form > #submit-container {
 }
 input[type="submit"] {
 	box-sizing: border-box;
-	color: white;
-	background: rgba(22, 100, 214, 0.91);
-	box-shadow: 0 4px 30px rgba(0, 0, 0, 0.1);
-	backdrop-filter: blur(2px);
-	-webkit-backdrop-filter: blur(5px);
-	border: 1px solid rgba(22, 100, 214, 0.3);
 	padding: 0.4rem;
 	width: 100%;
 	font-variant: small-caps;
@@ -138,6 +133,10 @@ form a {
 	font-size: 2rem;
 	color: var(--primary-dark);
 }
+
+#textarea_remaining_char {
+	text-align: left;
+}
 /*----------------
  * Mobile layout
  *----------------
@@ -148,10 +147,23 @@ form a {
 		grid-template-rows: 1fr;
 		grid-template-columns: 100%;
 	}
+
+	#form-container {
+		width: 95%;
+	}
+
+	#form-data {
+		padding-top: 0;
+		margin-top: 0;
+	}
+
+	#form-logo {
+		height: 3rem;
+	}
 }
 
 /*----------------
- * Mobile layout
+ * Desktop layout
  *----------------
  */
 @media only screen and (min-width: 845px) {

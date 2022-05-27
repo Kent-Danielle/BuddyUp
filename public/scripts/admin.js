@@ -1,7 +1,6 @@
 'use strict';
 
 let nestedTable = document.getElementById("nested");
-
 const searchButton = document.getElementById("search-button");
 const search = document.getElementById("search");
 const adminFilterButton = document.getElementById("adminFilter");
@@ -13,6 +12,7 @@ const requestFilterButton = document.getElementById("requestFilter");
 searchButton.addEventListener("click", (event) => {
 	let data = {
 		input: search.value,
+		type: "search",
 	};
 	let result = fetch("/user/adminSearch", {
 			method: "POST",
@@ -43,8 +43,9 @@ adminFilterButton.addEventListener("change", (event) => {
 		requestFilterButton.checked = false;
 		let data = {
 			input: adminFilterButton.checked,
+			type: "admin",
 		};
-		let result = fetch("/user/adminFilter", {
+		let result = fetch("/user/adminSearch", {
 				method: "POST",
 				headers: {
 					Accept: "application/json",
@@ -66,6 +67,7 @@ adminFilterButton.addEventListener("change", (event) => {
 	} else {
 		let data = {
 			input: "",
+			type: "search",
 		};
 		let result = fetch("/user/adminSearch", {
 				method: "POST",
@@ -98,8 +100,9 @@ requestFilterButton.addEventListener("change", (event) => {
 		adminFilterButton.checked = false;
 		let data = {
 			input: requestFilterButton.checked,
+			type: "request",
 		};
-		let result = fetch("/user/promotionFilter", {
+		let result = fetch("/user/adminSearch", {
 				method: "POST",
 				headers: {
 					Accept: "application/json",
@@ -121,6 +124,7 @@ requestFilterButton.addEventListener("change", (event) => {
 	} else {
 		let data = {
 			input: "",
+			type: "search"
 		};
 		let result = fetch("/user/adminSearch", {
 				method: "POST",
@@ -144,11 +148,11 @@ requestFilterButton.addEventListener("change", (event) => {
 	}
 });
 
+createListener();
+
 /**
  * Function for collapsible table
  */
-createListener();
-
 function createListener() {
 	const expandBtn = document.querySelectorAll("#more-info");
 	for (let i = 0; i < expandBtn.length; i++) {
@@ -171,11 +175,11 @@ function createListener() {
 	}
 }
 
+createDeleteListener();
+
 /**
  * Function for delete button
  */
-createDeleteListener();
-
 function createDeleteListener() {
 	const modalText = document.getElementById("modalText");
 	const loggedInName = document.getElementById("name").innerText;
@@ -192,7 +196,9 @@ function createDeleteListener() {
 			} else {
 				modalText.innerHTML =
 					"Do you want to delete " + deleteBtn[i].value + "'s account?";
-				confirmBtn.href = "/user/delete/" + deleteBtn[i].value;
+				confirmBtn.addEventListener("click", function (e) {
+					window.location.href = "/user/delete/" + deleteBtn[i].value;
+				});
 				confirmBtn.style.setProperty("display", "inline-block", "important");
 				confirmModal.style.setProperty("display", "flex", "important");
 			}
@@ -204,11 +210,11 @@ function createDeleteListener() {
 	});
 }
 
+createEditListener();
+
 /**
  * Function for edit button
  */
-createEditListener();
-
 function createEditListener() {
 	const loggedInName = document.getElementById("name").innerText;
 	let isAdminLabel = document.getElementById("isAdminLabel");
@@ -247,6 +253,7 @@ function createEditListener() {
 						passwordField.value = result.password;
 						bioField.value = result.about;
 						isAdmin.checked = result.admin;
+						document.getElementById("confirm-password").value = result.password;
 
 						isAdminLabel.innerText = isAdmin.checked ? "Demote to user" : "Promote to admin";
 
@@ -277,6 +284,20 @@ function createEditListener() {
 	});
 }
 
+/**
+ * Function that makes sure the email has valid characters and is in the proper format
+ * @param {The email string to be checked} mail 
+ * @returns true if the email is valid, false otherwise
+ */
+function ValidateEmail(mail) 
+{
+ if (/^\w+([.-]?\w+)@\w+([.-]?\w+)(.\w{2,3})+$/.test(mail))
+  {
+    return (true)
+  }
+    return (false)
+}
+
 // changes the text for the promote an admin button based on wheither they have been demoted or promoted
 document.getElementById("isAdmin").addEventListener("click", function (e) {
 	isAdminLabel.innerText = isAdmin.checked ? "Demote to user" : "Promote to admin";
@@ -285,33 +306,52 @@ document.getElementById("isAdmin").addEventListener("click", function (e) {
 document
 	.getElementById("submitButton")
 	.addEventListener("click", async function (e) {
-		let submitBtn = document.getElementById("submitButton");
 		e.preventDefault();
-		let oldName = await localStorage.getItem("oldName");
-		let form = document.getElementById("userForm");
-		let formData = new FormData(form);
-		formData.append("oldName", oldName);
-		let fetchPath =
-			submitBtn.value == "create account" ?
-			"/user/createAccountAdmin" :
-			"/user/editAccountAdmin";
-		let result = fetch(fetchPath, {
-				method: "POST",
-				body: formData,
-			})
-			.then(function (response) {
-				return response.json();
-			})
-			.then(function (result) {
-				if (result.success) {
-					window.location.replace("/user/admin");
-				} else {
-					let inputs = document.querySelectorAll(".inputFields");
-					inputs.forEach((input) => input.style.backgroundColor = "rgba(255, 255, 255, 0)");
-					document.getElementById("errorMsg").innerText = result.error;
-					document.getElementById(result.type + "Field").style.backgroundColor = 'var(--accent-light)';
-				}
-			});
+		// Check if the email input is valid
+		let email = document.getElementById("emailField").value;
+		if (ValidateEmail(email) == true) {
+
+			let password = document.getElementById("passwordField").value;
+			let confirm = document.getElementById("confirm-password").value;
+			if (password == confirm) {
+				let submitBtn = document.getElementById("submitButton");
+				let oldName = await localStorage.getItem("oldName");
+				let form = document.getElementById("userForm");
+				let formData = new FormData(form);
+				formData.append("oldName", oldName);
+				let fetchPath =
+					submitBtn.value == "create account" ?
+					"/user/createAccountAdmin" :
+					"/user/editAccountAdmin";
+				let result = fetch(fetchPath, {
+						method: "POST",
+						body: formData,
+					})
+					.then(function (response) {
+						return response.json();
+					})
+					.then(function (result) {
+						if (result.success) {
+							window.location.replace("/user/admin");
+						} else {
+							let inputs = document.querySelectorAll(".inputFields");
+							inputs.forEach((input) => input.style.backgroundColor = "rgba(255, 255, 255, 0)");
+							document.getElementById("errorMsg").innerText = result.error;
+							document.getElementById(result.type + "Field").style.backgroundColor = 'var(--accent-light)';
+						}
+					});
+			} else {
+				document.getElementById("errorMsg").innerText = "Password does not match.";
+				let inputs = document.querySelectorAll(".inputFields");
+				inputs.forEach((input) => input.style.backgroundColor = "rgba(255, 255, 255, 0)");
+				document.getElementById("passwordField").style.backgroundColor = 'var(--accent-light)';
+			}
+		} else {
+			document.getElementById("errorMsg").innerText = "Incomplete Email";
+			let inputs = document.querySelectorAll(".inputFields");
+			inputs.forEach((input) => input.style.backgroundColor = "rgba(255, 255, 255, 0)");
+			document.getElementById("emailField").style.backgroundColor = 'var(--accent-light)';
+		}
 	});
 
 /**
@@ -319,6 +359,9 @@ document
  */
 const textarea = document.querySelector("textarea");
 
+/**
+ * A listener for the text area to show how many characters are remaining that the user can enter
+ */
 textarea.addEventListener("input", ({
 	currentTarget: target
 }) => {
