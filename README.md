@@ -3,7 +3,7 @@
 
 Our project, Team UpTech, is developing BuddyUp, a chatroulette web application, to help gamers find other gamers based on the games they play, with a user profile feature to assist users in deciding if they want to chat with the matched user.
 
-
+[![Watch the video](https://img.youtube.com/vi/zfrqFqDBm3s/maxresdefault.jpg)](https://youtu.be/zfrqFqDBm3s)
 
 ## Technology used
 
