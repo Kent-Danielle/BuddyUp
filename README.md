@@ -155,3 +155,6 @@ uptech.co.09@gmail.com
 - Clayton: chunter52@my.bcit.ca
 - Tommy: tnguyen528@my.bcit.ca
 - Kent: kconcengco@my.bcit.ca
+
+
+[![Watch the video](https://img.youtube.com/vi/zfrqFqDBm3s/maxresdefault.jpg)](https://youtu.be/zfrqFqDBm3s)
