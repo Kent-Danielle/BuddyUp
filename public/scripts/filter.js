@@ -24,12 +24,14 @@ function createGameSpan(gameFilter) {
 	return gameSpan;
 }
 
+const errorMsg = document.getElementById("error-msg");
+const gameFiltersContainer = document.getElementById("gameFiltersContainer");
+
 // Helper function to display a message saying that the max amount of game filters has been reached
 function displayMaxGameFiltersMessage() {
-	document.getElementById("error-msg").innerText =
-		"You can only have a max of " + maxGames + " games";
+	errorMsg.innerText = "You can only have a max of " + maxGames + " games";
 	errorMessageTimer = setTimeout(() => {
-		document.getElementById("error-msg").innerText = "";
+		errorMsg.innerText = "";
 	}, 2000);
 }
 
@@ -45,7 +47,7 @@ function createGameFilterDeleteButton(gameSpan, gameFilter) {
 			gameFilters.splice(index, 1);
 		}
 		gameSpan.remove();
-		document.getElementById("error-msg").innerText = "";
+		errorMsg.innerText = "";
 	});
 	return deleteButton;
 }
@@ -79,7 +81,7 @@ gameInput.addEventListener("keypress", function (e) {
 		gameSpan.appendChild(deleteButton);
 
 		// Add the game filter to the DOM
-		document.getElementById("gameFiltersContainer").appendChild(gameSpan);
+		gameFiltersContainer.appendChild(gameSpan);
 	}
 });
 
@@ -96,7 +98,7 @@ function addGame(name) {
 	gameSpan.appendChild(deleteButton);
 
 	// Add the game filter to the DOM
-	const gameFiltersDiv = document.getElementById("gameFiltersContainer");
+	const gameFiltersDiv = gameFiltersContainer;
 	gameFiltersDiv.appendChild(gameSpan);
 }
 
@@ -127,13 +129,23 @@ autoFillFilters();
 
 let currentUser = localStorage.getItem("loggedInName");
 
+const profileContainer = document.getElementById("profile-container");
+const profileModal = document.getElementById("profile-modal");
+const matchFiltersContainer = document.getElementById(
+	"match-filters-container"
+);
+const acceptMatchBtn = document.getElementById("accept-match");
+const rejectMatchBtn = document.getElementById("reject-match");
+const sendMsgBtn = document.getElementById("send-button");
+const msgField = document.getElementById("message-field");
+
 // submit the data to the server and find a match
 const submitFilter = document.getElementById("submit");
 submitFilter.addEventListener("click", function (e) {
 	e.preventDefault;
 
 	removeMessage();
-	document.getElementById("profile-container").innerHTML = "  ";
+	profileContainer.innerHTML = "  ";
 	let data = {};
 	if (gameFilters.length == 0) {
 		data.hasGameFilters = false;
@@ -142,18 +154,10 @@ submitFilter.addEventListener("click", function (e) {
 		data.gameFilters = gameFilters;
 		data.currentUser = currentUser;
 
-		document
-			.getElementById("profile-modal")
-			.style.setProperty("display", "flex", "important");
-		document
-			.getElementById("match-filters-container")
-			.style.setProperty("display", "none", "important");
-		document
-			.getElementById("accept-match")
-			.style.setProperty("display", "none", "important");
-		document
-			.getElementById("reject-match")
-			.style.setProperty("display", "none", "important");
+		profileModal.style.setProperty("display", "flex", "important");
+		matchFiltersContainer.style.setProperty("display", "none", "important");
+		acceptMatchBtn.style.setProperty("display", "none", "important");
+		rejectMatchBtn.style.setProperty("display", "none", "important");
 		replaceClass("modal-body", "modal-content", "on-load-modal");
 
 		let filters = JSON.stringify(data);
@@ -161,29 +165,31 @@ submitFilter.addEventListener("click", function (e) {
 		socket.emit("find-match", filters, async function (result) {
 			if (result.status == "Success") {
 				replaceClass("modal-body", "on-load-modal", "modal-content");
-				document
-					.getElementById("match-filters-container")
-					.style.setProperty("display", "none", "important");
-				document
-					.getElementById("accept-match")
-					.style.setProperty("display", "inline-block", "important");
-				document
-					.getElementById("reject-match")
-					.style.setProperty("display", "inline-block", "important");
-				document.getElementById("profile-container").innerHTML = result.profile;
+				matchFiltersContainer.style.setProperty("display", "none", "important");
+				acceptMatchBtn.style.setProperty(
+					"display",
+					"inline-block",
+					"important"
+				);
+				rejectMatchBtn.style.setProperty(
+					"display",
+					"inline-block",
+					"important"
+				);
+				profileContainer.innerHTML = result.profile;
 				localStorage.setItem("roomID", result.roomID);
 				//update their status to match
 				socket.emit("update-status", currentUser, true);
 			} else {
 				replaceClass("modal-body", "on-load-modal", "modal-content");
-				document
-					.getElementById("match-filters-container")
-					.style.setProperty("display", "block", "important");
-				document
-					.getElementById("profile-modal")
-					.style.setProperty("display", "none", "important");
-				document.getElementById("send-button").disabled = true;
-				document.getElementById("message-field").disabled = true;
+				matchFiltersContainer.style.setProperty(
+					"display",
+					"block",
+					"important"
+				);
+				profileModal.style.setProperty("display", "none", "important");
+				sendMsgBtn.disabled = true;
+				msgField.disabled = true;
 				displayStatusMessage(result.status);
 				socket.emit("update-status", currentUser, false);
 				// socket.emit("no-match-status", currentUser);
@@ -195,68 +201,63 @@ submitFilter.addEventListener("click", function (e) {
 /**
  * Accept the match
  */
-document
-	.getElementById("accept-match")
-	.addEventListener("click", async function (e) {
-		let roomID = localStorage.getItem("roomID");
-		let otherUser = document.getElementById("username").innerText;
-		document.getElementById("profile-container").innerHTML =
-			"<h3 class='text-center'> Waiting for Response </h3>";
-		replaceClass("modal-body", "modal-content", "on-load-modal");
-		document.getElementById("accept-match").style.display = "none";
-		document.getElementById("reject-match").style.display = "none";
-		socket.emit(
-			"accept-match",
-			currentUser,
-			otherUser,
-			roomID,
-			async function (result) {
-				if (result.success) {
-					replaceClass("modal-body", "on-load-modal", "modal-content");
-					document
-						.getElementById("profile-modal")
-						.style.setProperty("display", "none", "important");
-					document.getElementById("send-button").disabled = false;
-					document.getElementById("message-field").disabled = false;
-					document
-						.getElementById("exit-chatroom")
-						.style.setProperty("display", "block", "important");
-				} else {
-					replaceClass("modal-body", "on-load-modal", "modal-content");
-					await socket.emit("reject-status", currentUser, roomID);
+acceptMatchBtn.addEventListener("click", async function (e) {
+	let roomID = localStorage.getItem("roomID");
+	let otherUser = document.getElementById("username").innerText;
+	profileContainer.innerHTML =
+		"<h3 class='text-center'> Waiting for Response </h3>";
+	replaceClass("modal-body", "modal-content", "on-load-modal");
+	acceptMatchBtn.style.display = "none";
+	rejectMatchBtn.style.display = "none";
 
-					document
-						.getElementById("match-filters-container")
-						.style.setProperty("display", "block", "important");
-					document
-						.getElementById("profile-modal")
-						.style.setProperty("display", "none", "important");
-					document.getElementById("send-button").disabled = true;
-					document.getElementById("message-field").disabled = true;
-					document.getElementById("profile-container").innerHTML = "";
-				}
-				document.getElementById("accept-match").style.display = "inline-block";
-				document.getElementById("reject-match").style.display = "inline-block";
+	socket.emit(
+		"accept-match",
+		currentUser,
+		otherUser,
+		roomID,
+		async function (result) {
+			if (result.success) {
+				replaceClass("modal-body", "on-load-modal", "modal-content");
+				profileModal.style.setProperty("display", "none", "important");
+				sendMsgBtn.disabled = false;
+				msgField.disabled = false;
+				document
+					.getElementById("exit-chatroom")
+					.style.setProperty("display", "block", "important");
+			} else {
+				replaceClass("modal-body", "on-load-modal", "modal-content");
+				await socket.emit("reject-status", currentUser, roomID);
+
+				matchFiltersContainer.style.setProperty(
+					"display",
+					"block",
+					"important"
+				);
+				profileModal.style.setProperty("display", "none", "important");
+				sendMsgBtn.disabled = true;
+				msgField.disabled = true;
+				profileContainer.innerHTML = "";
 			}
-		);
-	});
+			acceptMatchBtn.style.display = "inline-block";
+			rejectMatchBtn.style.display = "inline-block";
+		}
+	);
+});
 
 /**
  * Reject the match
  */
-document
-	.getElementById("reject-match")
-	.addEventListener("click", async function (e) {
-		e.preventDefault();
-		let room = localStorage.getItem("roomID");
-		let otherUser = document.getElementById("username").innerText;
-		document.getElementById("profile-container").innerHTML = "  ";
+rejectMatchBtn.addEventListener("click", async function (e) {
+	e.preventDefault();
+	let room = localStorage.getItem("roomID");
+	let otherUser = document.getElementById("username").innerText;
+	profileContainer.innerHTML = "  ";
 
-		await socket.emit("reject-match", currentUser, otherUser, room);
+	await socket.emit("reject-match", currentUser, otherUser, room);
 
-		await sleep(300);
-		submitFilter.click();
-	});
+	await sleep(300);
+	submitFilter.click();
+});
 
 /**
  * Listen for rejection
@@ -265,16 +266,12 @@ socket.on("rejected", async function () {
 	let roomID = localStorage.getItem("roomID");
 	await socket.emit("reject-status", currentUser, roomID);
 
-	document
-		.getElementById("match-filters-container")
-		.style.setProperty("display", "block", "important");
-	document
-		.getElementById("profile-modal")
-		.style.setProperty("display", "none", "important");
-	document.getElementById("send-button").disabled = true;
-	document.getElementById("message-field").disabled = true;
+	matchFiltersContainer.style.setProperty("display", "block", "important");
+	profileModal.style.setProperty("display", "none", "important");
+	sendMsgBtn.disabled = true;
+	msgField.disabled = true;
 	displayStatusMessage("You got rejected, nothin' personal Kid");
-	document.getElementById("profile-container").innerHTML = "  ";
+	profileContainer.innerHTML = "  ";
 });
 
 /**
@@ -292,14 +289,10 @@ exitMatchingBtn.addEventListener("click", async (e) => {
 	} catch {}
 
 	await socket.emit("quit-chat", currentUser, false);
-	document
-		.getElementById("match-filters-container")
-		.style.setProperty("display", "block", "important");
-	document
-		.getElementById("profile-modal")
-		.style.setProperty("display", "none", "important");
-	document.getElementById("send-button").disabled = true;
-	document.getElementById("message-field").disabled = true;
+	matchFiltersContainer.style.setProperty("display", "block", "important");
+	profileModal.style.setProperty("display", "none", "important");
+	sendMsgBtn.disabled = true;
+	msgField.disabled = true;
 });
 
 function sleep(ms) {
