@@ -1,5 +1,10 @@
 "use strict";
 
+const titleBox = document.getElementById("title-box");
+const postBox = document.getElementById("post-box");
+const addImage = document.getElementById("add-image");
+const buttonsDiv = document.getElementById("buttons");
+
 /**
  * Function to edit post when they submit.
  */
@@ -7,10 +12,10 @@ document.getElementById("submit").addEventListener("click", async (e) => {
 	e.preventDefault();
 	document.getElementById("errorMsg").innerHTML = "";
 	replaceClass("form-container", "form-style", "on-load-form");
-	document.getElementById("title-box").classList.add("hidden");
-	document.getElementById("post-box").classList.add("hidden");
-	document.getElementById("add-image").classList.add("hidden");
-	document.getElementById("buttons").classList.add("hidden");
+	titleBox.classList.add("hidden");
+	postBox.classList.add("hidden");
+	addImage.classList.add("hidden");
+	buttonsDiv.classList.add("hidden");
 	let form = document.getElementById("form-container");
 	let formData = new FormData(form);
 	formData.set(
@@ -21,9 +26,9 @@ document.getElementById("submit").addEventListener("click", async (e) => {
 	);
 	formData.set("id", document.getElementById("postID").innerHTML);
 	fetch("/user/editPost", {
-			method: "POST",
-			body: formData,
-		})
+		method: "POST",
+		body: formData,
+	})
 		.then(function (result) {
 			return result.json();
 		})
@@ -32,10 +37,10 @@ document.getElementById("submit").addEventListener("click", async (e) => {
 				window.location.replace("/user/profile");
 			} else {
 				replaceClass("form-container", "on-load-form", "form-style");
-				document.getElementById("title-box").classList.remove("hidden");
-				document.getElementById("post-box").classList.remove("hidden");
-				document.getElementById("add-image").classList.remove("hidden");
-				document.getElementById("buttons").classList.remove("hidden");
+				titleBox.classList.remove("hidden");
+				postBox.classList.remove("hidden");
+				addImage.classList.remove("hidden");
+				buttonsDiv.classList.remove("hidden");
 				document.getElementById("errorMsg").innerHTML = result.message;
 				document.getElementsByClassName("tox")[0].style.border = "none";
 				if (result.type != null && result.type != undefined) {
@@ -70,10 +75,11 @@ document.getElementById("cancelBtn").addEventListener("click", (e) => {
 /**
  * Function to upload an image.
  */
-document.getElementById("file-container").addEventListener("click", function () {
-	document.getElementById("image").click();
-});
-
+document
+	.getElementById("file-container")
+	.addEventListener("click", function () {
+		document.getElementById("image").click();
+	});
 
 document.getElementById("image").addEventListener("change", function () {
 	let count = document.getElementById("image").files.length;
@@ -86,13 +92,13 @@ window.onload = function () {
 		id: document.getElementById("postID").innerHTML,
 	};
 	fetch("/user/getPost", {
-			method: "POST",
-			headers: {
-				Accept: "application/json",
-				"Content-Type": "application/json",
-			},
-			body: JSON.stringify(data),
-		})
+		method: "POST",
+		headers: {
+			Accept: "application/json",
+			"Content-Type": "application/json",
+		},
+		body: JSON.stringify(data),
+	})
 		.then((result) => {
 			return result.json();
 		})

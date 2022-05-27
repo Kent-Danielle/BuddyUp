@@ -1,14 +1,19 @@
 "use strict";
 
+const titleBox = document.getElementById("title-box");
+const postBox = document.getElementById("post-box");
+const addImage = document.getElementById("add-image");
+const buttonsDiv = document.getElementById("buttons");
+
 // A function to send the story post to the server side.
 document.getElementById("submit").addEventListener("click", async (e) => {
 	e.preventDefault();
 	document.getElementById("errorMsg").innerHTML = "";
 	replaceClass("form-container", "form-style", "on-load-form");
-	document.getElementById("title-box").classList.add("hidden");
-	document.getElementById("post-box").classList.add("hidden");
-	document.getElementById("add-image").classList.add("hidden");
-	document.getElementById("buttons").classList.add("hidden");
+	titleBox.classList.add("hidden");
+	postBox.classList.add("hidden");
+	addImage.classList.add("hidden");
+	buttonsDiv.classList.add("hidden");
 	let form = document.getElementById("form-container");
 	let formData = new FormData(form);
 	formData.set(
@@ -29,10 +34,10 @@ document.getElementById("submit").addEventListener("click", async (e) => {
 				window.location.replace("/user/profile");
 			} else {
 				replaceClass("form-container", "on-load-form", "form-style");
-				document.getElementById("title-box").classList.remove("hidden");
-				document.getElementById("post-box").classList.remove("hidden");
-				document.getElementById("add-image").classList.remove("hidden");
-				document.getElementById("buttons").classList.remove("hidden");
+				titleBox.classList.remove("hidden");
+				postBox.classList.remove("hidden");
+				addImage.classList.remove("hidden");
+				buttonsDiv.classList.remove("hidden");
 				document.getElementById("errorMsg").innerHTML = result.message;
 				document.getElementsByClassName("tox")[0].style.border = "none";
 				if (result.type != null && result.type != undefined) {
