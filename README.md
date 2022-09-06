@@ -1,3 +1,7 @@
+<p align="center">
+ Click here!
+ <a href="https://buddy-up-comp2800.herokuapp.com/">https://buddy-up-comp2800.herokuapp.com/</a>
+</p>
 
 # BuddyUp
 
